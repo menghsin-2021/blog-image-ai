@@ -1,0 +1,7 @@
+# 加入 react 專案常見需要 ignore 的檔案
+/.env
+/.env.local
+/.env.*.local
+/node_modules
+/dist
+/build
