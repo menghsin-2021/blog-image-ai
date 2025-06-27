@@ -3,7 +3,7 @@ import { useCache } from './useCache';
 import { ContentInput, OptimizedPrompt, ImagePurposeType } from '../types/promptOptimizer';
 import { gpt4oOptimizationService } from '../services/gpt4oOptimizer';
 
-// 快取鍵生成函式
+// 快取鍵生成函式 - 支援 UTF-8 編碼
 const generateCacheKey = (content: ContentInput, purpose: ImagePurposeType): string => {
   const keyData = {
     title: content.title?.trim(),
@@ -13,7 +13,20 @@ const generateCacheKey = (content: ContentInput, purpose: ImagePurposeType): str
     purpose
   };
   
-  return btoa(JSON.stringify(keyData));
+  // 使用 encodeURIComponent 替代 btoa 來支援中文字符
+  const jsonString = JSON.stringify(keyData);
+  
+  // 建立簡單的 hash 來縮短鍵長度
+  let hash = 0;
+  for (let i = 0; i < jsonString.length; i++) {
+    const char = jsonString.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // 轉換為 32-bit 整數
+  }
+  
+  // 結合 hash 和編碼後的字串前綴來確保唯一性
+  const prefix = encodeURIComponent(jsonString.slice(0, 50));
+  return `cache_${Math.abs(hash).toString(36)}_${prefix}`;
 };
 
 /**

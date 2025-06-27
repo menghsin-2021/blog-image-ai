@@ -54,7 +54,8 @@ echo "✅ 10 次請求平均回應時間: ${avg_time}ms"
 echo "📝 檢查容器錯誤日誌..."
 error_count=$(docker logs $container_name 2>&1 | grep -i error | wc -l)
 warning_count=$(docker logs $container_name 2>&1 | grep -i warning | wc -l)
-echo "錯誤數量: $error_count, 警告數量: $warning_count"
+encoding_errors=$(docker logs $container_name 2>&1 | grep -i "InvalidCharacterError\|btoa\|encoding" | wc -l)
+echo "錯誤數量: $error_count, 警告數量: $warning_count, 編碼錯誤: $encoding_errors"
 
 # 建構測試（型別檢查）
 echo "🔨 執行容器內建構測試..."
@@ -94,6 +95,7 @@ score=100
 if [ $avg_time -gt 300 ]; then score=$((score - 20)); fi
 if [ $error_count -gt 0 ]; then score=$((score - 30)); fi
 if [ $build_time -gt 60 ]; then score=$((score - 10)); fi
+if [ $encoding_errors -gt 0 ]; then score=$((score - 25)); fi
 
 echo ""
 if [ $score -ge 90 ]; then
@@ -116,6 +118,9 @@ if [ $error_count -gt 0 ]; then
 fi
 if [ $build_time -gt 60 ]; then
     echo "• 優化建構速度"
+fi
+if [ $encoding_errors -gt 0 ]; then
+    echo "• 修復字符編碼錯誤 (UTF-8 支援)"
 fi
 
 echo ""
