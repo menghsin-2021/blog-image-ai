@@ -13,7 +13,7 @@ import { AspectRatioSelector } from './components/AspectRatioSelector';
 import { ModelSettings } from './components/ModelSettings';
 import { SimpleImagePreview } from './components/SimpleImagePreview';
 import { PromptOptimizer } from './components/PromptOptimizer';
-import { CacheTestPanel } from './components/CacheTestPanel';
+// import { CacheTestPanel } from './components/CacheTestPanel';
 import { SimpleCacheTestPanel } from './components/SimpleCacheTestPanel';
 
 function App() {

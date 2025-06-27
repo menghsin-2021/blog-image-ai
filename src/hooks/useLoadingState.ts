@@ -102,7 +102,7 @@ export const useLoadingState = (initialPhases: LoadingPhase[] = []) => {
     }));
 
     // 短暫延遲後重置為 idle
-    timeoutRef.current = setTimeout(() => {
+    timeoutRef.current = window.setTimeout(() => {
       setLoadingData(prev => ({
         ...prev,
         state: 'idle',
