@@ -2,7 +2,7 @@
   "name": "blog-image-ai",
   "version": "1.0.0",
   "type": "module",
-  "description": "部落格圖片生成助手 - 基於自然語言輸入的 AI 圖片生成網頁工具",
+  "description": "智慧 AI 圖片生成平台 - 支援多模型與提示詞最佳化的部落格插圖工具",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
