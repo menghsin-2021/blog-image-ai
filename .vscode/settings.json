@@ -1,0 +1,9 @@
+{
+    "python.defaultInterpreterPath": "/opt/homebrew/anaconda3/envs/blog-image-ai/bin/python",
+    "python.terminal.activateEnvironment": true,
+    "terminal.integrated.env.osx": {
+        "CONDA_DEFAULT_ENV": "blog-image-ai"
+    },
+    "terminal.integrated.shell.osx": "/bin/zsh",
+    "terminal.integrated.shellArgs.osx": ["-l"]
+}

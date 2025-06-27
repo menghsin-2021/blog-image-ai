@@ -1,6 +1,7 @@
 # .github/copilot-instructions.md
 
 ## 注意！請不要將任何 api key 放到不在 .gitignore 的檔案中
+## 每一次開新的 terminal 或開始執行第一個步驟時需要檢查目前的 conda 虛擬環境是在 `blog-image-ai`
 
 ## BlogImageAI 軟體開發企劃書
 
