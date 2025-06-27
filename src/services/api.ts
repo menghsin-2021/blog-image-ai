@@ -84,7 +84,7 @@ class OpenAIService {
     
     // 根據不同模型建構請求
     switch (request.model) {
-      case 'gpt-image-1':
+      case 'gpt-image-1': {
         // GPT-image-1 支援的參數：model, prompt, size, quality, n, output_format
         // 不支援 style 和 response_format 參數
         // GPT-image-1 預設返回 base64 編碼的圖片
@@ -97,6 +97,7 @@ class OpenAIService {
           n: 1 // GPT-image-1 支援 1-10 張
           // 注意：不包含 response_format，GPT-image-1 預設返回 base64
         };
+      }
         
       case 'dall-e-3':
         return {

@@ -44,7 +44,6 @@ test.describe('效能監控功能', () => {
   test('應該顯示記憶體使用情況', async ({ page }) => {
     // 檢查頁面是否有記憶體洩漏的跡象
     const memoryInfo = await page.evaluate(() => {
-      // @ts-ignore
       return (performance as any).memory || {
         usedJSHeapSize: 0,
         totalJSHeapSize: 0,
