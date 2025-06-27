@@ -308,10 +308,12 @@ blog-image-ai/
 
 1. **自動移動規則**: 
    - 所有總結相關的 `*.md` 檔案應放置在 `.github/change_log/` 資料夾中
+   - 開發指令和工作流程文件放在 `.github/instructions/` 資料夾中
    - 不包括專案根目錄的 `README.md` 和 `.github/prompts/` 資料夾中的指南檔案
 
 2. **檔案類型歸類**:
    - 專案變更記錄 → `.github/change_log/`
+   - 開發指令與工作流程 → `.github/instructions/`
    - 使用指南和 prompt → `.github/prompts/`
    - 專案說明文件 → 根目錄 `README.md`
 
@@ -321,6 +323,14 @@ blog-image-ai/
    .github/change_log/NEW-FEATURE-IMPLEMENTATION-{YYYY-MM-DD}.md
    .github/change_log/BUG-FIX-{COMPONENT}-{YYYY-MM-DD}.md
    .github/change_log/DEPLOYMENT-{VERSION}-{YYYY-MM-DD}.md
+   ```
+
+4. **Git 工作流程指令**:
+   ```bash
+   # Git 相關指令檔案位置
+   .github/instructions/git-workflow-complete.md
+   .github/instructions/commit-guidelines.md
+   .github/instructions/feature-branch-workflow.md
    ```
 
 ### 現有檔案清單
@@ -338,3 +348,74 @@ blog-image-ai/
 2. 將檔案放置在 `.github/change_log/` 資料夾中
 3. 使用適當的檔案命名規則
 4. 包含完整的時間戳記和變更摘要
+
+## Git 工作流程指令
+
+### 分支管理規則
+1. **主要分支**:
+   - `main`: 生產環境，穩定版本
+   - `develop`: 開發主分支，最新功能整合
+
+2. **功能分支**:
+   - `feature/*`: 新功能開發
+   - `bugfix/*`: Bug 修復
+   - `hotfix/*`: 緊急修復
+
+3. **工作流程**:
+   - 所有新功能從 `develop` 分支建立功能分支
+   - 完成後建立 Pull Request 合併回 `develop`
+   - 定期從 `develop` 合併到 `main` 進行發布
+
+### Commit 訊息規範
+遵循 `.github/instructions/commit-guidelines.md` 中的規範：
+
+```
+<type>(<scope>): <subject>
+
+<body>
+
+<footer>
+```
+
+**Type 類型**:
+- `feat`: 新功能
+- `fix`: 修復 bug
+- `docs`: 文件更新
+- `style`: 程式碼格式調整
+- `refactor`: 重構
+- `perf`: 效能改善
+- `test`: 測試相關
+- `build`: 建構相關
+- `ci`: CI 設定
+- `chore`: 其他維護
+
+### 自動化開發指令
+```bash
+# 建立新功能分支
+git checkout develop
+git pull origin develop
+git checkout -b feature/新功能名稱
+
+# 完成功能開發
+git add .
+git commit -m "feat(scope): 功能描述"
+git push origin feature/新功能名稱
+
+# 建立 Pull Request 後合併到 develop
+# 最終清理功能分支
+git branch -d feature/新功能名稱
+git push origin --delete feature/新功能名稱
+```
+
+### Copilot 協助指令
+當進行專案開發時，Copilot 應：
+1. 自動建議適當的 commit 訊息格式
+2. 提醒分支管理最佳實踐
+3. 在完成功能時建立對應的變更記錄檔案
+4. 確保所有變更都有適當的文件記錄
+
+### 相關指令檔案
+- **完整工作流程**: `.github/instructions/git-workflow-complete.md`
+- **Commit 規範**: `.github/instructions/commit-guidelines.md`
+- **功能分支流程**: `.github/instructions/feature-branch-workflow.md`
+- **指令索引**: `.github/instructions/README.md`
