@@ -27,7 +27,7 @@ export const BUILTIN_TEMPLATES: PromptTemplate[] = [
         description: '文章標題',
         type: 'text',
         required: true,
-        placeholder: '例如：React 18 新功能介紹'
+        placeholder: '例如：React 18 新功能介紹',
       },
       {
         name: 'style',
@@ -35,7 +35,7 @@ export const BUILTIN_TEMPLATES: PromptTemplate[] = [
         type: 'select',
         required: true,
         options: ['極簡現代', '科技感', '專業商務', '創意插畫', '漸層設計'],
-        defaultValue: '極簡現代'
+        defaultValue: '極簡現代',
       },
       {
         name: 'colorScheme',
@@ -43,7 +43,7 @@ export const BUILTIN_TEMPLATES: PromptTemplate[] = [
         type: 'select',
         required: true,
         options: ['藍色系', '紫色系', '綠色系', '橙色系', '黑白灰'],
-        defaultValue: '藍色系'
+        defaultValue: '藍色系',
       },
       {
         name: 'elements',
@@ -51,22 +51,22 @@ export const BUILTIN_TEMPLATES: PromptTemplate[] = [
         type: 'text',
         required: false,
         placeholder: '例如：程式碼、圖表、圖示',
-        defaultValue: '程式碼、圖示'
+        defaultValue: '程式碼、圖示',
       },
       {
         name: 'techStack',
         description: '技術堆疊',
         type: 'text',
         required: false,
-        placeholder: '例如：React, TypeScript, Node.js'
-      }
+        placeholder: '例如：React, TypeScript, Node.js',
+      },
     ],
     tags: ['部落格', '橫幅', '技術', '標題'],
     usageCount: 0,
     createdAt: new Date(),
     updatedAt: new Date(),
     isBuiltIn: true,
-    isPublic: true
+    isPublic: true,
   },
 
   // 段落說明類別
@@ -96,7 +96,7 @@ export const BUILTIN_TEMPLATES: PromptTemplate[] = [
         description: '要解釋的概念',
         type: 'text',
         required: true,
-        placeholder: '例如：函式組合、狀態管理'
+        placeholder: '例如：函式組合、狀態管理',
       },
       {
         name: 'description',
@@ -104,7 +104,7 @@ export const BUILTIN_TEMPLATES: PromptTemplate[] = [
         type: 'multiline',
         required: true,
         placeholder: '詳細描述這個概念的內容和重要性',
-        validation: { minLength: 50, maxLength: 500 }
+        validation: { minLength: 50, maxLength: 500 },
       },
       {
         name: 'illustrationStyle',
@@ -112,7 +112,7 @@ export const BUILTIN_TEMPLATES: PromptTemplate[] = [
         type: 'select',
         required: true,
         options: ['線條圖解', '流程圖', '示意圖', '圖示組合', '思維導圖'],
-        defaultValue: '線條圖解'
+        defaultValue: '線條圖解',
       },
       {
         name: 'complexity',
@@ -120,7 +120,7 @@ export const BUILTIN_TEMPLATES: PromptTemplate[] = [
         type: 'select',
         required: true,
         options: ['簡單', '中等', '複雜'],
-        defaultValue: '中等'
+        defaultValue: '中等',
       },
       {
         name: 'audience',
@@ -128,7 +128,7 @@ export const BUILTIN_TEMPLATES: PromptTemplate[] = [
         type: 'select',
         required: true,
         options: ['初學者', '中級開發者', '高級開發者', '技術主管'],
-        defaultValue: '中級開發者'
+        defaultValue: '中級開發者',
       },
       {
         name: 'aspectRatio',
@@ -136,15 +136,15 @@ export const BUILTIN_TEMPLATES: PromptTemplate[] = [
         type: 'select',
         required: true,
         options: ['正方形 1:1', '橫式 16:9', '橫式 4:3', '直式 3:4'],
-        defaultValue: '橫式 16:9'
-      }
+        defaultValue: '橫式 16:9',
+      },
     ],
     tags: ['概念', '說明', '插圖', '教學'],
     usageCount: 0,
     createdAt: new Date(),
     updatedAt: new Date(),
     isBuiltIn: true,
-    isPublic: true
+    isPublic: true,
   },
 
   // 技術插圖類別
@@ -173,7 +173,7 @@ export const BUILTIN_TEMPLATES: PromptTemplate[] = [
         description: '系統名稱',
         type: 'text',
         required: true,
-        placeholder: '例如：電商平台、微服務架構'
+        placeholder: '例如：電商平台、微服務架構',
       },
       {
         name: 'systemType',
@@ -181,7 +181,7 @@ export const BUILTIN_TEMPLATES: PromptTemplate[] = [
         type: 'select',
         required: true,
         options: ['Web 應用程式', '微服務', 'API 系統', '資料平台', '行動應用'],
-        defaultValue: 'Web 應用程式'
+        defaultValue: 'Web 應用程式',
       },
       {
         name: 'components',
@@ -189,14 +189,14 @@ export const BUILTIN_TEMPLATES: PromptTemplate[] = [
         type: 'multiline',
         required: true,
         placeholder: '列出系統的主要組件，例如：前端、後端、資料庫、快取等',
-        validation: { minLength: 30 }
+        validation: { minLength: 30 },
       },
       {
         name: 'techStack',
         description: '技術堆疊',
         type: 'text',
         required: false,
-        placeholder: '例如：React, Node.js, PostgreSQL, Redis'
+        placeholder: '例如：React, Node.js, PostgreSQL, Redis',
       },
       {
         name: 'deployment',
@@ -204,7 +204,7 @@ export const BUILTIN_TEMPLATES: PromptTemplate[] = [
         type: 'select',
         required: false,
         options: ['本地開發', '雲端部署', '容器化', '無伺服器', '混合雲'],
-        defaultValue: '雲端部署'
+        defaultValue: '雲端部署',
       },
       {
         name: 'diagramStyle',
@@ -212,15 +212,15 @@ export const BUILTIN_TEMPLATES: PromptTemplate[] = [
         type: 'select',
         required: true,
         options: ['極簡線條', '立體方塊', '流程圖風格', '雲端圖標風格'],
-        defaultValue: '極簡線條'
-      }
+        defaultValue: '極簡線條',
+      },
     ],
     tags: ['架構', '系統', '技術', '設計'],
     usageCount: 0,
     createdAt: new Date(),
     updatedAt: new Date(),
     isBuiltIn: true,
-    isPublic: true
+    isPublic: true,
   },
 
   // 流程圖表類別
@@ -253,7 +253,7 @@ export const BUILTIN_TEMPLATES: PromptTemplate[] = [
         description: '流程名稱',
         type: 'text',
         required: true,
-        placeholder: '例如：用戶註冊流程、訂單處理流程'
+        placeholder: '例如：用戶註冊流程、訂單處理流程',
       },
       {
         name: 'processType',
@@ -261,21 +261,21 @@ export const BUILTIN_TEMPLATES: PromptTemplate[] = [
         type: 'select',
         required: true,
         options: ['業務流程', '技術流程', '使用者流程', '資料流程'],
-        defaultValue: '業務流程'
+        defaultValue: '業務流程',
       },
       {
         name: 'startPoint',
         description: '流程起始點',
         type: 'text',
         required: true,
-        placeholder: '例如：使用者點擊註冊按鈕'
+        placeholder: '例如：使用者點擊註冊按鈕',
       },
       {
         name: 'endPoint',
         description: '流程結束點',
         type: 'text',
         required: true,
-        placeholder: '例如：註冊成功，發送確認郵件'
+        placeholder: '例如：註冊成功，發送確認郵件',
       },
       {
         name: 'steps',
@@ -283,28 +283,28 @@ export const BUILTIN_TEMPLATES: PromptTemplate[] = [
         type: 'multiline',
         required: true,
         placeholder: '列出流程的主要步驟，每行一個步驟',
-        validation: { minLength: 50 }
+        validation: { minLength: 50 },
       },
       {
         name: 'decisionPoints',
         description: '決策點',
         type: 'text',
         required: false,
-        placeholder: '流程中需要做決策的關鍵點'
+        placeholder: '流程中需要做決策的關鍵點',
       },
       {
         name: 'parallelProcesses',
         description: '並行處理',
         type: 'text',
         required: false,
-        placeholder: '可以同時進行的步驟'
+        placeholder: '可以同時進行的步驟',
       },
       {
         name: 'errorHandling',
         description: '異常處理',
         type: 'text',
         required: false,
-        placeholder: '錯誤情況的處理方式'
+        placeholder: '錯誤情況的處理方式',
       },
       {
         name: 'flowchartStyle',
@@ -312,16 +312,16 @@ export const BUILTIN_TEMPLATES: PromptTemplate[] = [
         type: 'select',
         required: true,
         options: ['標準流程圖', '現代扁平風格', '手繪風格', '立體風格'],
-        defaultValue: '現代扁平風格'
-      }
+        defaultValue: '現代扁平風格',
+      },
     ],
     tags: ['流程', '圖表', '工作流', '步驟'],
     usageCount: 0,
     createdAt: new Date(),
     updatedAt: new Date(),
     isBuiltIn: true,
-    isPublic: true
-  }
+    isPublic: true,
+  },
 ];
 
 // 分類資訊
@@ -329,43 +329,43 @@ export const TEMPLATE_CATEGORIES: TemplateLibrary['categories'] = {
   'blog-header': {
     name: '部落格橫幅',
     description: '為部落格文章建立吸引人的標題圖片',
-    icon: '🖼️'
+    icon: '🖼️',
   },
   'blog-section': {
     name: '段落說明',
     description: '為文章段落建立說明插圖',
-    icon: '📝'
+    icon: '📝',
   },
   'blog-summary': {
     name: '內容總結',
     description: '為文章建立總結性視覺圖像',
-    icon: '📊'
+    icon: '📊',
   },
-  'technical': {
+  technical: {
     name: '技術插圖',
     description: '程式碼、架構、技術概念圖解',
-    icon: '🔧'
+    icon: '🔧',
   },
-  'conceptual': {
+  conceptual: {
     name: '概念圖解',
     description: '抽象概念的視覺化表達',
-    icon: '💡'
+    icon: '💡',
   },
-  'interface': {
+  interface: {
     name: '介面設計',
     description: '使用者介面與互動設計',
-    icon: '🎨'
+    icon: '🎨',
   },
-  'diagram': {
+  diagram: {
     name: '流程圖表',
     description: '流程圖、時序圖、關係圖',
-    icon: '📈'
+    icon: '📈',
   },
-  'custom': {
+  custom: {
     name: '自訂模板',
     description: '使用者建立的自訂模板',
-    icon: '⚙️'
-  }
+    icon: '⚙️',
+  },
 };
 
 // 模板搜索關鍵字映射
@@ -373,7 +373,7 @@ export const TEMPLATE_SEARCH_KEYWORDS: Record<string, string[]> = {
   'blog-header-tech': ['橫幅', '標題', '技術', 'header', 'banner', '部落格'],
   'blog-section-concept': ['概念', '說明', '插圖', '教學', 'concept', 'explanation'],
   'technical-architecture': ['架構', '系統', '技術', 'architecture', 'system', 'technical'],
-  'diagram-workflow': ['流程', '工作流', '步驟', 'workflow', 'process', 'flow']
+  'diagram-workflow': ['流程', '工作流', '步驟', 'workflow', 'process', 'flow'],
 };
 
 // 預設模板使用建議
@@ -381,21 +381,13 @@ export const TEMPLATE_USAGE_HINTS: Record<string, string[]> = {
   'blog-header': [
     '選擇與文章主題相符的色彩配置',
     '標題要簡潔有力，避免過長',
-    '技術標籤有助於讀者快速理解文章內容'
+    '技術標籤有助於讀者快速理解文章內容',
   ],
   'blog-section': [
     '概念說明要清晰易懂',
     '選擇適合目標受眾的複雜程度',
-    '插圖風格應與整篇文章保持一致'
+    '插圖風格應與整篇文章保持一致',
   ],
-  'technical': [
-    '使用標準的技術圖示和符號',
-    '清楚標示組件間的關係',
-    '避免過度複雜的架構圖'
-  ],
-  'diagram': [
-    '遵循標準流程圖規範',
-    '使用清晰的箭頭指向',
-    '重要決策點要特別標示'
-  ]
+  technical: ['使用標準的技術圖示和符號', '清楚標示組件間的關係', '避免過度複雜的架構圖'],
+  diagram: ['遵循標準流程圖規範', '使用清晰的箭頭指向', '重要決策點要特別標示'],
 };

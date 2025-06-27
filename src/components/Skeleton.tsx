@@ -14,15 +14,15 @@ export const Skeleton: React.FC<SkeletonProps> = ({
   height = '1rem',
   width = '100%',
   rounded = false,
-  animated = true
+  animated = true,
 }) => {
   const baseClasses = 'bg-gray-200';
   const animationClasses = animated ? 'animate-pulse' : '';
   const roundedClasses = rounded ? 'rounded-full' : 'rounded';
-  
+
   const style = {
     height: typeof height === 'number' ? `${height}px` : height,
-    width: typeof width === 'number' ? `${width}px` : width
+    width: typeof width === 'number' ? `${width}px` : width,
   };
 
   return (
@@ -41,11 +41,7 @@ export const SkeletonText: React.FC<{
   return (
     <div className={`space-y-2 ${className}`}>
       {Array.from({ length: lines }).map((_, index) => (
-        <Skeleton
-          key={index}
-          height="1rem"
-          width={index === lines - 1 ? '75%' : '100%'}
-        />
+        <Skeleton key={index} height="1rem" width={index === lines - 1 ? '75%' : '100%'} />
       ))}
     </div>
   );
@@ -83,12 +79,7 @@ export const PromptOptimizerSkeleton: React.FC = () => {
               <Skeleton height="1rem" width="40%" />
               <div className="flex flex-wrap gap-2">
                 {Array.from({ length: 5 }).map((_, index) => (
-                  <Skeleton
-                    key={index}
-                    height="1.5rem"
-                    width={`${60 + index * 10}px`}
-                    rounded
-                  />
+                  <Skeleton key={index} height="1.5rem" width={`${60 + index * 10}px`} rounded />
                 ))}
               </div>
             </div>
@@ -112,7 +103,7 @@ export const PromptOptimizerSkeleton: React.FC = () => {
             </div>
           </div>
         </div>
-        
+
         <div className="p-4">
           <div className="bg-gray-50 rounded-lg p-4">
             <SkeletonText lines={4} />

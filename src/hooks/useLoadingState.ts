@@ -31,7 +31,7 @@ export const useLoadingState = (initialPhases: LoadingPhase[] = []) => {
     state: 'idle',
     progress: 0,
     phase: '',
-    phases: initialPhases
+    phases: initialPhases,
   });
 
   const timeoutRef = useRef<number>();
@@ -40,7 +40,7 @@ export const useLoadingState = (initialPhases: LoadingPhase[] = []) => {
   // 開始載入
   const startLoading = useCallback((phases?: LoadingPhase[]) => {
     startTimeRef.current = Date.now();
-    
+
     setLoadingData(prev => ({
       ...prev,
       state: 'loading',
@@ -48,7 +48,7 @@ export const useLoadingState = (initialPhases: LoadingPhase[] = []) => {
       phase: phases?.[0]?.label || '準備中...',
       phases: phases || prev.phases,
       startTime: startTimeRef.current,
-      error: undefined
+      error: undefined,
     }));
   }, []);
 
@@ -61,7 +61,7 @@ export const useLoadingState = (initialPhases: LoadingPhase[] = []) => {
       const updatedPhases = prev.phases.map((phase, index) => ({
         ...phase,
         completed: index <= phaseIndex,
-        duration: index === phaseIndex ? Date.now() - (startTimeRef.current || 0) : phase.duration
+        duration: index === phaseIndex ? Date.now() - (startTimeRef.current || 0) : phase.duration,
       }));
 
       const progress = ((phaseIndex + 1) / prev.phases.length) * 100;
@@ -70,7 +70,7 @@ export const useLoadingState = (initialPhases: LoadingPhase[] = []) => {
         ...prev,
         progress,
         phase: prev.phases[phaseIndex].label,
-        phases: updatedPhases
+        phases: updatedPhases,
       };
     });
   }, []);
@@ -80,14 +80,14 @@ export const useLoadingState = (initialPhases: LoadingPhase[] = []) => {
     setLoadingData(prev => ({
       ...prev,
       progress: Math.min(100, Math.max(0, progress)),
-      phase: phase || prev.phase
+      phase: phase || prev.phase,
     }));
   }, []);
 
   // 完成載入
   const completeLoading = useCallback(() => {
     const endTime = Date.now();
-    
+
     setLoadingData(prev => ({
       ...prev,
       state: 'success',
@@ -97,8 +97,8 @@ export const useLoadingState = (initialPhases: LoadingPhase[] = []) => {
       phases: prev.phases.map(phase => ({
         ...phase,
         completed: true,
-        duration: phase.duration || (endTime - (prev.startTime || endTime))
-      }))
+        duration: phase.duration || endTime - (prev.startTime || endTime),
+      })),
     }));
 
     // 短暫延遲後重置為 idle
@@ -108,7 +108,7 @@ export const useLoadingState = (initialPhases: LoadingPhase[] = []) => {
         state: 'idle',
         progress: 0,
         phase: '',
-        error: undefined
+        error: undefined,
       }));
     }, 1000);
   }, []);
@@ -119,7 +119,7 @@ export const useLoadingState = (initialPhases: LoadingPhase[] = []) => {
       ...prev,
       state: 'error',
       error,
-      endTime: Date.now()
+      endTime: Date.now(),
     }));
   }, []);
 
@@ -128,13 +128,13 @@ export const useLoadingState = (initialPhases: LoadingPhase[] = []) => {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
-    
+
     setLoadingData({
       state: 'idle',
       progress: 0,
       phase: '',
       phases: initialPhases,
-      error: undefined
+      error: undefined,
     });
   }, [initialPhases]);
 
@@ -167,7 +167,7 @@ export const useLoadingState = (initialPhases: LoadingPhase[] = []) => {
     isSuccess,
     isError,
     isIdle,
-    
+
     // 動作
     startLoading,
     updatePhase,
@@ -175,9 +175,9 @@ export const useLoadingState = (initialPhases: LoadingPhase[] = []) => {
     completeLoading,
     failLoading,
     resetLoading,
-    
+
     // 工具
-    getLoadingDuration
+    getLoadingDuration,
   };
 };
 
@@ -186,5 +186,5 @@ export const PROMPT_OPTIMIZATION_PHASES: LoadingPhase[] = [
   { id: 'validate', label: '驗證輸入內容...', completed: false },
   { id: 'analyze', label: '分析內容特徵...', completed: false },
   { id: 'generate', label: '生成最佳化提示詞...', completed: false },
-  { id: 'format', label: '格式化結果...', completed: false }
+  { id: 'format', label: '格式化結果...', completed: false },
 ];

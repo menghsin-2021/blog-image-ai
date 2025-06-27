@@ -11,7 +11,7 @@ interface TemplateLibraryProps {
 export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
   onSelectTemplate,
   onClose,
-  selectedCategory
+  selectedCategory,
 }) => {
   const {
     templates,
@@ -21,12 +21,12 @@ export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
     addToFavorites,
     removeFromFavorites,
     isFavorite,
-    isLoading
+    isLoading,
   } = usePromptTemplates();
 
-  const [activeCategory, setActiveCategory] = useState<PromptTemplateCategory | 'all' | 'favorites'>(
-    selectedCategory || 'all'
-  );
+  const [activeCategory, setActiveCategory] = useState<
+    PromptTemplateCategory | 'all' | 'favorites'
+  >(selectedCategory || 'all');
   const [searchQuery, setSearchQuery] = useState('');
 
   // 過濾模板
@@ -75,12 +75,14 @@ export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
       <div className="flex items-center justify-between p-6 border-b">
         <h2 className="text-xl font-semibold text-gray-900">提示詞模板庫</h2>
         {onClose && (
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
-          >
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         )}
@@ -94,7 +96,7 @@ export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
               type="text"
               placeholder="搜索模板..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={e => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
             <svg
@@ -146,7 +148,7 @@ export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
 
         {/* 模板網格 */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {filteredTemplates.map((template) => (
+          {filteredTemplates.map(template => (
             <TemplateCard
               key={template.id}
               template={template}
@@ -166,12 +168,8 @@ export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
         {filteredTemplates.length === 0 && (
           <div className="text-center py-12">
             <div className="text-4xl mb-4">🔍</div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              找不到符合條件的模板
-            </h3>
-            <p className="text-gray-500">
-              試試調整搜索關鍵字或選擇不同的分類
-            </p>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">找不到符合條件的模板</h3>
+            <p className="text-gray-500">試試調整搜索關鍵字或選擇不同的分類</p>
           </div>
         )}
       </div>
@@ -199,9 +197,7 @@ const CategoryTab: React.FC<CategoryTabProps> = ({ active, onClick, icon, label,
   >
     <span className="mr-2">{icon}</span>
     {label}
-    <span className="ml-2 px-1.5 py-0.5 bg-white rounded text-xs">
-      {count}
-    </span>
+    <span className="ml-2 px-1.5 py-0.5 bg-white rounded text-xs">{count}</span>
   </button>
 );
 
@@ -217,17 +213,17 @@ const TemplateCard: React.FC<TemplateCardProps> = ({
   template,
   isFavorite,
   onSelect,
-  onToggleFavorite
+  onToggleFavorite,
 }) => {
   const categoryInfo = {
     'blog-header': { icon: '🖼️', color: 'bg-purple-100 text-purple-700' },
     'blog-section': { icon: '📝', color: 'bg-blue-100 text-blue-700' },
     'blog-summary': { icon: '📊', color: 'bg-green-100 text-green-700' },
-    'technical': { icon: '🔧', color: 'bg-orange-100 text-orange-700' },
-    'conceptual': { icon: '💡', color: 'bg-yellow-100 text-yellow-700' },
-    'interface': { icon: '🎨', color: 'bg-pink-100 text-pink-700' },
-    'diagram': { icon: '📈', color: 'bg-indigo-100 text-indigo-700' },
-    'custom': { icon: '⚙️', color: 'bg-gray-100 text-gray-700' }
+    technical: { icon: '🔧', color: 'bg-orange-100 text-orange-700' },
+    conceptual: { icon: '💡', color: 'bg-yellow-100 text-yellow-700' },
+    interface: { icon: '🎨', color: 'bg-pink-100 text-pink-700' },
+    diagram: { icon: '📈', color: 'bg-indigo-100 text-indigo-700' },
+    custom: { icon: '⚙️', color: 'bg-gray-100 text-gray-700' },
   };
 
   const category = categoryInfo[template.category];
@@ -236,7 +232,9 @@ const TemplateCard: React.FC<TemplateCardProps> = ({
     <div className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer">
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center">
-          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${category.color}`}>
+          <span
+            className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${category.color}`}
+          >
             {category.icon} {template.category}
           </span>
           {template.isBuiltIn && (
@@ -246,7 +244,7 @@ const TemplateCard: React.FC<TemplateCardProps> = ({
           )}
         </div>
         <button
-          onClick={(e) => {
+          onClick={e => {
             e.stopPropagation();
             onToggleFavorite();
           }}
@@ -260,9 +258,7 @@ const TemplateCard: React.FC<TemplateCardProps> = ({
 
       <div onClick={onSelect}>
         <h3 className="font-medium text-gray-900 mb-2">{template.name}</h3>
-        <p className="text-sm text-gray-600 mb-3 line-clamp-2">
-          {template.description}
-        </p>
+        <p className="text-sm text-gray-600 mb-3 line-clamp-2">{template.description}</p>
 
         <div className="flex items-center justify-between text-xs text-gray-500">
           <span>{template.variables.length} 個參數</span>

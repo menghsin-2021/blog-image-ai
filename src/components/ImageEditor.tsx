@@ -16,17 +16,17 @@ export const ImageEditor: React.FC<ImageEditorProps> = ({
   imageUrl,
   onSave,
   onCancel,
-  className = ''
+  className = '',
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const maskCanvasRef = useRef<HTMLCanvasElement>(null);
   const [currentImage, setCurrentImage] = useState<HTMLImageElement | null>(null);
-  
+
   const [canvasState, setCanvasState] = useState<CanvasState>({
     tool: 'brush',
     brushSize: 20,
     isDrawing: false,
-    hasChanges: false
+    hasChanges: false,
   });
 
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -47,12 +47,12 @@ export const ImageEditor: React.FC<ImageEditorProps> = ({
   const setupCanvas = (img: HTMLImageElement) => {
     const canvas = canvasRef.current;
     const maskCanvas = maskCanvasRef.current;
-    
+
     if (!canvas || !maskCanvas) return;
 
     const ctx = canvas.getContext('2d');
     const maskCtx = maskCanvas.getContext('2d');
-    
+
     if (!ctx || !maskCtx) return;
 
     // 設定畫布大小
@@ -63,7 +63,7 @@ export const ImageEditor: React.FC<ImageEditorProps> = ({
 
     // 繪製原始圖片
     ctx.drawImage(img, 0, 0);
-    
+
     // 初始化遮罩畫布為白色
     maskCtx.fillStyle = 'white';
     maskCtx.fillRect(0, 0, maskCanvas.width, maskCanvas.height);
@@ -78,7 +78,7 @@ export const ImageEditor: React.FC<ImageEditorProps> = ({
   // 繪製
   const draw = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (!canvasState.isDrawing) return;
-    
+
     const canvas = canvasRef.current;
     const maskCanvas = maskCanvasRef.current;
     if (!canvas || !maskCanvas) return;
@@ -90,12 +90,13 @@ export const ImageEditor: React.FC<ImageEditorProps> = ({
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
-    
+
     const x = (e.clientX - rect.left) * scaleX;
     const y = (e.clientY - rect.top) * scaleY;
 
     // 設定繪製樣式
-    ctx.globalCompositeOperation = canvasState.tool === 'eraser' ? 'destination-out' : 'source-over';
+    ctx.globalCompositeOperation =
+      canvasState.tool === 'eraser' ? 'destination-out' : 'source-over';
     ctx.lineWidth = canvasState.brushSize;
     ctx.lineCap = 'round';
     ctx.strokeStyle = canvasState.tool === 'brush' ? 'rgba(255, 255, 255, 0.7)' : 'transparent';
@@ -127,22 +128,22 @@ export const ImageEditor: React.FC<ImageEditorProps> = ({
   const clearCanvas = () => {
     const canvas = canvasRef.current;
     const maskCanvas = maskCanvasRef.current;
-    
+
     if (!canvas || !maskCanvas || !currentImage) return;
 
     const ctx = canvas.getContext('2d');
     const maskCtx = maskCanvas.getContext('2d');
-    
+
     if (!ctx || !maskCtx) return;
 
     // 重新繪製原始圖片
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(currentImage, 0, 0);
-    
+
     // 重設遮罩
     maskCtx.fillStyle = 'white';
     maskCtx.fillRect(0, 0, maskCanvas.width, maskCanvas.height);
-    
+
     setCanvasState(prev => ({ ...prev, hasChanges: false }));
   };
 
@@ -150,20 +151,22 @@ export const ImageEditor: React.FC<ImageEditorProps> = ({
   const handleSave = async () => {
     const canvas = canvasRef.current;
     const maskCanvas = maskCanvasRef.current;
-    
+
     if (!canvas || !maskCanvas) return;
 
     try {
       // 轉換為 File 物件
-      const editedImageBlob = await new Promise<Blob>((resolve) => {
-        canvas.toBlob((blob) => resolve(blob!), 'image/png');
-      });
-      
-      const maskBlob = await new Promise<Blob>((resolve) => {
-        maskCanvas.toBlob((blob) => resolve(blob!), 'image/png');
+      const editedImageBlob = await new Promise<Blob>(resolve => {
+        canvas.toBlob(blob => resolve(blob!), 'image/png');
       });
 
-      const editedImageFile = new File([editedImageBlob], 'edited-image.png', { type: 'image/png' });
+      const maskBlob = await new Promise<Blob>(resolve => {
+        maskCanvas.toBlob(blob => resolve(blob!), 'image/png');
+      });
+
+      const editedImageFile = new File([editedImageBlob], 'edited-image.png', {
+        type: 'image/png',
+      });
       const maskFile = new File([maskBlob], 'mask.png', { type: 'image/png' });
 
       onSave(editedImageFile, maskFile);
@@ -185,11 +188,7 @@ export const ImageEditor: React.FC<ImageEditorProps> = ({
             <Button onClick={onCancel} variant="secondary" size="sm">
               取消
             </Button>
-            <Button 
-              onClick={handleSave}
-              disabled={!canvasState.hasChanges}
-              size="sm"
-            >
+            <Button onClick={handleSave} disabled={!canvasState.hasChanges} size="sm">
               儲存
             </Button>
           </div>
@@ -231,7 +230,9 @@ export const ImageEditor: React.FC<ImageEditorProps> = ({
               min="5"
               max="50"
               value={canvasState.brushSize}
-              onChange={(e) => setCanvasState(prev => ({ ...prev, brushSize: parseInt(e.target.value) }))}
+              onChange={e =>
+                setCanvasState(prev => ({ ...prev, brushSize: parseInt(e.target.value) }))
+              }
               className="w-20"
             />
             <span className="text-sm text-gray-600 w-8">{canvasState.brushSize}</span>
@@ -244,7 +245,7 @@ export const ImageEditor: React.FC<ImageEditorProps> = ({
         <div className="text-xs text-gray-500 mb-2">
           💡 使用畫筆標記您想要編輯的區域，然後提供新的描述來替換標記區域
         </div>
-        
+
         <div className="relative border border-gray-300 rounded-lg overflow-hidden bg-gray-50 max-w-full">
           {imageLoaded && (
             <canvas
@@ -257,13 +258,10 @@ export const ImageEditor: React.FC<ImageEditorProps> = ({
               style={{ display: 'block' }}
             />
           )}
-          
+
           {/* 隱藏的遮罩畫布 */}
-          <canvas
-            ref={maskCanvasRef}
-            className="hidden"
-          />
-          
+          <canvas ref={maskCanvasRef} className="hidden" />
+
           {!imageLoaded && (
             <div className="flex items-center justify-center h-64">
               <div className="text-gray-500">載入圖片中...</div>

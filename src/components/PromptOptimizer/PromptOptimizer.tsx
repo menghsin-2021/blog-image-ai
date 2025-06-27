@@ -1,5 +1,9 @@
 import React, { useState, useCallback } from 'react';
-import { ImagePurposeType, ContentInput as ContentInputType, OptimizedPrompt } from '../../types/promptOptimizer';
+import {
+  ImagePurposeType,
+  ContentInput as ContentInputType,
+  OptimizedPrompt,
+} from '../../types/promptOptimizer';
 import { validateContentInput } from '../../services/contentAnalyzer';
 import { usePromptOptimizationCache } from '../../hooks/usePromptOptimizationCache';
 import { useLoadingState, PROMPT_OPTIMIZATION_PHASES } from '../../hooks/useLoadingState';
@@ -14,7 +18,7 @@ interface PromptOptimizerProps {
 
 export const PromptOptimizer: React.FC<PromptOptimizerProps> = ({
   onOptimizedPrompt,
-  onApplyPrompt
+  onApplyPrompt,
 }) => {
   // 狀態管理
   const [currentStep, setCurrentStep] = useState<'purpose' | 'content' | 'result'>('purpose');
@@ -23,7 +27,7 @@ export const PromptOptimizer: React.FC<PromptOptimizerProps> = ({
     title: '',
     content: '',
     keywords: [],
-    targetAudience: ''
+    targetAudience: '',
   });
   const [optimizedPrompt, setOptimizedPrompt] = useState<OptimizedPrompt | null>(null);
 
@@ -44,7 +48,7 @@ export const PromptOptimizer: React.FC<PromptOptimizerProps> = ({
     }
 
     loadingState.startLoading();
-    
+
     try {
       // 階段 1: 驗證輸入
       loadingState.updatePhase('validate');
@@ -62,17 +66,16 @@ export const PromptOptimizer: React.FC<PromptOptimizerProps> = ({
       // 階段 3: 生成最佳化提示詞
       loadingState.updatePhase('generate');
       const result = await optimizePromptWithCache(contentInput, selectedPurpose);
-      
+
       // 階段 4: 格式化結果
       loadingState.updatePhase('format');
       await new Promise(resolve => setTimeout(resolve, 300)); // 模擬格式化時間
-      
+
       setOptimizedPrompt(result);
       setCurrentStep('result');
       onOptimizedPrompt?.(result);
-      
+
       loadingState.completeLoading();
-      
     } catch (error) {
       console.error('最佳化失敗:', error);
       loadingState.failLoading(error as Error);
@@ -87,7 +90,7 @@ export const PromptOptimizer: React.FC<PromptOptimizerProps> = ({
       title: '',
       content: '',
       keywords: [],
-      targetAudience: ''
+      targetAudience: '',
     });
     setOptimizedPrompt(null);
   }, []);
@@ -105,33 +108,41 @@ export const PromptOptimizer: React.FC<PromptOptimizerProps> = ({
     <div className="bg-white rounded-xl shadow-lg">
       {/* 標題區域 */}
       <div className="p-6 border-b border-gray-200">
-        <h3 className="text-xl font-semibold text-gray-900 mb-2">
-          提示詞最佳化助手
-        </h3>
-        <p className="text-gray-600">
-          針對部落格圖片需求，智慧分析內容並生成最佳化的圖片提示詞
-        </p>
+        <h3 className="text-xl font-semibold text-gray-900 mb-2">提示詞最佳化助手</h3>
+        <p className="text-gray-600">針對部落格圖片需求，智慧分析內容並生成最佳化的圖片提示詞</p>
       </div>
 
       {/* 進度指示器 */}
       <div className="p-6 border-b border-gray-200">
         <div className="flex items-center justify-center space-x-8">
-          <div className={`flex items-center ${currentStep === 'purpose' ? 'text-blue-600' : currentStep === 'content' || currentStep === 'result' ? 'text-green-600' : 'text-gray-400'}`}>
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${currentStep === 'purpose' ? 'bg-blue-100' : currentStep === 'content' || currentStep === 'result' ? 'bg-green-100' : 'bg-gray-100'}`}>
+          <div
+            className={`flex items-center ${currentStep === 'purpose' ? 'text-blue-600' : currentStep === 'content' || currentStep === 'result' ? 'text-green-600' : 'text-gray-400'}`}
+          >
+            <div
+              className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${currentStep === 'purpose' ? 'bg-blue-100' : currentStep === 'content' || currentStep === 'result' ? 'bg-green-100' : 'bg-gray-100'}`}
+            >
               1
             </div>
             <span className="ml-2 text-sm font-medium">選擇用途</span>
           </div>
-          
-          <div className={`flex items-center ${currentStep === 'content' ? 'text-blue-600' : currentStep === 'result' ? 'text-green-600' : 'text-gray-400'}`}>
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${currentStep === 'content' ? 'bg-blue-100' : currentStep === 'result' ? 'bg-green-100' : 'bg-gray-100'}`}>
+
+          <div
+            className={`flex items-center ${currentStep === 'content' ? 'text-blue-600' : currentStep === 'result' ? 'text-green-600' : 'text-gray-400'}`}
+          >
+            <div
+              className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${currentStep === 'content' ? 'bg-blue-100' : currentStep === 'result' ? 'bg-green-100' : 'bg-gray-100'}`}
+            >
               2
             </div>
             <span className="ml-2 text-sm font-medium">輸入內容</span>
           </div>
-          
-          <div className={`flex items-center ${currentStep === 'result' ? 'text-blue-600' : 'text-gray-400'}`}>
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${currentStep === 'result' ? 'bg-blue-100' : 'bg-gray-100'}`}>
+
+          <div
+            className={`flex items-center ${currentStep === 'result' ? 'text-blue-600' : 'text-gray-400'}`}
+          >
+            <div
+              className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${currentStep === 'result' ? 'bg-blue-100' : 'bg-gray-100'}`}
+            >
               3
             </div>
             <span className="ml-2 text-sm font-medium">最佳化結果</span>
@@ -147,36 +158,42 @@ export const PromptOptimizer: React.FC<PromptOptimizerProps> = ({
             <div className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full mx-4">
               <div className="text-center">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  處理中...
-                </h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">處理中...</h3>
                 <p className="text-gray-600 mb-4">{loadingState.loadingData.phase}</p>
-                
+
                 {/* 進度條 */}
                 <div className="w-full bg-gray-200 rounded-full h-2 mb-4">
-                  <div 
+                  <div
                     className="bg-blue-600 h-2 rounded-full transition-all duration-300"
                     style={{ width: `${loadingState.loadingData.progress}%` }}
                   />
                 </div>
-                
+
                 {/* 階段指示器 */}
                 <div className="space-y-2 text-left">
-                  {loadingState.loadingData.phases.map((phase) => (
-                    <div 
+                  {loadingState.loadingData.phases.map(phase => (
+                    <div
                       key={phase.id}
                       className={`flex items-center text-sm ${
                         phase.completed ? 'text-green-600' : 'text-gray-400'
                       }`}
                     >
-                      <div className={`w-4 h-4 rounded-full border-2 mr-2 flex items-center justify-center ${
-                        phase.completed 
-                          ? 'bg-green-500 border-green-500' 
-                          : 'border-gray-300'
-                      }`}>
+                      <div
+                        className={`w-4 h-4 rounded-full border-2 mr-2 flex items-center justify-center ${
+                          phase.completed ? 'bg-green-500 border-green-500' : 'border-gray-300'
+                        }`}
+                      >
                         {phase.completed && (
-                          <svg className="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          <svg
+                            className="w-2 h-2 text-white"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                              clipRule="evenodd"
+                            />
                           </svg>
                         )}
                       </div>
@@ -195,7 +212,11 @@ export const PromptOptimizer: React.FC<PromptOptimizerProps> = ({
             <div className="flex items-center">
               <div className="text-red-600 mr-3">
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                    clipRule="evenodd"
+                  />
                 </svg>
               </div>
               <div className="flex-1">
@@ -233,7 +254,7 @@ export const PromptOptimizer: React.FC<PromptOptimizerProps> = ({
           <OptimizedPromptDisplay
             result={optimizedPrompt}
             onApplyPrompt={onApplyPrompt || (() => {})}
-            onEditPrompt={(editedPrompt) => {
+            onEditPrompt={editedPrompt => {
               // 編輯功能暫時留空，因為需要知道是哪個語言版本被編輯
               console.log('編輯提示詞:', editedPrompt);
             }}
@@ -253,7 +274,7 @@ export const PromptOptimizer: React.FC<PromptOptimizerProps> = ({
               </button>
             )}
           </div>
-          
+
           <div className="space-x-3">
             {currentStep === 'result' && (
               <button

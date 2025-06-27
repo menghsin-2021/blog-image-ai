@@ -15,7 +15,7 @@ export const OptimizedPromptDisplay: React.FC<OptimizedPromptDisplayProps> = ({
   result,
   onApplyPrompt,
   onEditPrompt,
-  onReset
+  onReset,
 }) => {
   const [activeLanguage, setActiveLanguage] = useState<DisplayLanguage>('chinese');
   const [isEditing, setIsEditing] = useState(false);
@@ -24,17 +24,23 @@ export const OptimizedPromptDisplay: React.FC<OptimizedPromptDisplayProps> = ({
   const [copySuccess, setCopySuccess] = useState<string | null>(null);
 
   // 更新編輯的提示詞當語言切換時
-  const updateEditedPrompt = useCallback((language: DisplayLanguage) => {
-    setEditedPrompt(result.optimized[language]);
-  }, [result.optimized]);
+  const updateEditedPrompt = useCallback(
+    (language: DisplayLanguage) => {
+      setEditedPrompt(result.optimized[language]);
+    },
+    [result.optimized]
+  );
 
   // 處理語言切換
-  const handleLanguageChange = useCallback((language: DisplayLanguage) => {
-    setActiveLanguage(language);
-    if (isEditing) {
-      updateEditedPrompt(language);
-    }
-  }, [isEditing, updateEditedPrompt]);
+  const handleLanguageChange = useCallback(
+    (language: DisplayLanguage) => {
+      setActiveLanguage(language);
+      if (isEditing) {
+        updateEditedPrompt(language);
+      }
+    },
+    [isEditing, updateEditedPrompt]
+  );
 
   // 處理編輯模式切換
   const handleEditToggle = useCallback(() => {
@@ -84,24 +90,14 @@ export const OptimizedPromptDisplay: React.FC<OptimizedPromptDisplayProps> = ({
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 border-b">
         <div>
           <h2 className="text-2xl font-bold text-gray-800">✨ 提示詞最佳化完成！</h2>
-          <p className="text-gray-600 mt-1">
-            AI 已為您分析內容並產生最佳化的雙語提示詞
-          </p>
+          <p className="text-gray-600 mt-1">AI 已為您分析內容並產生最佳化的雙語提示詞</p>
         </div>
         <div className="flex gap-2">
-          <Button
-            variant="outline"
-            onClick={handleExportMarkdown}
-            className="text-sm"
-          >
+          <Button variant="outline" onClick={handleExportMarkdown} className="text-sm">
             📄 匯出 Markdown
           </Button>
           {onReset && (
-            <Button
-              variant="outline"
-              onClick={onReset}
-              className="text-sm"
-            >
+            <Button variant="outline" onClick={onReset} className="text-sm">
               🔄 重新開始
             </Button>
           )}
@@ -117,18 +113,23 @@ export const OptimizedPromptDisplay: React.FC<OptimizedPromptDisplayProps> = ({
           </span>
         </div>
         <div className="w-full bg-gray-200 rounded-full h-2">
-          <div 
+          <div
             className={`h-2 rounded-full transition-all duration-500 ${
-              result.confidence > 0.8 ? 'bg-green-500' :
-              result.confidence > 0.6 ? 'bg-yellow-500' : 'bg-orange-500'
+              result.confidence > 0.8
+                ? 'bg-green-500'
+                : result.confidence > 0.6
+                  ? 'bg-yellow-500'
+                  : 'bg-orange-500'
             }`}
             style={{ width: `${result.confidence * 100}%` }}
           />
         </div>
         <p className="text-xs text-gray-500 mt-1">
-          {result.confidence > 0.8 ? '高信心度 - 推薦直接使用' :
-           result.confidence > 0.6 ? '中等信心度 - 可能需要微調' :
-           '較低信心度 - 建議檢查並調整'}
+          {result.confidence > 0.8
+            ? '高信心度 - 推薦直接使用'
+            : result.confidence > 0.6
+              ? '中等信心度 - 可能需要微調'
+              : '較低信心度 - 建議檢查並調整'}
         </p>
       </div>
 
@@ -162,7 +163,7 @@ export const OptimizedPromptDisplay: React.FC<OptimizedPromptDisplayProps> = ({
       <div className="bg-white border rounded-lg">
         <div className="flex items-center justify-between p-4 border-b">
           <h3 className="font-semibold text-gray-900">🚀 最佳化提示詞</h3>
-          
+
           {/* 語言切換 */}
           <div className="flex items-center gap-4">
             <div className="flex bg-gray-100 rounded-lg p-1">
@@ -187,7 +188,7 @@ export const OptimizedPromptDisplay: React.FC<OptimizedPromptDisplayProps> = ({
                 English
               </button>
             </div>
-            
+
             <div className="flex space-x-2">
               <button
                 onClick={() => setShowComparison(!showComparison)}
@@ -210,12 +211,12 @@ export const OptimizedPromptDisplay: React.FC<OptimizedPromptDisplayProps> = ({
             </div>
           </div>
         </div>
-        
+
         <div className="p-4">
           {isEditing ? (
             <textarea
               value={editedPrompt}
-              onChange={(e) => setEditedPrompt(e.target.value)}
+              onChange={e => setEditedPrompt(e.target.value)}
               className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
               rows={4}
               placeholder="編輯最佳化提示詞..."
@@ -256,16 +257,12 @@ export const OptimizedPromptDisplay: React.FC<OptimizedPromptDisplayProps> = ({
           </div>
           <div>
             <span className="text-xs text-blue-600 font-medium">品質設定</span>
-            <div className="text-sm text-blue-900 font-mono">
-              {result.technicalParams.quality}
-            </div>
+            <div className="text-sm text-blue-900 font-mono">{result.technicalParams.quality}</div>
           </div>
           {result.technicalParams.style && (
             <div>
               <span className="text-xs text-blue-600 font-medium">風格偏好</span>
-              <div className="text-sm text-blue-900 font-mono">
-                {result.technicalParams.style}
-              </div>
+              <div className="text-sm text-blue-900 font-mono">{result.technicalParams.style}</div>
             </div>
           )}
         </div>
@@ -301,10 +298,7 @@ export const OptimizedPromptDisplay: React.FC<OptimizedPromptDisplayProps> = ({
 
       {/* 操作按鈕 */}
       <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t">
-        <Button
-          onClick={handleApply}
-          className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
-        >
+        <Button onClick={handleApply} className="flex-1 bg-blue-600 hover:bg-blue-700 text-white">
           🚀 應用到圖片生成器
         </Button>
         <Button

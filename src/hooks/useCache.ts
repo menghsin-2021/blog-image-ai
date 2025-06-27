@@ -32,7 +32,7 @@ export const useCache = <T>(config: CacheConfig = { maxSize: 100, defaultTTL: 5 
     hits: 0,
     misses: 0,
     size: 0,
-    hitRate: 0
+    hitRate: 0,
   });
 
   // 更新統計資料
@@ -42,7 +42,7 @@ export const useCache = <T>(config: CacheConfig = { maxSize: 100, defaultTTL: 5 
         hits: hit ? prev.hits + 1 : prev.hits,
         misses: hit ? prev.misses : prev.misses + 1,
         size: cacheRef.current.size,
-        hitRate: 0
+        hitRate: 0,
       };
       const total = newStats.hits + newStats.misses;
       newStats.hitRate = total > 0 ? newStats.hits / total : 0;
@@ -55,7 +55,7 @@ export const useCache = <T>(config: CacheConfig = { maxSize: 100, defaultTTL: 5 
     const now = Date.now();
     const cache = cacheRef.current;
     const accessOrder = accessOrderRef.current;
-    
+
     for (const [key, item] of cache.entries()) {
       if (now > item.expiry) {
         cache.delete(key);
@@ -71,7 +71,7 @@ export const useCache = <T>(config: CacheConfig = { maxSize: 100, defaultTTL: 5 
   const evictLRU = useCallback(() => {
     const cache = cacheRef.current;
     const accessOrder = accessOrderRef.current;
-    
+
     while (cache.size >= config.maxSize && accessOrder.length > 0) {
       const oldestKey = accessOrder.shift();
       if (oldestKey) {
@@ -84,7 +84,7 @@ export const useCache = <T>(config: CacheConfig = { maxSize: 100, defaultTTL: 5 
   const updateAccessOrder = useCallback((key: string) => {
     const accessOrder = accessOrderRef.current;
     const index = accessOrder.indexOf(key);
-    
+
     if (index > -1) {
       accessOrder.splice(index, 1);
     }
@@ -92,51 +92,57 @@ export const useCache = <T>(config: CacheConfig = { maxSize: 100, defaultTTL: 5 
   }, []);
 
   // 取得快取值
-  const get = useCallback((key: string): T | null => {
-    cleanExpired();
-    
-    const cache = cacheRef.current;
-    const item = cache.get(key);
-    
-    if (!item) {
-      updateStats(false);
-      return null;
-    }
-    
-    const now = Date.now();
-    if (now > item.expiry) {
-      cache.delete(key);
-      updateStats(false);
-      return null;
-    }
-    
-    updateAccessOrder(key);
-    updateStats(true);
-    return item.data;
-  }, [cleanExpired, updateStats, updateAccessOrder]);
+  const get = useCallback(
+    (key: string): T | null => {
+      cleanExpired();
+
+      const cache = cacheRef.current;
+      const item = cache.get(key);
+
+      if (!item) {
+        updateStats(false);
+        return null;
+      }
+
+      const now = Date.now();
+      if (now > item.expiry) {
+        cache.delete(key);
+        updateStats(false);
+        return null;
+      }
+
+      updateAccessOrder(key);
+      updateStats(true);
+      return item.data;
+    },
+    [cleanExpired, updateStats, updateAccessOrder]
+  );
 
   // 設定快取值
-  const set = useCallback((key: string, data: T, ttl: number = config.defaultTTL) => {
-    const cache = cacheRef.current;
-    const now = Date.now();
-    
-    evictLRU();
-    
-    const item: CacheItem<T> = {
-      data,
-      timestamp: now,
-      expiry: now + ttl
-    };
-    
-    cache.set(key, item);
-    updateAccessOrder(key);
-  }, [config.defaultTTL, evictLRU, updateAccessOrder]);
+  const set = useCallback(
+    (key: string, data: T, ttl: number = config.defaultTTL) => {
+      const cache = cacheRef.current;
+      const now = Date.now();
+
+      evictLRU();
+
+      const item: CacheItem<T> = {
+        data,
+        timestamp: now,
+        expiry: now + ttl,
+      };
+
+      cache.set(key, item);
+      updateAccessOrder(key);
+    },
+    [config.defaultTTL, evictLRU, updateAccessOrder]
+  );
 
   // 刪除快取項目
   const remove = useCallback((key: string) => {
     const cache = cacheRef.current;
     const accessOrder = accessOrderRef.current;
-    
+
     cache.delete(key);
     const index = accessOrder.indexOf(key);
     if (index > -1) {
@@ -152,26 +158,29 @@ export const useCache = <T>(config: CacheConfig = { maxSize: 100, defaultTTL: 5 
       hits: 0,
       misses: 0,
       size: 0,
-      hitRate: 0
+      hitRate: 0,
     });
   }, []);
 
   // 檢查是否存在
-  const has = useCallback((key: string): boolean => {
-    cleanExpired();
-    const cache = cacheRef.current;
-    const item = cache.get(key);
-    
-    if (!item) return false;
-    
-    const now = Date.now();
-    if (now > item.expiry) {
-      cache.delete(key);
-      return false;
-    }
-    
-    return true;
-  }, [cleanExpired]);
+  const has = useCallback(
+    (key: string): boolean => {
+      cleanExpired();
+      const cache = cacheRef.current;
+      const item = cache.get(key);
+
+      if (!item) return false;
+
+      const now = Date.now();
+      if (now > item.expiry) {
+        cache.delete(key);
+        return false;
+      }
+
+      return true;
+    },
+    [cleanExpired]
+  );
 
   // 取得所有快取鍵
   const keys = useCallback((): string[] => {
@@ -193,6 +202,6 @@ export const useCache = <T>(config: CacheConfig = { maxSize: 100, defaultTTL: 5 
     has,
     keys,
     size,
-    stats
+    stats,
   };
 };

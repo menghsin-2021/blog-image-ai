@@ -1,10 +1,10 @@
-import { 
-  ImageGenerationRequest, 
+import {
+  ImageGenerationRequest,
   ImageGenerationResponse,
   ImageEditRequest,
   ImageEditResponse,
   ImageVariationRequest,
-  ImageVariationResponse
+  ImageVariationResponse,
 } from '../types';
 import { API_CONFIG } from '../utils/constants';
 import { delay } from '../utils/helpers';
@@ -30,25 +30,25 @@ class OpenAIService {
     }
 
     const requestId = `img_${Date.now()}`;
-    
+
     try {
       // 根據模型建構請求參數
       const requestBody = this.buildGenerationRequest(request);
-      
+
       const response = await this.makeApiCall('generations', requestBody, requestId);
 
       return {
         success: true,
         imageUrl: response.data[0].url,
         revisedPrompt: response.data[0].revised_prompt,
-        requestId
+        requestId,
       };
     } catch (error) {
       console.error('圖片生成失敗:', error);
       return {
         success: false,
         error: error instanceof Error ? error.message : '未知錯誤',
-        requestId
+        requestId,
       };
     }
   }
@@ -62,7 +62,7 @@ class OpenAIService {
       prompt: this.optimizePrompt(request.prompt),
       size: request.aspectRatio.value,
       n: request.n || 1,
-      response_format: 'url'
+      response_format: 'url',
     };
 
     // 根據不同模型新增特定參數
@@ -72,25 +72,26 @@ class OpenAIService {
           ...baseRequest,
           quality: request.quality || 'auto',
           ...(request.outputFormat && { output_format: request.outputFormat }),
-          ...(request.outputCompression && request.outputFormat !== 'png' && { 
-            output_compression: request.outputCompression 
-          }),
-          ...(request.moderation && { moderation: request.moderation })
+          ...(request.outputCompression &&
+            request.outputFormat !== 'png' && {
+              output_compression: request.outputCompression,
+            }),
+          ...(request.moderation && { moderation: request.moderation }),
         };
-        
+
       case 'dall-e-3':
         return {
           ...baseRequest,
           quality: request.quality || 'standard',
-          style: request.style || 'vivid'
+          style: request.style || 'vivid',
         };
-        
+
       case 'dall-e-2':
         return {
           ...baseRequest,
           // DALL·E 2 沒有額外參數
         };
-        
+
       default:
         return baseRequest;
     }
@@ -105,7 +106,7 @@ class OpenAIService {
     }
 
     const requestId = `edit_${Date.now()}`;
-    
+
     try {
       const formData = new FormData();
       formData.append('image', request.image);
@@ -120,9 +121,9 @@ class OpenAIService {
       const response = await fetch(`${this.baseUrl}/images/edits`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${this.apiKey}`,
+          Authorization: `Bearer ${this.apiKey}`,
         },
-        body: formData
+        body: formData,
       });
 
       if (!response.ok) {
@@ -131,18 +132,18 @@ class OpenAIService {
       }
 
       const data = await response.json();
-      
+
       return {
         success: true,
         imageUrl: data.data[0].url,
-        requestId
+        requestId,
       };
     } catch (error) {
       console.error('圖片編輯失敗:', error);
       return {
         success: false,
         error: error instanceof Error ? error.message : '圖片編輯失敗',
-        requestId
+        requestId,
       };
     }
   }
@@ -156,7 +157,7 @@ class OpenAIService {
     }
 
     const requestId = `var_${Date.now()}`;
-    
+
     try {
       const formData = new FormData();
       formData.append('image', request.image);
@@ -167,9 +168,9 @@ class OpenAIService {
       const response = await fetch(`${this.baseUrl}/images/variations`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${this.apiKey}`,
+          Authorization: `Bearer ${this.apiKey}`,
         },
-        body: formData
+        body: formData,
       });
 
       if (!response.ok) {
@@ -178,18 +179,18 @@ class OpenAIService {
       }
 
       const data = await response.json();
-      
+
       return {
         success: true,
         imageUrl: data.data[0].url,
-        requestId
+        requestId,
       };
     } catch (error) {
       console.error('圖片變化失敗:', error);
       return {
         success: false,
         error: error instanceof Error ? error.message : '圖片變化失敗',
-        requestId
+        requestId,
       };
     }
   }
@@ -197,29 +198,25 @@ class OpenAIService {
   /**
    * API 呼叫通用方法
    */
-  private async makeApiCall(
-    endpoint: string, 
-    requestBody: any, 
-    requestId: string
-  ): Promise<any> {
+  private async makeApiCall(endpoint: string, requestBody: any, requestId: string): Promise<any> {
     let lastError: Error | null = null;
-    
+
     for (let attempt = 1; attempt <= API_CONFIG.maxRetries; attempt++) {
       try {
         console.log(`API 呼叫 (嘗試 ${attempt}/${API_CONFIG.maxRetries}):`, {
           endpoint,
           requestId,
           model: requestBody.model,
-          size: requestBody.size
+          size: requestBody.size,
         });
 
         const response = await fetch(`${this.baseUrl}/images/${endpoint}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${this.apiKey}`,
+            Authorization: `Bearer ${this.apiKey}`,
           },
-          body: JSON.stringify(requestBody)
+          body: JSON.stringify(requestBody),
         });
 
         if (!response.ok) {
@@ -230,11 +227,10 @@ class OpenAIService {
         const data = await response.json();
         console.log('API 呼叫成功:', { requestId, imageCount: data.data?.length });
         return data;
-
       } catch (error) {
         lastError = error instanceof Error ? error : new Error('未知錯誤');
         console.error(`API 呼叫失敗 (嘗試 ${attempt}):`, lastError.message);
-        
+
         if (attempt < API_CONFIG.maxRetries) {
           await delay(API_CONFIG.retryDelay * attempt);
         }
@@ -250,12 +246,12 @@ class OpenAIService {
   private optimizePrompt(prompt: string): string {
     // 移除多餘空格並確保長度在限制內
     const cleaned = prompt.trim().replace(/\s+/g, ' ');
-    
+
     // GPT-Image-1 支援最多 4000 字元
     if (cleaned.length > 4000) {
       return cleaned.substring(0, 3997) + '...';
     }
-    
+
     return cleaned;
   }
 
@@ -281,13 +277,12 @@ class OpenAIService {
 const openAIService = new OpenAIService();
 
 // 導出 API 方法
-export const generateImage = (request: ImageGenerationRequest) => 
+export const generateImage = (request: ImageGenerationRequest) =>
   openAIService.generateImage(request);
 
-export const editImage = (request: ImageEditRequest) => 
-  openAIService.editImage(request);
+export const editImage = (request: ImageEditRequest) => openAIService.editImage(request);
 
-export const createVariation = (request: ImageVariationRequest) => 
+export const createVariation = (request: ImageVariationRequest) =>
   openAIService.createVariation(request);
 
 export default openAIService;

@@ -12,18 +12,21 @@ export const ContentInput: React.FC<ContentInputProps> = ({
   content,
   onChange,
   onAnalyze,
-  isAnalyzing = false
+  isAnalyzing = false,
 }) => {
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [keywordsInputValue, setKeywordsInputValue] = useState(content.keywords?.join(', ') || '');
 
   // 處理輸入變更
-  const handleChange = useCallback((field: keyof ContentInputType, value: string | string[]) => {
-    onChange({
-      ...content,
-      [field]: value
-    });
-  }, [content, onChange]);
+  const handleChange = useCallback(
+    (field: keyof ContentInputType, value: string | string[]) => {
+      onChange({
+        ...content,
+        [field]: value,
+      });
+    },
+    [content, onChange]
+  );
 
   // 處理關鍵字輸入 - 只更新本地顯示值
   const handleKeywordsInputChange = useCallback((value: string) => {
@@ -63,13 +66,11 @@ export const ContentInput: React.FC<ContentInputProps> = ({
         <input
           type="text"
           value={content.title || ''}
-          onChange={(e) => handleChange('title', e.target.value)}
+          onChange={e => handleChange('title', e.target.value)}
           placeholder="輸入您的部落格文章標題..."
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         />
-        <p className="text-xs text-gray-500 mt-1">
-          標題將幫助系統理解文章主題，產生更相關的圖片
-        </p>
+        <p className="text-xs text-gray-500 mt-1">標題將幫助系統理解文章主題，產生更相關的圖片</p>
       </div>
 
       {/* 文章內容 */}
@@ -79,18 +80,14 @@ export const ContentInput: React.FC<ContentInputProps> = ({
         </label>
         <textarea
           value={content.content}
-          onChange={(e) => handleChange('content', e.target.value)}
+          onChange={e => handleChange('content', e.target.value)}
           placeholder="貼上您要配圖的文章段落或全文內容..."
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
           rows={6}
         />
         <div className="flex justify-between items-center mt-1">
-          <p className="text-xs text-gray-500">
-            建議至少 50 字以上，內容越詳細分析效果越好
-          </p>
-          <span className="text-xs text-gray-400">
-            {content.content.length} 字元
-          </span>
+          <p className="text-xs text-gray-500">建議至少 50 字以上，內容越詳細分析效果越好</p>
+          <span className="text-xs text-gray-400">{content.content.length} 字元</span>
         </div>
       </div>
 
@@ -102,7 +99,7 @@ export const ContentInput: React.FC<ContentInputProps> = ({
         <input
           type="text"
           value={keywordsInputValue}
-          onChange={(e) => handleKeywordsInputChange(e.target.value)}
+          onChange={e => handleKeywordsInputChange(e.target.value)}
           onBlur={handleKeywordsBlur}
           placeholder="AI, 機器學習, 深度學習... (支援中英文逗號分隔)"
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -141,7 +138,7 @@ export const ContentInput: React.FC<ContentInputProps> = ({
             </label>
             <select
               value={content.targetAudience || ''}
-              onChange={(e) => handleChange('targetAudience', e.target.value)}
+              onChange={e => handleChange('targetAudience', e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="">請選擇目標讀者群</option>
@@ -152,9 +149,7 @@ export const ContentInput: React.FC<ContentInputProps> = ({
               <option value="student">學生/新手</option>
               <option value="general">一般大眾</option>
             </select>
-            <p className="text-xs text-gray-500 mt-1">
-              指定目標讀者有助於調整圖片風格和複雜度
-            </p>
+            <p className="text-xs text-gray-500 mt-1">指定目標讀者有助於調整圖片風格和複雜度</p>
           </div>
         </div>
       )}
@@ -172,9 +167,25 @@ export const ContentInput: React.FC<ContentInputProps> = ({
         >
           {isAnalyzing ? (
             <div className="flex items-center justify-center">
-              <svg className="animate-spin -ml-1 mr-3 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              <svg
+                className="animate-spin -ml-1 mr-3 h-4 w-4 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
               </svg>
               分析內容中...
             </div>
@@ -182,7 +193,7 @@ export const ContentInput: React.FC<ContentInputProps> = ({
             '分析內容並最佳化提示詞'
           )}
         </button>
-        
+
         {!shouldEnableAnalysis && (
           <p className="text-xs text-gray-500 text-center mt-2">
             請填寫文章標題和內容後即可開始分析

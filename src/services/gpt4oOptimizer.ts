@@ -1,5 +1,12 @@
 // GPT-4o 驅動的內容分析和提示詞最佳化服務
-import { ContentInput, ContentAnalysis, ImagePurposeType, OptimizedPrompt, GPT4oRequest, GPT4oResponse } from '../types/promptOptimizer';
+import {
+  ContentInput,
+  ContentAnalysis,
+  ImagePurposeType,
+  OptimizedPrompt,
+  GPT4oRequest,
+  GPT4oResponse,
+} from '../types/promptOptimizer';
 
 class GPT4oOptimizationService {
   private apiKey: string;
@@ -8,7 +15,9 @@ class GPT4oOptimizationService {
   constructor() {
     this.apiKey = import.meta.env.VITE_OPENAI_API_KEY;
     if (!this.apiKey) {
-      throw new Error('OpenAI API key not found. Please set VITE_OPENAI_API_KEY in your .env file.');
+      throw new Error(
+        'OpenAI API key not found. Please set VITE_OPENAI_API_KEY in your .env file.'
+      );
     }
   }
 
@@ -20,7 +29,7 @@ class GPT4oOptimizationService {
       const response = await fetch(`${this.baseUrl}/chat/completions`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${this.apiKey}`,
+          Authorization: `Bearer ${this.apiKey}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
@@ -32,7 +41,9 @@ class GPT4oOptimizationService {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(`GPT-4o API Error: ${response.status} - ${errorData.error?.message || '未知錯誤'}`);
+        throw new Error(
+          `GPT-4o API Error: ${response.status} - ${errorData.error?.message || '未知錯誤'}`
+        );
       }
 
       return await response.json();
@@ -75,14 +86,14 @@ ${content.targetAudience ? `目標讀者: ${content.targetAudience}` : ''}`;
         model: 'gpt-4o-mini', // 使用 mini 版本來控制成本
         messages: [
           { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt }
+          { role: 'user', content: userPrompt },
         ],
         max_tokens: 500,
         temperature: 0.3, // 降低隨機性以獲得更一致的結果
       });
 
       const analysisText = response.choices[0].message.content;
-      
+
       // 嘗試解析 JSON 回應
       try {
         const analysis = JSON.parse(analysisText);
@@ -111,20 +122,19 @@ ${content.targetAudience ? `目標讀者: ${content.targetAudience}` : ''}`;
     purpose: ImagePurposeType,
     analysis: ContentAnalysis
   ): Promise<{ chinese: string; english: string; suggestions: string[] }> {
-    
     const purposeDescriptions = {
       banner: {
         chinese: '首頁橫幅 - 需要吸引眼球、視覺衝擊力強、代表文章主題',
-        english: 'Header Banner - eye-catching, visually impactful, representing article theme'
+        english: 'Header Banner - eye-catching, visually impactful, representing article theme',
       },
       illustration: {
         chinese: '段落說明圖 - 需要簡單清晰、輔助理解、避免干擾閱讀',
-        english: 'Illustration - simple, clear, helps understanding, non-distracting'
+        english: 'Illustration - simple, clear, helps understanding, non-distracting',
       },
       summary: {
         chinese: '內容總結圖 - 需要概念性、啟發性、留下深刻印象',
-        english: 'Summary Image - conceptual, inspiring, memorable'
-      }
+        english: 'Summary Image - conceptual, inspiring, memorable',
+      },
     };
 
     const systemPrompt = `你是一個專業的 AI 圖片生成提示詞專家。請根據用戶的部落格內容和圖片用途，生成高品質的提示詞。
@@ -161,32 +171,32 @@ ${content.targetAudience ? `目標讀者: ${content.targetAudience}` : ''}`;
         model: 'gpt-4o', // 使用完整版本獲得更好的創意
         messages: [
           { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt }
+          { role: 'user', content: userPrompt },
         ],
         max_tokens: 800,
         temperature: 0.8, // 提高創意性
       });
 
       const resultText = response.choices[0]?.message?.content;
-      
+
       if (!resultText) {
         console.warn('GPT-4o API 回應內容為空，使用降級模式');
         return this.fallbackPromptGeneration(content, purpose, analysis);
       }
-      
+
       try {
         const result = JSON.parse(resultText);
-        
+
         // 驗證回應結構的完整性
         if (!result || typeof result !== 'object') {
           console.warn('GPT-4o API 回應格式不正確，使用降級模式');
           return this.fallbackPromptGeneration(content, purpose, analysis);
         }
-        
+
         return {
           chinese: result.chinese || '生成失敗',
           english: result.english || 'Generation failed',
-          suggestions: result.suggestions || ['無可用建議']
+          suggestions: result.suggestions || ['無可用建議'],
         };
       } catch (parseError) {
         console.warn('提示詞生成回應解析失敗，使用降級模式:', parseError);
@@ -216,7 +226,7 @@ ${content.targetAudience ? `目標讀者: ${content.targetAudience}` : ''}`;
         console.warn('內容分析失敗，使用預設分析:', analysisError);
         analysis = this.createFallbackAnalysis(content);
       }
-      
+
       // 2. 生成最佳化提示詞
       let prompts: { chinese: string; english: string; suggestions: string[] };
       try {
@@ -225,34 +235,40 @@ ${content.targetAudience ? `目標讀者: ${content.targetAudience}` : ''}`;
         console.warn('提示詞生成失敗，使用降級模式:', promptError);
         prompts = this.fallbackPromptGeneration(content, purpose, analysis);
       }
-      
+
       // 3. 驗證提示詞結構
       if (!prompts || !prompts.chinese || !prompts.english) {
         console.warn('提示詞結構不完整，重新生成降級版本');
         prompts = this.fallbackPromptGeneration(content, purpose, analysis);
       }
-      
+
       // 4. 生成技術參數建議
       const technicalParams = this.generateTechnicalParams(purpose, analysis);
-      
+
       // 5. 計算信心度
       const confidence = this.calculateConfidence(content, analysis);
-      
+
       // 6. 生成 Markdown 匯出資料
-      const exportData = this.generateExportData(content, purpose, prompts, analysis, technicalParams);
+      const exportData = this.generateExportData(
+        content,
+        purpose,
+        prompts,
+        analysis,
+        technicalParams
+      );
 
       const result: OptimizedPrompt = {
         original: originalPrompt || content.content.slice(0, 100),
         optimized: {
           chinese: prompts.chinese,
-          english: prompts.english
+          english: prompts.english,
         },
         suggestions: prompts.suggestions,
         styleModifiers: this.extractStyleModifiers(analysis),
         technicalParams,
         confidence,
         analysis,
-        exportData
+        exportData,
       };
 
       // 7. 最終驗證結果結構
@@ -263,25 +279,31 @@ ${content.targetAudience ? `目標讀者: ${content.targetAudience}` : ''}`;
       return result;
     } catch (error) {
       console.error('提示詞最佳化完全失敗，使用完整降級模式:', error);
-      
+
       // 完整降級模式：確保返回有效結構
       const fallbackAnalysis = this.createFallbackAnalysis(content);
       const fallbackPrompts = this.fallbackPromptGeneration(content, purpose, fallbackAnalysis);
       const fallbackTechnicalParams = this.generateTechnicalParams(purpose, fallbackAnalysis);
-      const fallbackExportData = this.generateExportData(content, purpose, fallbackPrompts, fallbackAnalysis, fallbackTechnicalParams);
+      const fallbackExportData = this.generateExportData(
+        content,
+        purpose,
+        fallbackPrompts,
+        fallbackAnalysis,
+        fallbackTechnicalParams
+      );
 
       return {
         original: originalPrompt || content.content.slice(0, 100),
         optimized: {
           chinese: fallbackPrompts.chinese,
-          english: fallbackPrompts.english
+          english: fallbackPrompts.english,
         },
         suggestions: fallbackPrompts.suggestions,
         styleModifiers: ['現代', '簡潔', '專業'],
         technicalParams: fallbackTechnicalParams,
         confidence: 0.3, // 降級模式的信心度更低
         analysis: fallbackAnalysis,
-        exportData: fallbackExportData
+        exportData: fallbackExportData,
       };
     }
   }
@@ -292,9 +314,9 @@ ${content.targetAudience ? `目標讀者: ${content.targetAudience}` : ''}`;
   private extractTechnicalTerms(content: string): string[] {
     const technicalPatterns = [
       /\b(API|SDK|框架|架構|演算法|資料庫|伺服器|雲端|AI|機器學習|深度學習|區塊鏈|IoT|DevOps)\b/gi,
-      /\b(React|Vue|Angular|Node\.js|Python|JavaScript|TypeScript|Docker|Kubernetes)\b/gi
+      /\b(React|Vue|Angular|Node\.js|Python|JavaScript|TypeScript|Docker|Kubernetes)\b/gi,
     ];
-    
+
     const terms = new Set<string>();
     technicalPatterns.forEach(pattern => {
       const matches = content.match(pattern);
@@ -302,7 +324,7 @@ ${content.targetAudience ? `目標讀者: ${content.targetAudience}` : ''}`;
         matches.forEach(match => terms.add(match));
       }
     });
-    
+
     return Array.from(terms);
   }
 
@@ -315,7 +337,7 @@ ${content.targetAudience ? `目標讀者: ${content.targetAudience}` : ''}`;
       topic: '技術文章',
       sentiment: 'professional',
       complexity: 'moderate',
-      technicalTerms: this.extractTechnicalTerms(content.content)
+      technicalTerms: this.extractTechnicalTerms(content.content),
     };
   }
 
@@ -328,7 +350,7 @@ ${content.targetAudience ? `目標讀者: ${content.targetAudience}` : ''}`;
       topic: '技術',
       sentiment: 'professional',
       complexity: 'moderate',
-      technicalTerms: this.extractTechnicalTerms(content.content)
+      technicalTerms: this.extractTechnicalTerms(content.content),
     };
   }
 
@@ -341,20 +363,20 @@ ${content.targetAudience ? `目標讀者: ${content.targetAudience}` : ''}`;
     analysis: ContentAnalysis
   ): { chinese: string; english: string; suggestions: string[] } {
     const keywords = analysis.keywords.slice(0, 3).join('、');
-    
+
     const templates = {
       banner: {
         chinese: `關於${content.title}的現代專業橫幅圖片，包含${keywords}相關的視覺元素，簡潔設計，適合技術部落格`,
-        english: `Modern professional banner image about ${content.title}, featuring ${keywords} visual elements, clean design, suitable for tech blog`
+        english: `Modern professional banner image about ${content.title}, featuring ${keywords} visual elements, clean design, suitable for tech blog`,
       },
       illustration: {
         chinese: `${keywords}的簡單清晰說明圖片，扁平設計風格，圖示化表現，適合輔助文章理解`,
-        english: `Simple clear illustration of ${keywords}, flat design style, iconographic representation, suitable for article comprehension`
+        english: `Simple clear illustration of ${keywords}, flat design style, iconographic representation, suitable for article comprehension`,
       },
       summary: {
         chinese: `${content.title}主題的概念性總結圖片，象徵性設計，啟發性視覺元素`,
-        english: `Conceptual summary image of ${content.title} theme, symbolic design, inspiring visual elements`
-      }
+        english: `Conceptual summary image of ${content.title} theme, symbolic design, inspiring visual elements`,
+      },
     };
 
     return {
@@ -363,8 +385,8 @@ ${content.targetAudience ? `目標讀者: ${content.targetAudience}` : ''}`;
       suggestions: [
         '建議使用現代簡潔的設計風格',
         '避免過多文字和複雜細節',
-        '確保圖片與文章主題相關'
-      ]
+        '確保圖片與文章主題相關',
+      ],
     };
   }
 
@@ -375,7 +397,7 @@ ${content.targetAudience ? `目標讀者: ${content.targetAudience}` : ''}`;
     const parametersByPurpose = {
       banner: { aspectRatio: '16:9', quality: 'high', style: 'natural' },
       illustration: { aspectRatio: '1:1', quality: 'standard', style: 'natural' },
-      summary: { aspectRatio: '4:3', quality: 'high', style: 'vivid' }
+      summary: { aspectRatio: '4:3', quality: 'high', style: 'vivid' },
     };
 
     return parametersByPurpose[purpose];
@@ -400,11 +422,11 @@ ${content.targetAudience ? `目標讀者: ${content.targetAudience}` : ''}`;
    */
   private extractStyleModifiers(analysis: ContentAnalysis): string[] {
     const modifiers = ['現代', '專業', '簡潔'];
-    
+
     if (analysis.sentiment === 'positive') modifiers.push('創新', '前衛');
     if (analysis.complexity === 'simple') modifiers.push('易懂', '直觀');
     if (analysis.topic === '技術') modifiers.push('科技感', '數位');
-    
+
     return modifiers;
   }
 
@@ -422,7 +444,7 @@ ${content.targetAudience ? `目標讀者: ${content.targetAudience}` : ''}`;
     const purposeNames = {
       banner: '首頁橫幅',
       illustration: '段落說明',
-      summary: '內容總結'
+      summary: '內容總結',
     };
 
     const markdown = `# 提示詞最佳化結果
@@ -463,7 +485,7 @@ ${prompts.suggestions.map(s => `- ${s}`).join('\n')}
     return {
       markdown,
       timestamp,
-      purpose
+      purpose,
     };
   }
 }

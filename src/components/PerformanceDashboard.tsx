@@ -9,7 +9,7 @@ export const PerformanceDashboard: React.FC = () => {
     startMonitoring,
     stopMonitoring,
     getPerformanceScore,
-    getPerformanceRecommendations
+    getPerformanceRecommendations,
   } = usePerformanceMonitor();
 
   const [isExpanded, setIsExpanded] = useState(false);
@@ -41,7 +41,9 @@ export const PerformanceDashboard: React.FC = () => {
           className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-lg transition-colors flex items-center"
         >
           📊 效能監控
-          <span className={`ml-2 px-2 py-1 rounded text-xs font-medium ${getScoreColor(performanceScore)}`}>
+          <span
+            className={`ml-2 px-2 py-1 rounded text-xs font-medium ${getScoreColor(performanceScore)}`}
+          >
             {Math.round(performanceScore)}
           </span>
         </button>
@@ -79,15 +81,20 @@ export const PerformanceDashboard: React.FC = () => {
         <div className="mb-4">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium text-gray-700">總體評分</span>
-            <span className={`px-2 py-1 rounded text-sm font-medium ${getScoreColor(performanceScore)}`}>
+            <span
+              className={`px-2 py-1 rounded text-sm font-medium ${getScoreColor(performanceScore)}`}
+            >
               {Math.round(performanceScore)}/100
             </span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2">
             <div
               className={`h-2 rounded-full transition-all duration-300 ${
-                performanceScore >= 90 ? 'bg-green-500' :
-                performanceScore >= 70 ? 'bg-yellow-500' : 'bg-red-500'
+                performanceScore >= 90
+                  ? 'bg-green-500'
+                  : performanceScore >= 70
+                    ? 'bg-yellow-500'
+                    : 'bg-red-500'
               }`}
               style={{ width: `${performanceScore}%` }}
             />
@@ -97,7 +104,7 @@ export const PerformanceDashboard: React.FC = () => {
         {/* 核心指標 */}
         <div className="space-y-3 mb-4">
           <h4 className="text-sm font-medium text-gray-900">核心指標</h4>
-          
+
           <div className="grid grid-cols-2 gap-3 text-sm">
             <MetricCard
               label="FCP"
@@ -125,7 +132,7 @@ export const PerformanceDashboard: React.FC = () => {
         {/* 應用程式指標 */}
         <div className="space-y-3 mb-4">
           <h4 className="text-sm font-medium text-gray-900">應用程式指標</h4>
-          
+
           <div className="grid grid-cols-2 gap-3 text-sm">
             <MetricCard
               label="提示詞最佳化"
@@ -170,12 +177,18 @@ export const PerformanceDashboard: React.FC = () => {
           <div className="mt-4 pt-4 border-t">
             <h4 className="text-sm font-medium text-gray-900 mb-2">最近事件</h4>
             <div className="space-y-1 max-h-32 overflow-y-auto">
-              {events.slice(-5).reverse().map((event, index) => (
-                <div key={index} className="text-xs text-gray-600 flex items-center justify-between">
-                  <span className="truncate">{event.name}</span>
-                  <span className="font-mono ml-2">{formatTime(event.duration)}</span>
-                </div>
-              ))}
+              {events
+                .slice(-5)
+                .reverse()
+                .map((event, index) => (
+                  <div
+                    key={index}
+                    className="text-xs text-gray-600 flex items-center justify-between"
+                  >
+                    <span className="truncate">{event.name}</span>
+                    <span className="font-mono ml-2">{formatTime(event.duration)}</span>
+                  </div>
+                ))}
             </div>
           </div>
         )}
@@ -192,10 +205,10 @@ interface MetricCardProps {
 }
 
 const MetricCard: React.FC<MetricCardProps> = ({ label, value, good }) => (
-  <div className={`p-2 rounded border ${good ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
+  <div
+    className={`p-2 rounded border ${good ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}
+  >
     <div className="text-xs text-gray-500">{label}</div>
-    <div className={`font-mono text-sm ${good ? 'text-green-700' : 'text-red-700'}`}>
-      {value}
-    </div>
+    <div className={`font-mono text-sm ${good ? 'text-green-700' : 'text-red-700'}`}>{value}</div>
   </div>
 );

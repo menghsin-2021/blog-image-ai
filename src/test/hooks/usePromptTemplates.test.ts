@@ -56,10 +56,8 @@ describe('usePromptTemplates', () => {
     const searchResults = result.current.searchTemplates('技術');
     expect(searchResults.length).toBeGreaterThan(0);
     expect(
-      searchResults.some(t => 
-        t.name.includes('技術') || 
-        t.description.includes('技術') ||
-        t.tags.includes('技術')
+      searchResults.some(
+        t => t.name.includes('技術') || t.description.includes('技術') || t.tags.includes('技術')
       )
     ).toBe(true);
   });
@@ -127,15 +125,17 @@ describe('usePromptTemplates', () => {
       description: '這是一個測試模板',
       category: 'custom' as const,
       template: '這是 {{testVariable}} 的模板',
-      variables: [{
-        name: 'testVariable',
-        description: '測試變數',
-        type: 'text' as const,
-        required: true
-      }],
+      variables: [
+        {
+          name: 'testVariable',
+          description: '測試變數',
+          type: 'text' as const,
+          required: true,
+        },
+      ],
       tags: ['測試'],
       isBuiltIn: false,
-      isPublic: true
+      isPublic: true,
     };
 
     const initialCount = result.current.templates.length;

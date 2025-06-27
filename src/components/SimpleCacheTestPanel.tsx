@@ -13,15 +13,14 @@ export function SimpleCacheTestPanel() {
   const runSimpleTest = async () => {
     setIsTestRunning(true);
     setTestLogs([]);
-    
+
     try {
       addLog('🧪 開始簡化快取測試...');
-      
+
       // 簡單的延遲模擬
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       addLog('✅ 簡化測試完成');
-      
     } catch (error) {
       addLog(`❌ 簡化測試失敗: ${error}`);
     } finally {
@@ -32,12 +31,8 @@ export function SimpleCacheTestPanel() {
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg">
       <div className="border-b border-gray-200 pb-4 mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          🧪 簡化快取測試面板
-        </h2>
-        <p className="text-gray-600">
-          用於檢測快取系統基本功能
-        </p>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">🧪 簡化快取測試面板</h2>
+        <p className="text-gray-600">用於檢測快取系統基本功能</p>
       </div>
 
       {/* 控制按鈕 */}

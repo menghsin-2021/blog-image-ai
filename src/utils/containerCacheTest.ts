@@ -3,11 +3,11 @@
 
 // 快取效能測試介面
 export interface CachePerformanceMetrics {
-  hitRate: number;          // 快取命中率
+  hitRate: number; // 快取命中率
   averageResponseTime: number; // 平均回應時間 (ms)
-  memoryUsage: number;      // 記憶體使用 (MB)
-  totalOperations: number;  // 總操作次數
-  cacheSize: number;        // 快取項目數量
+  memoryUsage: number; // 記憶體使用 (MB)
+  totalOperations: number; // 總操作次數
+  cacheSize: number; // 快取項目數量
 }
 
 // 容器環境快取測試類別
@@ -32,7 +32,7 @@ export class ContainerCacheTest {
   recordCacheOperation(isHit: boolean, responseTime: number): void {
     this.operations++;
     this.responseTimes.push(responseTime);
-    
+
     if (isHit) {
       this.hits++;
       console.log(`✅ 快取命中 - 回應時間: ${responseTime}ms`);
@@ -44,9 +44,10 @@ export class ContainerCacheTest {
 
   // 取得效能報告
   getPerformanceReport(): CachePerformanceMetrics {
-    const averageResponseTime = this.responseTimes.length > 0 
-      ? this.responseTimes.reduce((a, b) => a + b, 0) / this.responseTimes.length 
-      : 0;
+    const averageResponseTime =
+      this.responseTimes.length > 0
+        ? this.responseTimes.reduce((a, b) => a + b, 0) / this.responseTimes.length
+        : 0;
 
     const hitRate = this.operations > 0 ? (this.hits / this.operations) * 100 : 0;
 
@@ -57,7 +58,7 @@ export class ContainerCacheTest {
       averageResponseTime: Math.round(averageResponseTime * 100) / 100,
       memoryUsage: Math.round(memoryUsage * 100) / 100,
       totalOperations: this.operations,
-      cacheSize: this.hits + this.misses
+      cacheSize: this.hits + this.misses,
     };
   }
 
@@ -82,7 +83,7 @@ export class ContainerCacheTest {
     console.log(`平均回應時間: ${report.averageResponseTime}ms`);
     console.log(`估計記憶體使用: ${report.memoryUsage}MB`);
     console.log(`快取項目數: ${report.cacheSize}`);
-    
+
     // 效能評級
     const performanceGrade = this.calculatePerformanceGrade(report);
     console.log(`效能評級: ${performanceGrade}`);
@@ -124,29 +125,32 @@ export function useCachePerformanceTest() {
   const cacheTest = new ContainerCacheTest();
 
   // 測試提示詞最佳化快取
-  const testPromptOptimizationCache = async (testData: Array<{
-    content: string;
-    purpose: string;
-    keywords?: string[];
-  }>) => {
+  const testPromptOptimizationCache = async (
+    testData: Array<{
+      content: string;
+      purpose: string;
+      keywords?: string[];
+    }>
+  ) => {
     cacheTest.startPerformanceTest();
 
     for (let i = 0; i < testData.length; i++) {
       const testItem = testData[i];
       const startTime = Date.now();
-      
+
       try {
         // 這裡會實際呼叫快取系統
         // const result = await optimizePromptWithCache(testItem);
         const responseTime = Date.now() - startTime;
-        
+
         // 模擬快取命中/未命中 (實際使用時會由快取系統回報)
         // 第一次請求通常是未命中，後續相同請求應該命中
         const isHit = i > 0 && Math.random() > 0.3; // 70% 命中率模擬
         cacheTest.recordCacheOperation(isHit, responseTime);
-        
-        console.log(`測試項目 ${i + 1}/${testData.length}: ${testItem.purpose} - ${testItem.content.slice(0, 50)}...`);
-        
+
+        console.log(
+          `測試項目 ${i + 1}/${testData.length}: ${testItem.purpose} - ${testItem.content.slice(0, 50)}...`
+        );
       } catch (error) {
         const responseTime = Date.now() - startTime;
         cacheTest.recordCacheOperation(false, responseTime);
@@ -163,7 +167,7 @@ export function useCachePerformanceTest() {
 
   return {
     testPromptOptimizationCache,
-    getPerformanceReport: () => cacheTest.getPerformanceReport()
+    getPerformanceReport: () => cacheTest.getPerformanceReport(),
   };
 }
 
@@ -176,29 +180,33 @@ export function useContainerResourceMonitor() {
       memoryUsage: {
         used: 256, // MB
         limit: 512, // MB
-        percentage: 50
+        percentage: 50,
       },
       cpuUsage: {
-        percentage: 25
+        percentage: 25,
       },
       networkIO: {
         bytesReceived: 1024 * 1024, // 1MB
-        bytesSent: 512 * 1024 // 512KB
-      }
+        bytesSent: 512 * 1024, // 512KB
+      },
     };
   };
 
   const logResourceUsage = () => {
     const stats = getContainerStats();
     console.log('🐳 容器資源使用情況:');
-    console.log(`記憶體: ${stats.memoryUsage.used}MB / ${stats.memoryUsage.limit}MB (${stats.memoryUsage.percentage}%)`);
+    console.log(
+      `記憶體: ${stats.memoryUsage.used}MB / ${stats.memoryUsage.limit}MB (${stats.memoryUsage.percentage}%)`
+    );
     console.log(`CPU: ${stats.cpuUsage.percentage}%`);
-    console.log(`網路 I/O: ↓${(stats.networkIO.bytesReceived / 1024 / 1024).toFixed(2)}MB ↑${(stats.networkIO.bytesSent / 1024 / 1024).toFixed(2)}MB`);
+    console.log(
+      `網路 I/O: ↓${(stats.networkIO.bytesReceived / 1024 / 1024).toFixed(2)}MB ↑${(stats.networkIO.bytesSent / 1024 / 1024).toFixed(2)}MB`
+    );
   };
 
   return {
     getContainerStats,
-    logResourceUsage
+    logResourceUsage,
   };
 }
 

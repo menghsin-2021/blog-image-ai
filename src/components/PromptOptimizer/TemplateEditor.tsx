@@ -10,7 +10,7 @@ interface TemplateEditorProps {
 export const TemplateEditor: React.FC<TemplateEditorProps> = ({
   template,
   onGenerate,
-  onCancel
+  onCancel,
 }) => {
   const [variables, setVariables] = useState<Record<string, string>>({});
   const [preview, setPreview] = useState<string>('');
@@ -52,15 +52,15 @@ export const TemplateEditor: React.FC<TemplateEditorProps> = ({
       // 長度檢查
       if (variable.validation) {
         const { minLength, maxLength, pattern } = variable.validation;
-        
+
         if (minLength && value.length < minLength) {
           newErrors[variable.name] = `最少需要 ${minLength} 個字元`;
         }
-        
+
         if (maxLength && value.length > maxLength) {
           newErrors[variable.name] = `最多 ${maxLength} 個字元`;
         }
-        
+
         if (pattern && value && !new RegExp(pattern).test(value)) {
           newErrors[variable.name] = '格式不正確';
         }
@@ -80,9 +80,9 @@ export const TemplateEditor: React.FC<TemplateEditorProps> = ({
   const handleVariableChange = (variableName: string, value: string) => {
     setVariables(prev => ({
       ...prev,
-      [variableName]: value
+      [variableName]: value,
     }));
-    
+
     // 清除該欄位的錯誤
     if (errors[variableName]) {
       setErrors(prev => {
@@ -107,7 +107,12 @@ export const TemplateEditor: React.FC<TemplateEditorProps> = ({
             className="text-gray-400 hover:text-gray-600 transition-colors"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         )}
@@ -118,14 +123,14 @@ export const TemplateEditor: React.FC<TemplateEditorProps> = ({
           {/* 參數設定區 */}
           <div className="space-y-4">
             <h3 className="text-lg font-medium text-gray-900 mb-4">參數設定</h3>
-            
-            {template.variables.map((variable) => (
+
+            {template.variables.map(variable => (
               <VariableInput
                 key={variable.name}
                 variable={variable}
                 value={variables[variable.name] || ''}
                 error={errors[variable.name]}
-                onChange={(value) => handleVariableChange(variable.name, value)}
+                onChange={value => handleVariableChange(variable.name, value)}
               />
             ))}
 
@@ -140,16 +145,12 @@ export const TemplateEditor: React.FC<TemplateEditorProps> = ({
           {/* 預覽區 */}
           <div className="space-y-4">
             <h3 className="text-lg font-medium text-gray-900 mb-4">即時預覽</h3>
-            
+
             <div className="bg-gray-50 rounded-lg p-4 min-h-[300px]">
-              <pre className="whitespace-pre-wrap text-sm text-gray-700 font-mono">
-                {preview}
-              </pre>
+              <pre className="whitespace-pre-wrap text-sm text-gray-700 font-mono">{preview}</pre>
             </div>
 
-            <div className="text-xs text-gray-500">
-              預覽長度: {preview.length} 字元
-            </div>
+            <div className="text-xs text-gray-500">預覽長度: {preview.length} 字元</div>
           </div>
         </div>
 
@@ -184,12 +185,7 @@ interface VariableInputProps {
   onChange: (value: string) => void;
 }
 
-const VariableInput: React.FC<VariableInputProps> = ({
-  variable,
-  value,
-  error,
-  onChange
-}) => {
+const VariableInput: React.FC<VariableInputProps> = ({ variable, value, error, onChange }) => {
   const renderInput = () => {
     const baseClassName = `w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
       error ? 'border-red-300' : 'border-gray-300'
@@ -200,7 +196,7 @@ const VariableInput: React.FC<VariableInputProps> = ({
         return (
           <textarea
             value={value}
-            onChange={(e) => onChange(e.target.value)}
+            onChange={e => onChange(e.target.value)}
             placeholder={variable.placeholder}
             rows={4}
             className={baseClassName}
@@ -209,13 +205,9 @@ const VariableInput: React.FC<VariableInputProps> = ({
 
       case 'select':
         return (
-          <select
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-            className={baseClassName}
-          >
+          <select value={value} onChange={e => onChange(e.target.value)} className={baseClassName}>
             <option value="">請選擇...</option>
-            {variable.options?.map((option) => (
+            {variable.options?.map(option => (
               <option key={option} value={option}>
                 {option}
               </option>
@@ -228,7 +220,7 @@ const VariableInput: React.FC<VariableInputProps> = ({
           <input
             type="number"
             value={value}
-            onChange={(e) => onChange(e.target.value)}
+            onChange={e => onChange(e.target.value)}
             placeholder={variable.placeholder}
             className={baseClassName}
           />
@@ -239,7 +231,7 @@ const VariableInput: React.FC<VariableInputProps> = ({
           <input
             type="text"
             value={value}
-            onChange={(e) => onChange(e.target.value)}
+            onChange={e => onChange(e.target.value)}
             placeholder={variable.placeholder}
             className={baseClassName}
           />
@@ -253,21 +245,19 @@ const VariableInput: React.FC<VariableInputProps> = ({
         {variable.name}
         {variable.required && <span className="text-red-500 ml-1">*</span>}
       </label>
-      
-      {variable.description && (
-        <p className="text-xs text-gray-500">{variable.description}</p>
-      )}
-      
+
+      {variable.description && <p className="text-xs text-gray-500">{variable.description}</p>}
+
       {renderInput()}
-      
-      {error && (
-        <p className="text-sm text-red-600">{error}</p>
-      )}
-      
+
+      {error && <p className="text-sm text-red-600">{error}</p>}
+
       {variable.validation && (
         <div className="text-xs text-gray-500">
           {variable.validation.minLength && variable.validation.maxLength && (
-            <span>長度: {variable.validation.minLength}-{variable.validation.maxLength} 字元</span>
+            <span>
+              長度: {variable.validation.minLength}-{variable.validation.maxLength} 字元
+            </span>
           )}
           {variable.validation.minLength && !variable.validation.maxLength && (
             <span>最少 {variable.validation.minLength} 字元</span>

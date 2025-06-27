@@ -13,7 +13,7 @@ export const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
   onRetry,
   onDismiss,
   type = 'general',
-  showDetails = false
+  showDetails = false,
 }) => {
   if (!error) return null;
 
@@ -29,7 +29,7 @@ export const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
           bgColor: 'bg-red-50',
           borderColor: 'border-red-200',
           textColor: 'text-red-700',
-          buttonColor: 'bg-red-600 hover:bg-red-700'
+          buttonColor: 'bg-red-600 hover:bg-red-700',
         };
       case 'validation':
         return {
@@ -39,7 +39,7 @@ export const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
           bgColor: 'bg-yellow-50',
           borderColor: 'border-yellow-200',
           textColor: 'text-yellow-700',
-          buttonColor: 'bg-yellow-600 hover:bg-yellow-700'
+          buttonColor: 'bg-yellow-600 hover:bg-yellow-700',
         };
       case 'network':
         return {
@@ -49,7 +49,7 @@ export const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
           bgColor: 'bg-orange-50',
           borderColor: 'border-orange-200',
           textColor: 'text-orange-700',
-          buttonColor: 'bg-orange-600 hover:bg-orange-700'
+          buttonColor: 'bg-orange-600 hover:bg-orange-700',
         };
       default:
         return {
@@ -59,7 +59,7 @@ export const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
           bgColor: 'bg-red-50',
           borderColor: 'border-red-200',
           textColor: 'text-red-700',
-          buttonColor: 'bg-red-600 hover:bg-red-700'
+          buttonColor: 'bg-red-600 hover:bg-red-700',
         };
     }
   };
@@ -69,23 +69,19 @@ export const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
   return (
     <div className={`rounded-lg p-4 border ${config.bgColor} ${config.borderColor}`}>
       <div className="flex items-start">
-        <div className="flex-shrink-0 text-2xl mr-3">
-          {config.icon}
-        </div>
+        <div className="flex-shrink-0 text-2xl mr-3">{config.icon}</div>
         <div className="flex-1">
-          <h3 className={`text-sm font-medium ${config.textColor} mb-1`}>
-            {config.title}
-          </h3>
-          <p className={`text-sm ${config.textColor} opacity-90 mb-2`}>
-            {config.description}
-          </p>
-          
+          <h3 className={`text-sm font-medium ${config.textColor} mb-1`}>{config.title}</h3>
+          <p className={`text-sm ${config.textColor} opacity-90 mb-2`}>{config.description}</p>
+
           {showDetails && (
             <details className="mb-3">
               <summary className={`text-xs ${config.textColor} cursor-pointer hover:underline`}>
                 顯示詳細錯誤資訊
               </summary>
-              <pre className={`text-xs ${config.textColor} mt-2 bg-white p-2 rounded border overflow-auto`}>
+              <pre
+                className={`text-xs ${config.textColor} mt-2 bg-white p-2 rounded border overflow-auto`}
+              >
                 {errorMessage}
               </pre>
             </details>
@@ -127,7 +123,7 @@ export const PromptOptimizerError: React.FC<PromptOptimizerErrorProps> = ({
   error,
   stage,
   onRetry,
-  onReset
+  onReset,
 }) => {
   if (!error) return null;
 
@@ -139,35 +135,23 @@ export const PromptOptimizerError: React.FC<PromptOptimizerErrorProps> = ({
           suggestions: [
             '檢查文章內容是否完整',
             '確認文字長度在合理範圍內',
-            '嘗試簡化複雜的內容結構'
-          ]
+            '嘗試簡化複雜的內容結構',
+          ],
         };
       case 'prompt-optimization':
         return {
           title: '提示詞最佳化失敗',
-          suggestions: [
-            '確認 API 金鑰設定正確',
-            '檢查網路連線狀態',
-            '嘗試降低內容複雜度'
-          ]
+          suggestions: ['確認 API 金鑰設定正確', '檢查網路連線狀態', '嘗試降低內容複雜度'],
         };
       case 'template-loading':
         return {
           title: '模板載入失敗',
-          suggestions: [
-            '重新整理頁面',
-            '清除瀏覽器快取',
-            '檢查模板設定檔案'
-          ]
+          suggestions: ['重新整理頁面', '清除瀏覽器快取', '檢查模板設定檔案'],
         };
       default:
         return {
           title: '處理失敗',
-          suggestions: [
-            '請稍後再試',
-            '檢查網路連線',
-            '聯繫技術支援'
-          ]
+          suggestions: ['請稍後再試', '檢查網路連線', '聯繫技術支援'],
         };
     }
   };
@@ -178,12 +162,8 @@ export const PromptOptimizerError: React.FC<PromptOptimizerErrorProps> = ({
     <div className="bg-red-50 border border-red-200 rounded-lg p-6">
       <div className="text-center mb-4">
         <div className="text-4xl mb-2">😞</div>
-        <h3 className="text-lg font-semibold text-red-700 mb-2">
-          {config.title}
-        </h3>
-        <p className="text-red-600 text-sm">
-          {typeof error === 'string' ? error : error.message}
-        </p>
+        <h3 className="text-lg font-semibold text-red-700 mb-2">{config.title}</h3>
+        <p className="text-red-600 text-sm">{typeof error === 'string' ? error : error.message}</p>
       </div>
 
       <div className="mb-4">
@@ -243,7 +223,12 @@ export const NetworkStatus: React.FC = () => {
     <div className="fixed top-0 left-0 right-0 bg-yellow-500 text-white p-2 text-center text-sm font-medium z-50">
       <div className="flex items-center justify-center">
         <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"
+          />
         </svg>
         網路連線中斷，部分功能可能無法使用
       </div>
