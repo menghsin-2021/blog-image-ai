@@ -16,12 +16,12 @@ export function CacheTestPanel() {
   const testDataSet = [
     {
       content: "介紹 React Hooks 的基本概念和使用方法，包括 useState 和 useEffect 的實際應用案例。",
-      purpose: "header",
+      purpose: "banner",
       keywords: ["React", "Hooks", "useState", "useEffect"]
     },
     {
       content: "深入探討 JavaScript 閉包的運作原理，解釋作用域鏈和記憶體管理的相關概念。",
-      purpose: "content",
+      purpose: "illustration",
       keywords: ["JavaScript", "閉包", "作用域", "記憶體"]
     },
     {
@@ -31,12 +31,12 @@ export function CacheTestPanel() {
     },
     {
       content: "TypeScript 型別系統的進階應用，泛型和條件型別的實戰演練。",
-      purpose: "content",
+      purpose: "illustration",
       keywords: ["TypeScript", "泛型", "型別系統", "進階"]
     },
     {
       content: "React Hooks 的基本概念", // 重複內容，測試快取命中
-      purpose: "header",
+      purpose: "banner",
       keywords: ["React", "Hooks"]
     }
   ];
@@ -100,7 +100,7 @@ export function CacheTestPanel() {
             content: testItem.content,
             title: `測試標題 ${i + 1}`,
             keywords: testItem.keywords
-          }, testItem.purpose as any);
+          }, testItem.purpose as 'banner' | 'illustration' | 'summary');
           
           const endTime = Date.now();
           const responseTime = endTime - startTime;

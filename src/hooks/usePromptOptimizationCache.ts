@@ -5,12 +5,18 @@ import { gpt4oOptimizationService } from '../services/gpt4oOptimizer';
 
 // 快取鍵生成函式 - 支援 UTF-8 編碼
 const generateCacheKey = (content: ContentInput, purpose: ImagePurposeType): string => {
+  // 安全檢查輸入參數
+  if (!content || !purpose) {
+    console.warn('generateCacheKey: 缺少必要參數', { content: !!content, purpose: !!purpose });
+    return `cache_fallback_${Date.now()}_${Math.random().toString(36)}`;
+  }
+
   const keyData = {
-    title: content.title?.trim(),
-    content: content.content?.trim(),
-    keywords: content.keywords?.sort().join(','),
-    targetAudience: content.targetAudience?.trim(),
-    purpose
+    title: content.title?.trim() || '',
+    content: content.content?.trim() || '',
+    keywords: content.keywords?.sort().join(',') || '',
+    targetAudience: content.targetAudience?.trim() || '',
+    purpose: purpose || 'unknown'
   };
   
   // 使用 encodeURIComponent 替代 btoa 來支援中文字符
@@ -46,6 +52,17 @@ export const usePromptOptimizationCache = () => {
     purpose: ImagePurposeType,
     forceFresh: boolean = false
   ): Promise<OptimizedPrompt> => {
+    // 輸入驗證
+    if (!content) {
+      throw new Error('optimizePromptWithCache: content 參數為必填');
+    }
+    if (!content.content || content.content.trim().length === 0) {
+      throw new Error('optimizePromptWithCache: content.content 不能為空');
+    }
+    if (!purpose) {
+      throw new Error('optimizePromptWithCache: purpose 參數為必填');
+    }
+
     // 生成快取鍵
     const cacheKey = generateCacheKey(content, purpose);
     
@@ -63,6 +80,12 @@ export const usePromptOptimizationCache = () => {
       
       // 呼叫實際 API
       const result = await gpt4oOptimizationService.optimizePrompt(content, purpose);
+      
+      // 驗證 API 回應結構
+      if (!result || !result.optimized || !result.optimized.chinese || !result.optimized.english) {
+        console.error('API 回應結構不完整:', result);
+        throw new Error('API 回應結構不完整');
+      }
       
       // 儲存到快取
       cache.set(cacheKey, result);

@@ -14,6 +14,7 @@ import { ModelSettings } from './components/ModelSettings';
 import { SimpleImagePreview } from './components/SimpleImagePreview';
 import { PromptOptimizer } from './components/PromptOptimizer';
 import { CacheTestPanel } from './components/CacheTestPanel';
+import { SimpleCacheTestPanel } from './components/SimpleCacheTestPanel';
 
 function App() {
   // 基本狀態
@@ -194,8 +195,8 @@ function App() {
               onApplyPrompt={handleApplyPrompt}
             />
           ) : (
-            /* 快取測試頁面 */
-            <CacheTestPanel />
+            /* 快取測試頁面 - 使用簡化版本進行除錯 */
+            <SimpleCacheTestPanel />
           )}
         </div>
       </div>
