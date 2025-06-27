@@ -1,6 +1,6 @@
 # BlogImageAI
 
-BlogImageAI 是一個基於 OpenAI 圖片生成 API 的 AI 圖片生成助手，專為技術部落格文章建立專業插圖而設計。支援最新的 GPT-Image-1、DALL·E 3 和 DALL·E 2 模型。
+BlogImageAI 是一個智慧 AI 圖片生成平台，支援多模型與提示詞最佳化，專為部落格打造專業插圖。整合 OpenAI 最新的 GPT-Image-1、DALL·E 3 和 DALL·E 2 模型。
 
 ## ✨ 功能特色
 

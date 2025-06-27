@@ -66,7 +66,7 @@ function App() {
         <header className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">BlogImageAI</h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            基於 OpenAI DALL·E 的 AI 圖片生成助手，專為技術部落格文章建立專業插圖
+            智慧 AI 圖片生成平台，支援多模型與提示詞最佳化，專為部落格打造專業插圖
           </p>
         </header>
 
