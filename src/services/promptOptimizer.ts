@@ -186,34 +186,40 @@ function buildOptimizedPrompt(
   content: ContentInput,
   analysis: ContentAnalysis,
   purpose: ImagePurposeType
-): string {
+): { chinese: string; english: string } {
   const template = selectBestTemplate(purpose, analysis);
   const visualElements = selectVisualElements(analysis, purpose);
   const styleModifiers = selectStyleModifiers(analysis, purpose);
   
   // 替換模板中的占位符
-  let prompt = template.template;
+  let englishPrompt = template.template;
   
   // 主要概念/主題
   const mainConcept = content.title || analysis.keywords[0] || 'blog content';
-  prompt = prompt.replace(/\{MAIN_CONCEPT\}/g, mainConcept);
-  prompt = prompt.replace(/\{TOPIC\}/g, mainConcept);
-  prompt = prompt.replace(/\{MAIN_THEME\}/g, mainConcept);
-  prompt = prompt.replace(/\{CONCEPT\}/g, mainConcept);
-  prompt = prompt.replace(/\{PROCESS\}/g, mainConcept);
+  englishPrompt = englishPrompt.replace(/\{MAIN_CONCEPT\}/g, mainConcept);
+  englishPrompt = englishPrompt.replace(/\{TOPIC\}/g, mainConcept);
+  englishPrompt = englishPrompt.replace(/\{MAIN_THEME\}/g, mainConcept);
+  englishPrompt = englishPrompt.replace(/\{CONCEPT\}/g, mainConcept);
+  englishPrompt = englishPrompt.replace(/\{PROCESS\}/g, mainConcept);
   
   // 視覺元素
   const visualElementsText = visualElements.join(', ');
-  prompt = prompt.replace(/\{VISUAL_ELEMENTS\}/g, visualElementsText);
+  englishPrompt = englishPrompt.replace(/\{VISUAL_ELEMENTS\}/g, visualElementsText);
   
   // 風格修飾詞
   const styleModifiersText = styleModifiers.join(', ');
-  prompt = prompt.replace(/\{STYLE_MODIFIERS\}/g, styleModifiersText);
+  englishPrompt = englishPrompt.replace(/\{STYLE_MODIFIERS\}/g, styleModifiersText);
   
   // 添加通用的品質指引
-  prompt += ', high quality, professional photography, clean composition, suitable for blog use';
+  englishPrompt += ', high quality, professional photography, clean composition, suitable for blog use';
   
-  return prompt;
+  // 建立中文版本（簡化版）
+  const chinesePrompt = `為「${mainConcept}」主題建立專業部落格插圖，風格：${styleModifiersText}，高品質專業攝影效果，乾淨構圖，適合部落格使用`;
+  
+  return {
+    chinese: chinesePrompt,
+    english: englishPrompt
+  };
 }
 
 /**
@@ -299,6 +305,40 @@ function recommendTechnicalParams(purpose: ImagePurposeType): {
 }
 
 /**
+ * 生成 Markdown 格式的匯出資料
+ */
+function generateMarkdownExport(
+  optimizedPrompt: { chinese: string; english: string },
+  suggestions: string[],
+  technicalParams: { aspectRatio: string; quality: string; style?: string }
+): string {
+  const sections = [
+    '# 提示詞最佳化結果',
+    '',
+    '## 最佳化提示詞',
+    '',
+    '### 中文版本',
+    optimizedPrompt.chinese,
+    '',
+    '### 英文版本',
+    optimizedPrompt.english,
+    '',
+    '## 最佳化建議',
+    ...suggestions.map(suggestion => `- ${suggestion}`),
+    '',
+    '## 技術參數建議',
+    `- 比例: ${technicalParams.aspectRatio}`,
+    `- 品質: ${technicalParams.quality}`,
+    ...(technicalParams.style ? [`- 風格: ${technicalParams.style}`] : []),
+    '',
+    '---',
+    `*建立時間: ${new Date().toLocaleString('zh-TW')}*`
+  ];
+  
+  return sections.join('\n');
+}
+
+/**
  * 主要的提示詞最佳化函式
  */
 export async function optimizePrompt(
@@ -330,7 +370,18 @@ export async function optimizePrompt(
     suggestions,
     styleModifiers,
     technicalParams,
-    confidence
+    confidence,
+    analysis: {
+      keywords: analysis.keywords,
+      topic: analysis.topic,
+      sentiment: analysis.sentiment,
+      complexity: analysis.complexity
+    },
+    exportData: {
+      markdown: generateMarkdownExport(optimizedPrompt, suggestions, technicalParams),
+      timestamp: new Date().toISOString(),
+      purpose
+    }
   };
 }
 
