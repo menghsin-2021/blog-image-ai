@@ -98,13 +98,28 @@ interface ContentInput {
 ```typescript
 interface OptimizedPrompt {
   original: string;         // 原始提示詞
-  optimized: string;        // 最佳化後提示詞
+  optimized: {              // 最佳化後提示詞 (雙語)
+    chinese: string;        // 中文版本
+    english: string;        // 英文版本
+  };
   suggestions: string[];    // 最佳化建議
   styleModifiers: string[]; // 風格修飾詞
   technicalParams: {        // 技術參數建議
     aspectRatio: string;
     quality: string;
     style?: string;
+  };
+  confidence: number;       // 最佳化信心度 (0-1)
+  analysis: {               // GPT-4o 分析結果
+    keywords: string[];     // 提取的關鍵字
+    topic: string;          // 主題分類
+    sentiment: string;      // 情感分析
+    complexity: string;     // 內容複雜度
+  };
+  exportData: {             // 匯出資料
+    markdown: string;       // Markdown 格式
+    timestamp: string;      // 建立時間
+    purpose: ImagePurposeType; // 圖片用途
   };
 }
 ```
@@ -129,19 +144,35 @@ interface OptimizedPrompt {
 3. 提供具體的改善建議說明
 4. 推薦適合的技術參數
 
-### 階段 4: 結果應用
-1. 使用者可以進一步編輯最佳化提示詞
-2. 一鍵複製到主要生成介面
-3. 自動設定推薦的技術參數
+### 階段 4: 結果應用與匯出
+1. **雙語結果顯示**: 同時展示中文和英文版本的最佳化提示詞
+2. **語言切換**: 使用者可以選擇偏好的語言版本
+3. **編輯功能**: 使用者可以進一步編輯最佳化提示詞
+4. **一鍵應用**: 直接將選定的提示詞複製到主要生成介面
+5. **Markdown 匯出**: 將完整的最佳化結果匯出為 Markdown 檔案
+6. **重複使用**: 儲存的 Markdown 檔案可以重新匯入使用
 
 ## 最佳化演算法
 
-### 1. 內容分析
-- **關鍵字提取**: 使用 TF-IDF 或關鍵字密度分析
-- **主題識別**: 技術、生活、教學、評論等分類
-- **情感分析**: 正向、中性、專業等語調
+### 1. GPT-4o 驅動的內容分析
+- **智慧關鍵字提取**: 使用 GPT-4o 進行語義分析和關鍵概念提取
+- **主題識別**: 自動分類內容類型 (技術、教學、產品、概念等)
+- **情感與語調分析**: 識別內容的專業度、複雜度、目標受眾
+- **多語言處理**: 優化中文和英文的語言特性
 
-### 2. 提示詞建構
+### 2. 雙語提示詞建構系統
+```typescript
+// GPT-4o 驅動的提示詞建構
+const gpt4oPromptBuilder = {
+  systemPrompt: '你是一個專業的 AI 圖片生成提示詞專家...',
+  contentAnalysis: (content: string) => Promise<ContentAnalysis>,
+  generatePrompts: (analysis: ContentAnalysis, purpose: ImagePurposeType) => Promise<{
+    chinese: string,
+    english: string,
+    suggestions: string[]
+  }>,
+  optimizeForPurpose: (prompt: string, purpose: ImagePurposeType) => Promise<string>
+};
 ```typescript
 // 基本模板結構
 const promptTemplate = {
@@ -240,10 +271,21 @@ const styleGuides = {
 - [ ] 內容輸入介面
 
 ### Phase 2: 最佳化邏輯 (2-3 週)
-- [ ] 內容分析演算法
-- [ ] 提示詞建構系統
-- [ ] 模板庫建立
-- [ ] 結果顯示介面
+- [ ] **GPT-4o 驅動的內容分析** 🚀 NEW
+  - 使用 OpenAI GPT-4o 模型進行智慧內容分析
+  - 關鍵字提取、主題識別、情感分析
+  - 多語言支援 (中文、英文優化)
+- [ ] **雙語提示詞建構系統** 🌐 NEW
+  - 同時生成中文和英文版本的最佳化提示詞
+  - 基於 GPT-4o 的專業翻譯和本地化
+  - 語言特定的風格調整
+- [ ] **提示詞模板庫** 📚
+  - 針對部落格用途的專業模板
+  - GPT-4o 動態模板最佳化
+- [ ] **Markdown 匯出功能** 💾 NEW
+  - 提示詞結果以 Markdown 格式儲存
+  - 包含中英文版本、技術參數、使用建議
+  - 支援重複使用和分享
 
 ### Phase 3: 整合與最佳化 (1 週)
 - [ ] 主介面整合
@@ -271,3 +313,68 @@ const styleGuides = {
 此功能將大幅提升 BlogImageAI 的使用者體驗，特別是對於不熟悉 AI 圖片生成的使用者。實作時需要注意保持介面簡潔，避免過度複雜化，並確保與現有功能的良好整合。
 
 最佳化邏輯應該基於實際使用資料持續改進，建議在初期版本中加入使用者回饋收集機制，以便後續迭代優化。
+
+## Phase 2 更新 - GPT-4o 集成與雙語支援
+
+### 新增需求 (基於使用者回饋)
+
+#### 1. GPT-4o API 整合
+- **模型**: 使用 `gpt-4o` 或 `gpt-4o-mini` 進行提示詞最佳化
+- **Chat Completions API**: 利用對話式 API 進行智慧分析
+- **成本控制**: 使用 `max_tokens` 參數控制回應長度
+- **錯誤處理**: 完整的 API 錯誤處理和重試機制
+
+#### 2. 使用者介面改進
+- **關鍵字輸入修復**: 解決半形逗號輸入問題
+- **雙語結果展示**: 中文和英文提示詞並排顯示
+- **語言切換**: 快速切換查看不同語言版本
+- **即時預覽**: 輸入時即時顯示格式化結果
+
+#### 3. Markdown 匯出系統
+```markdown
+# 提示詞最佳化結果
+
+**生成時間**: {timestamp}  
+**圖片用途**: {purpose}  
+**信心度**: {confidence}%
+
+## 原始內容
+- **標題**: {title}
+- **關鍵字**: {keywords}
+
+## 最佳化提示詞
+
+### 中文版本
+{chinese_prompt}
+
+### 英文版本  
+{english_prompt}
+
+## 技術參數建議
+- **比例**: {aspectRatio}
+- **品質**: {quality}
+- **風格**: {style}
+
+## 最佳化建議
+{suggestions}
+```
+
+#### 4. 檔案管理功能
+- **本地儲存**: 使用瀏覽器 File API 下載 Markdown 檔案
+- **檔案命名**: 自動生成有意義的檔案名稱
+- **重新匯入**: 支援上傳 Markdown 檔案恢復設定
+- **歷史記錄**: 本地儲存最近的最佳化結果
+
+#### 5. 技術實作重點
+- **API 金鑰安全**: 確保 GPT-4o API 金鑰的安全使用
+- **請求最佳化**: 減少不必要的 API 呼叫
+- **快取機制**: 相同內容的結果快取
+- **使用者體驗**: 載入狀態、進度指示、錯誤提示
+
+#### 6. 品質保證
+- **輸入驗證**: 全面的表單驗證和錯誤提示
+- **響應式設計**: 在各種裝置上的最佳表現
+- **無障礙性**: 鍵盤導航、螢幕閱讀器支援
+- **效能監控**: API 呼叫時間、成功率追蹤
+
+---

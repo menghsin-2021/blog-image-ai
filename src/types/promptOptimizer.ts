@@ -25,7 +25,10 @@ export interface ContentInput {
 // 提示詞最佳化結果
 export interface OptimizedPrompt {
   original: string;         // 原始提示詞
-  optimized: string;        // 最佳化後提示詞
+  optimized: {              // 最佳化後提示詞 (雙語)
+    chinese: string;        // 中文版本
+    english: string;        // 英文版本
+  };
   suggestions: string[];    // 最佳化建議
   styleModifiers: string[]; // 風格修飾詞
   technicalParams: {        // 技術參數建議
@@ -34,6 +37,17 @@ export interface OptimizedPrompt {
     style?: string;
   };
   confidence: number;       // 最佳化信心度 (0-1)
+  analysis: {               // GPT-4o 分析結果
+    keywords: string[];     // 提取的關鍵字
+    topic: string;          // 主題分類
+    sentiment: string;      // 情感分析
+    complexity: string;     // 內容複雜度
+  };
+  exportData: {             // 匯出資料
+    markdown: string;       // Markdown 格式
+    timestamp: string;      // 建立時間
+    purpose: ImagePurposeType; // 圖片用途
+  };
 }
 
 // 內容分析結果
@@ -62,4 +76,47 @@ export interface OptimizationOptions {
   addStyleGuides: boolean;
   simplifyLanguage: boolean;
   includeTechnicalTerms: boolean;
+}
+
+// GPT-4o API 相關類型
+export interface GPT4oRequest {
+  model: 'gpt-4o' | 'gpt-4o-mini';
+  messages: Array<{
+    role: 'system' | 'user' | 'assistant';
+    content: string;
+  }>;
+  max_tokens?: number;
+  temperature?: number;
+  top_p?: number;
+}
+
+export interface GPT4oResponse {
+  id: string;
+  object: string;
+  created: number;
+  model: string;
+  choices: Array<{
+    index: number;
+    message: {
+      role: string;
+      content: string;
+    };
+    finish_reason: string;
+  }>;
+  usage: {
+    prompt_tokens: number;
+    completion_tokens: number;
+    total_tokens: number;
+  };
+}
+
+// 語言偏好
+export type LanguagePreference = 'chinese' | 'english' | 'both';
+
+// Markdown 匯出選項
+export interface ExportOptions {
+  includeAnalysis: boolean;
+  includeTimestamp: boolean;
+  includeTechnicalParams: boolean;
+  language: LanguagePreference;
 }

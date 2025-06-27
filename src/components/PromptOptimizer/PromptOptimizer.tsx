@@ -1,7 +1,10 @@
 import React, { useState, useCallback } from 'react';
 import { ImagePurposeType, ContentInput as ContentInputType, OptimizedPrompt } from '../../types/promptOptimizer';
+import { validateContentInput } from '../../services/contentAnalyzer';
+import { gpt4oOptimizationService } from '../../services/gpt4oOptimizer';
 import { PurposeSelector } from './PurposeSelector';
 import { ContentInput } from './ContentInput';
+import { OptimizedPromptDisplay } from './OptimizedPromptDisplay';
 
 interface PromptOptimizerProps {
   onOptimizedPrompt?: (prompt: OptimizedPrompt) => void;
@@ -39,54 +42,28 @@ export const PromptOptimizer: React.FC<PromptOptimizerProps> = ({
     setIsAnalyzing(true);
     
     try {
-      // TODO: Phase 2 會實作真正的分析邏輯
-      // 這裡先用模擬資料展示介面
-      await new Promise(resolve => setTimeout(resolve, 2000)); // 模擬分析時間
-      
-      const mockOptimizedPrompt: OptimizedPrompt = {
-        original: contentInput.content.slice(0, 100) + '...',
-        optimized: generateMockOptimizedPrompt(selectedPurpose, contentInput),
-        suggestions: [
-          '加入專業的視覺風格指引',
-          '優化技術術語的視覺表現',
-          '調整構圖建議以符合部落格需求'
-        ],
-        styleModifiers: ['現代', '簡潔', '專業', '清晰'],
-        technicalParams: {
-          aspectRatio: selectedPurpose === 'banner' ? '16:9' : '1:1',
-          quality: 'high',
-          style: 'natural'
-        },
-        confidence: 0.85
-      };
+      // 驗證輸入
+      const validation = validateContentInput(contentInput);
+      if (!validation.isValid) {
+        console.error('輸入驗證失敗:', validation.errors);
+        // TODO: 顯示錯誤訊息
+        return;
+      }
 
-      setOptimizedPrompt(mockOptimizedPrompt);
+      // 使用 GPT-4o 進行真實的最佳化
+      const result = await gpt4oOptimizationService.optimizePrompt(contentInput, selectedPurpose);
+      
+      setOptimizedPrompt(result);
       setCurrentStep('result');
-      onOptimizedPrompt?.(mockOptimizedPrompt);
+      onOptimizedPrompt?.(result);
       
     } catch (error) {
-      console.error('Analysis failed:', error);
+      console.error('最佳化失敗:', error);
       // TODO: 加入錯誤處理 UI
     } finally {
       setIsAnalyzing(false);
     }
   }, [selectedPurpose, contentInput, onOptimizedPrompt]);
-
-  // 生成模擬最佳化提示詞 (Phase 2 會替換為真正的邏輯)
-  const generateMockOptimizedPrompt = (purpose: ImagePurposeType, content: ContentInputType): string => {
-    const basePrompt = `關於"${content.title}"的`;
-    
-    switch (purpose) {
-      case 'banner':
-        return `${basePrompt}現代專業橫幅圖片，視覺衝擊力強，簡潔設計，適合技術部落格首頁，包含相關的視覺元素和符號`;
-      case 'illustration':
-        return `${basePrompt}簡單清晰的說明插圖，扁平設計風格，圖示化表現，適合輔助文章段落說明概念`;
-      case 'summary':
-        return `${basePrompt}概念性總結圖片，象徵性設計，啟發性視覺元素，適合文章結尾總結主題`;
-      default:
-        return basePrompt + '專業插圖';
-    }
-  };
 
   // 重新開始流程
   const handleRestart = useCallback(() => {
@@ -167,57 +144,15 @@ export const PromptOptimizer: React.FC<PromptOptimizerProps> = ({
         )}
 
         {currentStep === 'result' && optimizedPrompt && (
-          <div className="space-y-6">
-            <div className="text-center">
-              <div className="text-lg font-semibold text-green-600 mb-2">
-                ✨ 提示詞最佳化完成！
-              </div>
-              <p className="text-gray-600">
-                系統已根據您的內容和用途生成最佳化的圖片提示詞
-              </p>
-            </div>
-
-            {/* 最佳化結果展示 */}
-            <div className="bg-gray-50 rounded-lg p-4">
-              <h4 className="font-semibold text-gray-900 mb-3">最佳化提示詞</h4>
-              <div className="bg-white rounded border p-3 text-gray-800">
-                {optimizedPrompt.optimized}
-              </div>
-              
-              <div className="mt-3 flex items-center justify-between">
-                <div className="flex items-center text-sm text-gray-600">
-                  <span>信心度：</span>
-                  <div className="ml-2 w-20 bg-gray-200 rounded-full h-2">
-                    <div 
-                      className="bg-green-500 h-2 rounded-full"
-                      style={{ width: `${optimizedPrompt.confidence * 100}%` }}
-                    ></div>
-                  </div>
-                  <span className="ml-2">{Math.round(optimizedPrompt.confidence * 100)}%</span>
-                </div>
-                
-                <button
-                  onClick={() => onApplyPrompt?.(optimizedPrompt.optimized)}
-                  className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  應用到生成器
-                </button>
-              </div>
-            </div>
-
-            {/* 最佳化建議 */}
-            <div className="space-y-3">
-              <h4 className="font-semibold text-gray-900">最佳化建議</h4>
-              <ul className="space-y-2">
-                {optimizedPrompt.suggestions.map((suggestion, index) => (
-                  <li key={index} className="flex items-start text-sm text-gray-600">
-                    <span className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                    {suggestion}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
+          <OptimizedPromptDisplay
+            result={optimizedPrompt}
+            onApplyPrompt={onApplyPrompt || (() => {})}
+            onEditPrompt={(editedPrompt) => {
+              // 編輯功能暫時留空，因為需要知道是哪個語言版本被編輯
+              console.log('編輯提示詞:', editedPrompt);
+            }}
+            onReset={handleRestart}
+          />
         )}
 
         {/* 導航按鈕 */}

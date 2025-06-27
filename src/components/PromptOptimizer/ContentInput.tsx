@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { ContentInput as ContentInputType } from '../../types/promptOptimizer';
 
 interface ContentInputProps {
@@ -15,6 +15,7 @@ export const ContentInput: React.FC<ContentInputProps> = ({
   isAnalyzing = false
 }) => {
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [keywordsInputValue, setKeywordsInputValue] = useState(content.keywords?.join(', ') || '');
 
   // 處理輸入變更
   const handleChange = useCallback((field: keyof ContentInputType, value: string | string[]) => {
@@ -24,11 +25,26 @@ export const ContentInput: React.FC<ContentInputProps> = ({
     });
   }, [content, onChange]);
 
-  // 處理關鍵字輸入 (逗號分隔)
-  const handleKeywordsChange = useCallback((value: string) => {
-    const keywords = value.split(',').map(k => k.trim()).filter(k => k.length > 0);
+  // 處理關鍵字輸入 - 只更新本地顯示值
+  const handleKeywordsInputChange = useCallback((value: string) => {
+    setKeywordsInputValue(value);
+  }, []);
+
+  // 處理關鍵字失焦 - 分割並更新實際數據
+  const handleKeywordsBlur = useCallback(() => {
+    const keywords = keywordsInputValue
+      .split(/[,，;；]/)
+      .map(k => k.trim())
+      .filter(k => k.length > 0);
     handleChange('keywords', keywords);
-  }, [handleChange]);
+    // 重新格式化顯示值
+    setKeywordsInputValue(keywords.join(', '));
+  }, [keywordsInputValue, handleChange]);
+
+  // 當外部 content.keywords 變更時，同步更新輸入框
+  useEffect(() => {
+    setKeywordsInputValue(content.keywords?.join(', ') || '');
+  }, [content.keywords]);
 
   // 自動分析內容 (當標題和內容都有值時)
   const shouldEnableAnalysis = content.title?.trim() && content.content.trim();
@@ -78,6 +94,24 @@ export const ContentInput: React.FC<ContentInputProps> = ({
         </div>
       </div>
 
+      {/* 關鍵字 - 移到主要區域 */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          關鍵字 <span className="text-gray-400">(選填)</span>
+        </label>
+        <input
+          type="text"
+          value={keywordsInputValue}
+          onChange={(e) => handleKeywordsInputChange(e.target.value)}
+          onBlur={handleKeywordsBlur}
+          placeholder="AI, 機器學習, 深度學習... (支援中英文逗號分隔)"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        />
+        <p className="text-xs text-gray-500 mt-1">
+          支援多種分隔符：逗號 (,)、中文逗號 (，)、分號 (;)
+        </p>
+      </div>
+
       {/* 進階選項切換 */}
       <div>
         <button
@@ -100,23 +134,6 @@ export const ContentInput: React.FC<ContentInputProps> = ({
       {/* 進階選項 */}
       {showAdvanced && (
         <div className="space-y-4 pl-4 border-l-2 border-gray-100">
-          {/* 關鍵字 */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              關鍵字 <span className="text-gray-400">(選填)</span>
-            </label>
-            <input
-              type="text"
-              value={content.keywords?.join(', ') || ''}
-              onChange={(e) => handleKeywordsChange(e.target.value)}
-              placeholder="AI, 機器學習, 深度學習... (用逗號分隔)"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              手動指定重要關鍵字，幫助系統更準確理解內容重點
-            </p>
-          </div>
-
           {/* 目標讀者 */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
