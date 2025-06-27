@@ -17,6 +17,10 @@ import { PromptOptimizer } from './components/PromptOptimizer';
 import { SimpleCacheTestPanel } from './components/SimpleCacheTestPanel';
 
 function App() {
+  // 檢查是否為開發環境或除錯模式
+  const isDevelopment = import.meta.env.DEV;
+  const isDebugMode = isDevelopment || import.meta.env.VITE_DEBUG_MODE === 'true';
+  
   // 基本狀態
   const [prompt, setPrompt] = useState('');
   const [selectedRatio, setSelectedRatio] = useState<AspectRatio>(ASPECT_RATIOS[0]);
@@ -24,8 +28,9 @@ function App() {
   const [selectedQuality, setSelectedQuality] = useState<ImageQuality>(DEFAULT_SETTINGS.quality);
   const [selectedStyle, setSelectedStyle] = useState<ImageStyle>(DEFAULT_SETTINGS.style);
   
-  // 頁籤狀態
-  const [activeTab, setActiveTab] = useState<'generate' | 'optimize' | 'cacheTest'>('generate');
+  // 頁籤狀態 - 使用簡單的字串聯合類型
+  type TabType = 'generate' | 'optimize' | 'cacheTest';
+  const [activeTab, setActiveTab] = useState<TabType>('generate');
 
   // 圖片生成 Hook
   const { 
@@ -82,7 +87,9 @@ function App() {
         <div className="max-w-6xl mx-auto">
           {/* 頁籤導航 */}
           <div className="mb-6">
-            <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg max-w-2xl mx-auto">
+            <div className={`flex space-x-1 bg-gray-100 p-1 rounded-lg mx-auto ${
+              isDebugMode ? 'max-w-2xl' : 'max-w-xl'
+            }`}>
               <button
                 onClick={() => setActiveTab('generate')}
                 className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
@@ -103,17 +110,29 @@ function App() {
               >
                 ✨ 提示詞最佳化
               </button>
-              <button
-                onClick={() => setActiveTab('cacheTest')}
-                className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-                  activeTab === 'cacheTest'
-                    ? 'bg-white text-blue-600 shadow-sm'
-                    : 'text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                🐳 快取測試
-              </button>
+              {/* 只在開發環境或除錯模式下顯示快取測試頁籤 */}
+              {isDebugMode && (
+                <button
+                  onClick={() => setActiveTab('cacheTest')}
+                  className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                    activeTab === 'cacheTest'
+                      ? 'bg-white text-blue-600 shadow-sm'
+                      : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  🐳 快取測試
+                </button>
+              )}
             </div>
+            
+            {/* 開發環境提示 */}
+            {isDebugMode && (
+              <div className="text-center mt-2">
+                <span className="text-xs text-gray-500 bg-yellow-100 px-2 py-1 rounded">
+                  {isDevelopment ? '開發模式' : '除錯模式'} - 快取測試功能僅在開發環境中可用
+                </span>
+              </div>
+            )}
           </div>
 
           {/* 內容區域 */}
@@ -194,10 +213,17 @@ function App() {
               onOptimizedPrompt={handleOptimizedPrompt}
               onApplyPrompt={handleApplyPrompt}
             />
-          ) : (
-            /* 快取測試頁面 - 使用簡化版本進行除錯 */
-            <SimpleCacheTestPanel />
-          )}
+          ) : isDebugMode ? (
+            /* 快取測試頁面 - 只在開發環境或除錯模式中顯示 */
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <p className="text-sm text-yellow-800">
+                  <strong>⚠️ 開發工具:</strong> 此功能僅供開發人員測試快取系統效能，在生產環境中不會顯示。
+                </p>
+              </div>
+              <SimpleCacheTestPanel />
+            </div>
+          ) : null}
         </div>
       </div>
     </div>
