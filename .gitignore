@@ -6,3 +6,19 @@
 /dist
 /build
 /coverage
+
+# 測試產生的檔案和報告
+/test-results
+/playwright-report
+/playwright/.cache
+
+# 除錯和測試腳本產生的檔案
+debug-*.sh
+test-*.sh
+*.log
+*.tmp
+.cache/
+
+# 腳本和報告檔案（在 scripts 目錄中管理）
+/scripts/debug/
+/scripts/test/
