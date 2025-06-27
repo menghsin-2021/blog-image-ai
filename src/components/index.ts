@@ -6,3 +6,6 @@ export { ImagePreview } from './ImagePreview';
 export { ImageEditor } from './ImageEditor';
 export { ModelSettings } from './ModelSettings';
 export { PromptHelper } from './PromptHelper';
+
+// 提示詞最佳化元件
+export { PromptOptimizer } from './PromptOptimizer';

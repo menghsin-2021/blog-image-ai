@@ -6,11 +6,13 @@ import {
   ImageQuality,
   ImageStyle
 } from './types';
+import { OptimizedPrompt } from './types/promptOptimizer';
 import { ASPECT_RATIOS, DEFAULT_SETTINGS, getAspectRatiosForModel } from './utils/constants';
 import { useImageGeneration } from './hooks/useImageGeneration';
 import { AspectRatioSelector } from './components/AspectRatioSelector';
 import { ModelSettings } from './components/ModelSettings';
 import { SimpleImagePreview } from './components/SimpleImagePreview';
+import { PromptOptimizer } from './components/PromptOptimizer';
 
 function App() {
   // 基本狀態
@@ -19,6 +21,9 @@ function App() {
   const [selectedModel, setSelectedModel] = useState<DalleModel>(DEFAULT_SETTINGS.model);
   const [selectedQuality, setSelectedQuality] = useState<ImageQuality>(DEFAULT_SETTINGS.quality);
   const [selectedStyle, setSelectedStyle] = useState<ImageStyle>(DEFAULT_SETTINGS.style);
+  
+  // 頁籤狀態
+  const [activeTab, setActiveTab] = useState<'generate' | 'optimize'>('generate');
 
   // 圖片生成 Hook
   const { 
@@ -45,6 +50,20 @@ function App() {
     await generateImage(request);
   };
 
+  // 處理提示詞最佳化結果
+  const handleOptimizedPrompt = (optimized: OptimizedPrompt) => {
+    console.log('Optimized prompt received:', optimized);
+  };
+
+  // 應用最佳化提示詞到生成器
+  const handleApplyPrompt = (optimizedPrompt: string) => {
+    setPrompt(optimizedPrompt);
+    setActiveTab('generate');
+    
+    // 自動應用推薦的技術參數 (這裡可以擴展)
+    // TODO: 根據最佳化結果調整比例和其他參數
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
       <div className="container mx-auto px-4 py-8">
@@ -59,11 +78,39 @@ function App() {
         </header>
 
         <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* 左側控制面板 */}
-            <div className="lg:col-span-1 space-y-6">
-              {/* 模型設定 */}
-              <div className="bg-white rounded-xl shadow-lg p-6">
+          {/* 頁籤導航 */}
+          <div className="mb-6">
+            <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg max-w-md mx-auto">
+              <button
+                onClick={() => setActiveTab('generate')}
+                className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                  activeTab === 'generate'
+                    ? 'bg-white text-blue-600 shadow-sm'
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                🎨 圖片生成
+              </button>
+              <button
+                onClick={() => setActiveTab('optimize')}
+                className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                  activeTab === 'optimize'
+                    ? 'bg-white text-blue-600 shadow-sm'
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                ✨ 提示詞最佳化
+              </button>
+            </div>
+          </div>
+
+          {/* 內容區域 */}
+          {activeTab === 'generate' ? (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* 左側控制面板 */}
+              <div className="lg:col-span-1 space-y-6">
+                {/* 模型設定 */}
+                <div className="bg-white rounded-xl shadow-lg p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">
                   模型設定
                 </h3>
@@ -129,6 +176,13 @@ function App() {
               </div>
             </div>
           </div>
+          ) : (
+            /* 提示詞最佳化頁面 */
+            <PromptOptimizer
+              onOptimizedPrompt={handleOptimizedPrompt}
+              onApplyPrompt={handleApplyPrompt}
+            />
+          )}
         </div>
       </div>
     </div>

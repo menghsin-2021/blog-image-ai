@@ -1,5 +1,37 @@
 # .github/copilot-instructions.md
 
+## ⚠️ 開發流程重要提醒 ⚠️
+
+### 🔐 安全性規則
+- **絕對禁止**：不要將任何 API key 放到不在 .gitignore 的檔案中
+- **環境變數**：所有敏感資訊必須使用 .env 檔案管理
+- **版本控制**：確保 .env 檔案已加入 .gitignore
+
+### 🌿 分支管理規則
+- **開始新任務前**：必須確認目前在正確的分支上
+- **新功能開發**：必須建立 `feature/*` 分支進行開發
+- **功能完成後**：建立 Pull Request 合併回 develop 分支
+
+### 📋 功能開發流程 (必須依序執行)
+1. **建立功能分支** - 從 develop 建立 feature 分支
+2. **制定功能規格** - 建立詳細的 spec 文件到 `.github/instructions/`
+3. **更新專案狀態** - 在本檔案中記錄功能為開發中狀態
+4. **分階段實作** - 按照 Phase 1, 2, 3 逐步開發和測試
+5. **容器化測試** - 使用 `./start-server.sh dev` 啟動容器測試
+6. **記錄變更** - 建立變更記錄檔案到 `.github/change_log/`
+7. **提交變更** - 遵循 commit 訊息規範提交程式碼
+
+### 🐍 Python 環境檢查 (如需要)
+- **每次開新 terminal**：檢查 conda 虛擬環境是否在 `blog-image-ai`
+- **環境啟動**：`conda activate blog-image-ai`
+
+### 🐳 容器化開發
+- **推薦測試方式**：使用 Docker 容器進行開發和測試
+- **啟動指令**：`./start-server.sh dev` (開發模式)
+- **服務地址**：http://localhost:3000 (開發環境)
+
+---
+
 ## 注意！請不要將任何 api key 放到不在 .gitignore 的檔案中
 ## 每一次開新的 terminal 或開始執行第一個步驟時需要檢查目前的 conda 虛擬環境是在 `blog-image-ai`
 ## 每次開啟新任務需確認是否在正確的分支上，或詢問是否建立新分支進行這次的改動
@@ -190,14 +222,21 @@ blog-image-ai/
    - 提示詞驗證與最佳化
    - 模型參數正規化
 
-### 開發中功能 🚧
-1. **提示詞最佳化助手** ⭐ NEW
-   - `PromptOptimizer` 主要元件
+7. **提示詞最佳化助手 Phase 1** ✅ NEW
+   - `PromptOptimizer` 主要元件完成
    - `PurposeSelector` 圖片用途選擇器 (首頁橫幅/段落說明/內容總結)
-   - `ContentInput` 部落格內容分析輸入
-   - `OptimizedPromptDisplay` 最佳化結果顯示
+   - `ContentInput` 部落格內容分析輸入介面
+   - 三階段使用流程：用途選擇 → 內容輸入 → 結果展示
+   - 頁籤整合到主應用程式
+   - Docker 容器化測試完成
+
+### 開發中功能 🚧
+1. **提示詞最佳化助手 Phase 2** ⭐ 優先開發
+   - `OptimizedPromptDisplay` 真實最佳化邏輯
    - 智慧內容分析與提示詞最佳化演算法
    - 針對部落格圖片的專業化最佳化策略
+   - 內容分析服務 (`contentAnalyzer.ts`)
+   - 提示詞最佳化服務 (`promptOptimizer.ts`)
 
 2. **圖片編輯功能**
    - `ImageEditor` 元件基礎架構
@@ -209,7 +248,7 @@ blog-image-ai/
    - 預設模板庫
    - 智慧建議系統
 
-3. **歷史記錄系統**
+4. **歷史記錄系統**
    - 生成歷史儲存
    - 圖片管理介面
    - 批次操作功能
