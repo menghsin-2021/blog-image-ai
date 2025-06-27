@@ -1,4 +1,4 @@
-import React from 'react';
+// import React from 'react';
 
 function App() {
   return (
@@ -12,12 +12,10 @@ function App() {
             基於 OpenAI DALL·E 的 AI 圖片生成助手
           </p>
         </header>
-        
+
         <div className="max-w-6xl mx-auto">
           <div className="bg-white rounded-xl shadow-lg p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              應用程式正在載入...
-            </h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">應用程式正在載入...</h3>
             <p>如果你看到這個訊息，表示基本的 React 應用程式正在運行。</p>
           </div>
         </div>

@@ -1,12 +1,12 @@
 import { useState, useCallback } from 'react';
-import { 
-  ImageGenerationRequest, 
-  ImageGenerationResponse, 
+import {
+  ImageGenerationRequest,
+  ImageGenerationResponse,
   ImageEditRequest,
   ImageEditResponse,
   ImageVariationRequest,
   ImageVariationResponse,
-  LoadingState 
+  LoadingState,
 } from '../types';
 import openaiService from '../services/api';
 import { validatePrompt } from '../utils/helpers';
@@ -36,7 +36,7 @@ export const useImageGeneration = () => {
 
     try {
       const response: ImageGenerationResponse = await openaiService.generateImage(request);
-      
+
       if (response.success && response.imageUrl) {
         setGeneratedImage(response.imageUrl);
         setRevisedPrompt(response.revisedPrompt || null);
@@ -59,7 +59,7 @@ export const useImageGeneration = () => {
 
     try {
       const response: ImageEditResponse = await openaiService.editImage(request);
-      
+
       if (response.success && response.imageUrl) {
         setGeneratedImage(response.imageUrl);
         setRevisedPrompt(null);
@@ -82,7 +82,7 @@ export const useImageGeneration = () => {
 
     try {
       const response: ImageVariationResponse = await openaiService.createVariation(request);
-      
+
       if (response.success && response.imageUrl) {
         setGeneratedImage(response.imageUrl);
         setRevisedPrompt(null);
@@ -116,6 +116,6 @@ export const useImageGeneration = () => {
     reset,
     isLoading: state === 'loading',
     isSuccess: state === 'success',
-    isError: state === 'error'
+    isError: state === 'error',
   };
 };

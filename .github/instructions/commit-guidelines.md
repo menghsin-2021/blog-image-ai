@@ -10,6 +10,7 @@
 
 <footer>
 ```
+- 一律使用繁體中文 zh.TW
 
 ### Type 類型
 - **feat**: 新功能 (feature)

@@ -1,10 +1,6 @@
 import React from 'react';
 import { DalleModel, ImageQuality, ImageStyle } from '../types';
-import { 
-  DALLE_MODELS, 
-  IMAGE_QUALITIES, 
-  IMAGE_STYLES
-} from '../utils/constants';
+import { DALLE_MODELS, IMAGE_QUALITIES, IMAGE_STYLES } from '../utils/constants';
 
 interface ModelSettingsProps {
   model: DalleModel;
@@ -26,22 +22,18 @@ export const ModelSettings: React.FC<ModelSettingsProps> = ({
   onModelChange,
   onQualityChange,
   onStyleChange,
-  className = ''
+  className = '',
 }) => {
   // 根據模型篩選可用的品質選項
-  const availableQualities = IMAGE_QUALITIES.filter(q => 
-    q.models.includes(model)
-  );
+  const availableQualities = IMAGE_QUALITIES.filter(q => q.models.includes(model));
 
   return (
     <div className={`space-y-4 ${className}`}>
       {/* 模型選擇 */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          AI 模型
-        </label>
+        <label className="block text-sm font-medium text-gray-700 mb-2">AI 模型</label>
         <div className="space-y-2">
-          {DALLE_MODELS.map((modelOption) => (
+          {DALLE_MODELS.map(modelOption => (
             <div key={modelOption.value} className="flex items-start">
               <input
                 id={`model-${modelOption.value}`}
@@ -58,9 +50,7 @@ export const ModelSettings: React.FC<ModelSettingsProps> = ({
                 >
                   {modelOption.label}
                 </label>
-                <p className="text-xs text-gray-500">
-                  {modelOption.description}
-                </p>
+                <p className="text-xs text-gray-500">{modelOption.description}</p>
               </div>
             </div>
           ))}
@@ -70,15 +60,13 @@ export const ModelSettings: React.FC<ModelSettingsProps> = ({
       {/* 品質設定 */}
       {availableQualities.length > 0 && (
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            圖片品質
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">圖片品質</label>
           <select
             value={quality}
-            onChange={(e) => onQualityChange(e.target.value as ImageQuality)}
+            onChange={e => onQualityChange(e.target.value as ImageQuality)}
             className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-md"
           >
-            {availableQualities.map((qualityOption) => (
+            {availableQualities.map(qualityOption => (
               <option key={qualityOption.value} value={qualityOption.value}>
                 {qualityOption.label}
               </option>
@@ -90,11 +78,9 @@ export const ModelSettings: React.FC<ModelSettingsProps> = ({
       {/* 風格設定 (僅 DALL·E 3 支援，GPT-image-1 不支援) */}
       {model === 'dall-e-3' && (
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            圖片風格
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">圖片風格</label>
           <div className="space-y-2">
-            {IMAGE_STYLES.map((styleOption) => (
+            {IMAGE_STYLES.map(styleOption => (
               <div key={styleOption.value} className="flex items-start">
                 <input
                   id={`style-${styleOption.value}`}
@@ -111,9 +97,7 @@ export const ModelSettings: React.FC<ModelSettingsProps> = ({
                   >
                     {styleOption.label}
                   </label>
-                  <p className="text-xs text-gray-500">
-                    {styleOption.description}
-                  </p>
+                  <p className="text-xs text-gray-500">{styleOption.description}</p>
                 </div>
               </div>
             ))}

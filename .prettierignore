@@ -1,0 +1,26 @@
+# 建構產物
+dist/
+build/
+
+# 相依套件
+node_modules/
+
+# 快取
+.cache/
+*.log
+
+# 設定檔案
+*.config.js
+*.config.ts
+
+# 生成的檔案
+coverage/
+playwright-report/
+
+# Docker
+Dockerfile*
+docker-compose*.yml
+
+# 其他
+.env*
+*.md

@@ -16,14 +16,14 @@ export const SimpleImagePreview: FC<SimpleImagePreviewProps> = ({
   originalPrompt,
   isLoading,
   error,
-  onRetry
+  onRetry,
 }) => {
   const [isDownloading, setIsDownloading] = useState(false);
   const [copied, setCopied] = useState(false);
 
   const handleDownload = async () => {
     if (!imageUrl) return;
-    
+
     setIsDownloading(true);
     try {
       const response = await fetch(imageUrl);
@@ -111,7 +111,7 @@ export const SimpleImagePreview: FC<SimpleImagePreviewProps> = ({
           className="w-full h-auto object-contain max-h-[600px]"
           loading="lazy"
         />
-        
+
         {/* 懸停時顯示的操作按鈕 */}
         <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-200 flex items-center justify-center opacity-0 group-hover:opacity-100">
           <div className="flex gap-2">
@@ -139,18 +139,16 @@ export const SimpleImagePreview: FC<SimpleImagePreviewProps> = ({
         {revisedPrompt && revisedPrompt !== originalPrompt && (
           <div className="mb-3">
             <h4 className="text-sm font-medium text-gray-700 mb-1">優化後的提示詞:</h4>
-            <p className="text-sm text-gray-600 bg-gray-50 p-2 rounded italic">
-              "{revisedPrompt}"
-            </p>
+            <p className="text-sm text-gray-600 bg-gray-50 p-2 rounded italic">"{revisedPrompt}"</p>
           </div>
         )}
-        
+
         <div className="flex items-center justify-between">
           <div>
             <h4 className="text-sm font-medium text-gray-700 mb-1">原始提示詞:</h4>
             <p className="text-sm text-gray-600">"{originalPrompt}"</p>
           </div>
-          
+
           <button
             onClick={handleDownload}
             disabled={isDownloading}
