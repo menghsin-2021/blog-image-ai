@@ -13,6 +13,7 @@ import { AspectRatioSelector } from './components/AspectRatioSelector';
 import { ModelSettings } from './components/ModelSettings';
 import { SimpleImagePreview } from './components/SimpleImagePreview';
 import { PromptOptimizer } from './components/PromptOptimizer';
+import { CacheTestPanel } from './components/CacheTestPanel';
 
 function App() {
   // 基本狀態
@@ -23,7 +24,7 @@ function App() {
   const [selectedStyle, setSelectedStyle] = useState<ImageStyle>(DEFAULT_SETTINGS.style);
   
   // 頁籤狀態
-  const [activeTab, setActiveTab] = useState<'generate' | 'optimize'>('generate');
+  const [activeTab, setActiveTab] = useState<'generate' | 'optimize' | 'cacheTest'>('generate');
 
   // 圖片生成 Hook
   const { 
@@ -80,7 +81,7 @@ function App() {
         <div className="max-w-6xl mx-auto">
           {/* 頁籤導航 */}
           <div className="mb-6">
-            <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg max-w-md mx-auto">
+            <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg max-w-2xl mx-auto">
               <button
                 onClick={() => setActiveTab('generate')}
                 className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
@@ -100,6 +101,16 @@ function App() {
                 }`}
               >
                 ✨ 提示詞最佳化
+              </button>
+              <button
+                onClick={() => setActiveTab('cacheTest')}
+                className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                  activeTab === 'cacheTest'
+                    ? 'bg-white text-blue-600 shadow-sm'
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                🐳 快取測試
               </button>
             </div>
           </div>
@@ -176,12 +187,15 @@ function App() {
               </div>
             </div>
           </div>
-          ) : (
+          ) : activeTab === 'optimize' ? (
             /* 提示詞最佳化頁面 */
             <PromptOptimizer
               onOptimizedPrompt={handleOptimizedPrompt}
               onApplyPrompt={handleApplyPrompt}
             />
+          ) : (
+            /* 快取測試頁面 */
+            <CacheTestPanel />
           )}
         </div>
       </div>
