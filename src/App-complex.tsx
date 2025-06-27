@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { 
-  AspectRatio, 
-  ImageGenerationRequest, 
+import {
+  AspectRatio,
+  ImageGenerationRequest,
   ImageEditRequest,
   ImageVariationRequest,
   DalleModel,
   ImageQuality,
-  ImageStyle
+  ImageStyle,
 } from './types';
 import { ASPECT_RATIOS, DEFAULT_SETTINGS, getAspectRatiosForModel } from './utils/constants';
 import { useImageGeneration } from './hooks/useImageGeneration';
@@ -28,20 +28,20 @@ function App() {
   const [selectedModel, setSelectedModel] = useState<DalleModel>(DEFAULT_SETTINGS.model);
   const [selectedQuality, setSelectedQuality] = useState<ImageQuality>(DEFAULT_SETTINGS.quality);
   const [selectedStyle, setSelectedStyle] = useState<ImageStyle>(DEFAULT_SETTINGS.style);
-  
+
   // Hooks
-  const { 
+  const {
     generatedImage,
     revisedPrompt,
-    isLoading, 
-    isSuccess, 
-    error, 
+    isLoading,
+    isSuccess,
+    error,
     generateImage,
     editImage,
     createVariation,
-    reset 
+    reset,
   } = useImageGeneration();
-  
+
   const { addToHistory } = useImageHistory();
 
   // 當模型改變時，確保選擇的比例在新模型中可用
@@ -62,7 +62,7 @@ function App() {
       model: selectedModel,
       quality: selectedQuality,
       style: selectedStyle,
-      n: 1
+      n: 1,
     };
 
     await generateImage(request);
@@ -75,7 +75,7 @@ function App() {
       mask: mask,
       prompt: editPrompt,
       n: 1,
-      size: selectedRatio.value
+      size: selectedRatio.value,
     };
 
     await editImage(request);
@@ -86,7 +86,7 @@ function App() {
     const request: ImageVariationRequest = {
       image: imageFile,
       n: 1,
-      size: selectedRatio.value
+      size: selectedRatio.value,
     };
 
     await createVariation(request);
@@ -104,19 +104,27 @@ function App() {
         model: selectedModel,
         quality: selectedQuality,
         style: selectedStyle,
-        type: 'generation'
+        type: 'generation',
       });
     }
-  }, [isSuccess, generatedImage, prompt, revisedPrompt, selectedRatio, selectedModel, selectedQuality, selectedStyle, addToHistory]);
+  }, [
+    isSuccess,
+    generatedImage,
+    prompt,
+    revisedPrompt,
+    selectedRatio,
+    selectedModel,
+    selectedQuality,
+    selectedStyle,
+    addToHistory,
+  ]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
       <div className="container mx-auto px-4 py-8">
         {/* 標題區域 */}
         <header className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            BlogImageAI
-          </h1>
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">BlogImageAI</h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
             基於 OpenAI DALL·E 的 AI 圖片生成助手，專為技術部落格文章建立專業插圖
           </p>
@@ -128,9 +136,7 @@ function App() {
             <div className="lg:col-span-1 space-y-6">
               {/* 模型設定 */}
               <div className="bg-white rounded-xl shadow-lg p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                  模型設定
-                </h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">模型設定</h3>
                 <ModelSettings
                   model={selectedModel}
                   quality={selectedQuality}
@@ -143,9 +149,7 @@ function App() {
 
               {/* 比例選擇器 */}
               <div className="bg-white rounded-xl shadow-lg p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                  圖片比例
-                </h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">圖片比例</h3>
                 <AspectRatioSelector
                   options={getAspectRatiosForModel(selectedModel)}
                   selected={selectedRatio}
@@ -158,16 +162,14 @@ function App() {
             <div className="lg:col-span-2 space-y-6">
               {/* 提示詞輸入 */}
               <div className="bg-white rounded-xl shadow-lg p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                  描述你想要的圖片
-                </h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">描述你想要的圖片</h3>
                 <PromptInput
                   value={prompt}
                   onChange={setPrompt}
                   placeholder="描述你想生成的技術插圖，例如：一個現代的雲端架構圖，顯示微服務之間的連接..."
                   disabled={isLoading}
                 />
-                
+
                 {/* 生成按鈕 */}
                 <div className="mt-4 flex gap-3">
                   <Button
@@ -178,13 +180,9 @@ function App() {
                   >
                     {isLoading ? '生成中...' : '生成圖片'}
                   </Button>
-                  
+
                   {(generatedImage || error) && (
-                    <Button
-                      onClick={reset}
-                      variant="outline"
-                      disabled={isLoading}
-                    >
+                    <Button onClick={reset} variant="outline" disabled={isLoading}>
                       重置
                     </Button>
                   )}
@@ -197,16 +195,16 @@ function App() {
                   <div className="flex items-center">
                     <div className="flex-shrink-0">
                       <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                        <path
+                          fillRule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                          clipRule="evenodd"
+                        />
                       </svg>
                     </div>
                     <div className="ml-3">
-                      <h3 className="text-sm font-medium text-red-800">
-                        生成錯誤
-                      </h3>
-                      <div className="mt-1 text-sm text-red-700">
-                        {error}
-                      </div>
+                      <h3 className="text-sm font-medium text-red-800">生成錯誤</h3>
+                      <div className="mt-1 text-sm text-red-700">{error}</div>
                     </div>
                   </div>
                 </div>
@@ -215,9 +213,7 @@ function App() {
               {/* 圖片預覽區域 */}
               {generatedImage && (
                 <div className="bg-white rounded-xl shadow-lg p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                    生成結果
-                  </h3>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">生成結果</h3>
                   <ImagePreview
                     imageUrl={generatedImage}
                     prompt={prompt}
@@ -235,9 +231,9 @@ function App() {
         {/* 頁尾 */}
         <footer className="mt-16 text-center text-gray-500 text-sm">
           <p>
-            Powered by OpenAI DALL·E | 
-            <a 
-              href="https://github.com/menghsin/blog-image-ai" 
+            Powered by OpenAI DALL·E |
+            <a
+              href="https://github.com/menghsin/blog-image-ai"
               className="ml-1 text-indigo-600 hover:text-indigo-500"
               target="_blank"
               rel="noopener noreferrer"
@@ -247,7 +243,7 @@ function App() {
           </p>
         </footer>
       </div>
-      
+
       {/* 偵錯元件 - 暫時停用 */}
       {/* <DebugInfo /> */}
     </div>

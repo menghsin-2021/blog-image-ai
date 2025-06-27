@@ -16,7 +16,7 @@ export const formatFileName = (prompt: string, format: DownloadFormat = 'png'): 
     .replace(/[^\w\s\u4e00-\u9fff]/gi, '')
     .trim()
     .substring(0, 50);
-  
+
   const timestamp = new Date().toISOString().slice(0, 10);
   return `blog-image-${cleanPrompt.replace(/\s+/g, '-')}-${timestamp}.${format}`;
 };
@@ -25,24 +25,24 @@ export const formatFileName = (prompt: string, format: DownloadFormat = 'png'): 
  * 下載圖片檔案
  */
 export const downloadImage = async (
-  imageUrl: string, 
-  fileName: string, 
+  imageUrl: string,
+  fileName: string,
   _format: DownloadFormat = 'png'
 ): Promise<void> => {
   try {
     const response = await fetch(imageUrl);
     const blob = await response.blob();
-    
+
     // 建立下載連結
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
     link.download = fileName;
-    
+
     // 觸發下載
     document.body.appendChild(link);
     link.click();
-    
+
     // 清理
     document.body.removeChild(link);
     window.URL.revokeObjectURL(url);
@@ -69,11 +69,11 @@ export const copyToClipboard = async (text: string): Promise<void> => {
  */
 export const formatFileSize = (bytes: number): string => {
   if (bytes === 0) return '0 位元組';
-  
+
   const k = 1024;
   const sizes = ['位元組', 'KB', 'MB', 'GB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
-  
+
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 };
 
@@ -91,11 +91,11 @@ export const validatePrompt = (prompt: string): { isValid: boolean; error?: stri
   if (!prompt.trim()) {
     return { isValid: false, error: '請輸入圖片描述' };
   }
-  
+
   if (prompt.length < 5) {
     return { isValid: false, error: '描述過短，請至少輸入 5 個字元' };
   }
-  
+
   return { isValid: true };
 };
 
@@ -111,7 +111,7 @@ export const storage = {
       return defaultValue;
     }
   },
-  
+
   set: <T>(key: string, value: T): void => {
     try {
       localStorage.setItem(key, JSON.stringify(value));
@@ -119,8 +119,8 @@ export const storage = {
       console.error('儲存到本地儲存失敗:', error);
     }
   },
-  
+
   remove: (key: string): void => {
     localStorage.removeItem(key);
-  }
+  },
 };

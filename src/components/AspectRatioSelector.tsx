@@ -15,15 +15,13 @@ export const AspectRatioSelector: React.FC<AspectRatioSelectorProps> = ({
   options,
   selected,
   onSelect,
-  className = ''
+  className = '',
 }) => {
   return (
     <div className={`space-y-3 ${className}`}>
-      <label className="block text-sm font-medium text-gray-700">
-        圖片比例
-      </label>
+      <label className="block text-sm font-medium text-gray-700">圖片比例</label>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-        {options.map((option) => (
+        {options.map(option => (
           <button
             key={option.value}
             onClick={() => onSelect(option)}
@@ -42,34 +40,30 @@ export const AspectRatioSelector: React.FC<AspectRatioSelectorProps> = ({
                 {option.width} × {option.height}
               </span>
             </div>
-            
+
             {/* 視覺化比例預覽 */}
             <div className="mt-3 flex justify-center">
-              <div 
+              <div
                 className={`
                   border-2 rounded-sm
-                  ${
-                    selected.value === option.value
-                      ? 'border-primary-400'
-                      : 'border-gray-300'
-                  }
+                  ${selected.value === option.value ? 'border-primary-400' : 'border-gray-300'}
                 `}
                 style={{
                   width: `${Math.min(option.ratio * 20, 40)}px`,
                   height: `${Math.min(20 / option.ratio, 40)}px`,
                   maxWidth: '40px',
-                  maxHeight: '40px'
+                  maxHeight: '40px',
                 }}
               />
             </div>
-            
+
             {selected.value === option.value && (
               <div className="absolute top-2 right-2">
                 <svg className="w-4 h-4 text-primary-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path 
-                    fillRule="evenodd" 
-                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" 
-                    clipRule="evenodd" 
+                  <path
+                    fillRule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clipRule="evenodd"
                   />
                 </svg>
               </div>

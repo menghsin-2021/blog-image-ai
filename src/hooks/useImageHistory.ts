@@ -11,37 +11,38 @@ export const useImageHistory = () => {
 
   // 載入歷史記錄
   useEffect(() => {
-    const savedHistory = storage.get<GeneratedImage[]>(STORAGE_KEYS.generationHistory, []);
+    const savedHistory = storage.get<GeneratedImage[]>(STORAGE_KEYS.IMAGE_HISTORY, []);
     setHistory(savedHistory);
   }, []);
 
   // 新增到歷史記錄
-  const addToHistory = useCallback((item: Omit<GeneratedImage, 'id' | 'createdAt' | 'downloadCount'>) => {
-    const newItem: GeneratedImage = {
-      ...item,
-      id: `img_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      createdAt: new Date(),
-      downloadCount: 0
-    };
+  const addToHistory = useCallback(
+    (item: Omit<GeneratedImage, 'id' | 'createdAt' | 'downloadCount'>) => {
+      const newItem: GeneratedImage = {
+        ...item,
+        id: `img_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        createdAt: new Date(),
+        downloadCount: 0,
+      };
 
-    setHistory(prev => {
-      const updated = [newItem, ...prev].slice(0, FILE_LIMITS.maxHistoryItems);
-      storage.set(STORAGE_KEYS.generationHistory, updated);
-      return updated;
-    });
+      setHistory(prev => {
+        const updated = [newItem, ...prev].slice(0, FILE_LIMITS.MAX_HISTORY_ITEMS);
+        storage.set(STORAGE_KEYS.IMAGE_HISTORY, updated);
+        return updated;
+      });
 
-    return newItem.id;
-  }, []);
+      return newItem.id;
+    },
+    []
+  );
 
   // 更新下載計數
   const incrementDownloadCount = useCallback((id: string) => {
     setHistory(prev => {
-      const updated = prev.map(item => 
-        item.id === id 
-          ? { ...item, downloadCount: item.downloadCount + 1 }
-          : item
+      const updated = prev.map(item =>
+        item.id === id ? { ...item, downloadCount: item.downloadCount + 1 } : item
       );
-      storage.set(STORAGE_KEYS.generationHistory, updated);
+      storage.set(STORAGE_KEYS.IMAGE_HISTORY, updated);
       return updated;
     });
   }, []);
@@ -50,7 +51,7 @@ export const useImageHistory = () => {
   const removeFromHistory = useCallback((id: string) => {
     setHistory(prev => {
       const updated = prev.filter(item => item.id !== id);
-      storage.set(STORAGE_KEYS.generationHistory, updated);
+      storage.set(STORAGE_KEYS.IMAGE_HISTORY, updated);
       return updated;
     });
   }, []);
@@ -58,7 +59,7 @@ export const useImageHistory = () => {
   // 清空歷史記錄
   const clearHistory = useCallback(() => {
     setHistory([]);
-    storage.remove(STORAGE_KEYS.generationHistory);
+    storage.remove(STORAGE_KEYS.IMAGE_HISTORY);
   }, []);
 
   return {
@@ -67,6 +68,6 @@ export const useImageHistory = () => {
     incrementDownloadCount,
     removeFromHistory,
     clearHistory,
-    totalImages: history.length
+    totalImages: history.length,
   };
 };

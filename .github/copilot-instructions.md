@@ -1,22 +1,67 @@
 # .github/copilot-instructions.md
 
+## ⚠️ 開發流程重要提醒 ⚠️
+
+### 🔐 安全性規則
+- **絕對禁止**：不要將任何 API key 放到不在 .gitignore 的檔案中
+- **環境變數**：所有敏感資訊必須使用 .env 檔案管理
+- **版本控制**：確保 .env 檔案已加入 .gitignore
+
+### 🌿 分支管理規則
+- **開始新任務前**：必須確認目前在正確的分支上
+- **新功能開發**：必須建立 `feature/*` 分支進行開發
+- **功能完成後**：建立 Pull Request 合併回 develop 分支
+
+### 📋 功能開發流程 (必須依序執行)
+1. **建立功能分支** - 從 develop 建立 feature 分支
+2. **制定功能規格** - 建立詳細的 spec 文件到 `.github/instructions/`
+3. **更新專案狀態** - 在本檔案中記錄功能為開發中狀態
+4. **分階段實作** - 按照 Phase 1, 2, 3 逐步開發和測試
+5. **容器化測試** - 使用 `./start-server.sh dev` 啟動容器測試
+6. **CI 風格檢查** - 執行 `npm run format:check` 確保程式碼格式正確
+7. **記錄變更** - 建立變更記錄檔案到 `.github/change_log/`
+8. **提交變更** - 遵循 commit 訊息規範提交程式碼
+
+### 🐍 Python 環境檢查 (如需要)
+- **每次開新 terminal**：檢查 conda 虛擬環境是否在 `blog-image-ai`
+- **環境啟動**：`conda activate blog-image-ai`
+
+### 🐳 容器化開發
+- **推薦測試方式**：使用 Docker 容器進行開發和測試
+- **啟動指令**：`./start-server.sh dev` (開發模式)
+- **服務地址**：http://localhost:3000 (開發環境)
+
+### 🔍 CI 品質檢查規則 (上版前必須執行)
+- **程式碼格式檢查**：執行 `npm run format:check` 或 `npx prettier --check "src/**/*.{ts,tsx,js,jsx,json,css,md}"`
+- **程式碼風格修正**：如有格式問題，執行 `npm run format` 或 `npx prettier --write "src/**/*.{ts,tsx,js,jsx,json,css,md}"`
+- **ESLint 檢查**：執行 `npm run lint` 確保程式碼品質
+- **TypeScript 檢查**：執行 `npm run type-check` 確保型別正確性
+- **測試執行**：執行 `npm run test` 確保所有測試通過
+- **建構驗證**：執行 `npm run build` 確保專案可正常建構
+- **⚠️ 重要**：所有 CI 檢查必須通過後才能建立 Pull Request 或合併程式碼
+
+---
+
 ## 注意！請不要將任何 api key 放到不在 .gitignore 的檔案中
 ## 每一次開新的 terminal 或開始執行第一個步驟時需要檢查目前的 conda 虛擬環境是在 `blog-image-ai`
+## 每次開啟新任務需確認是否在正確的分支上，或詢問是否建立新分支進行這次的改動
+## 每次開發新 feature 時應該先建立該需求的規格說明，再開始執行任務
+## 你應該需要先建立分支，並先幫我完成這個 feature 的 spec，更新在 instruction
 
 ## BlogImageAI 軟體開發企劃書
 
 ### 專案名稱
-BlogImageAI - 部落格圖片生成助手
+BlogImageAI - 智慧 AI 圖片生成平台
 
 ### 專案目標
-開發一個基於自然語言輸入的 AI 圖片生成網頁工具，專門為技術部落格文章建立輔助說明插圖，提升內容視覺化品質。支援最新的 OpenAI 圖片生成模型。
+開發一個智慧 AI 圖片生成平台，整合多模型支援與提示詞最佳化功能，專為部落格文章建立專業插圖，提升內容視覺化品質。支援最新的 OpenAI 圖片生成模型。
 
 ### 核心價值主張
-- 效率提升：快速將文字描述轉換為專業插圖
-- 模型多樣性：支援 GPT-Image-1、DALL·E 3、DALL·E 2 三種模型
-- 成本控制：月費用控制在合理範圍內，依使用量調整
+- 智慧最佳化：提示詞分析與自動最佳化，提升圖片生成品質
+- 多模型整合：支援 GPT-Image-1、DALL·E 3、DALL·E 2 三種先進模型
+- 工作流程優化：從內容分析到圖片生成的完整解決方案
 - 易用性：直觀的網頁介面，支援多種圖片比例和格式
-- 進階功能：圖片編輯、變化生成、多種輸出格式
+- 專業化：針對部落格和技術文章場景深度最佳化
 
 ### 技術架構
 - 前端：React 18 + TypeScript + Vite + Tailwind CSS
@@ -187,18 +232,33 @@ blog-image-ai/
    - 提示詞驗證與最佳化
    - 模型參數正規化
 
+7. **提示詞最佳化助手 Phase 1** ✅ NEW
+   - `PromptOptimizer` 主要元件完成
+   - `PurposeSelector` 圖片用途選擇器 (首頁橫幅/段落說明/內容總結)
+   - `ContentInput` 部落格內容分析輸入介面
+   - 三階段使用流程：用途選擇 → 內容輸入 → 結果展示
+   - 頁籤整合到主應用程式
+   - Docker 容器化測試完成
+
 ### 開發中功能 🚧
-1. **圖片編輯功能**
+1. **提示詞最佳化助手 Phase 2** ⭐ 優先開發
+   - `OptimizedPromptDisplay` 真實最佳化邏輯
+   - 智慧內容分析與提示詞最佳化演算法
+   - 針對部落格圖片的專業化最佳化策略
+   - 內容分析服務 (`contentAnalyzer.ts`)
+   - 提示詞最佳化服務 (`promptOptimizer.ts`)
+
+2. **圖片編輯功能**
    - `ImageEditor` 元件基礎架構
    - 畫布遮罩編輯功能 (DALL·E 2)
    - 圖片變化生成
 
-2. **提示詞助手**
+3. **提示詞助手** (傳統)
    - `PromptHelper` 元件
    - 預設模板庫
    - 智慧建議系統
 
-3. **歷史記錄系統**
+4. **歷史記錄系統**
    - 生成歷史儲存
    - 圖片管理介面
    - 批次操作功能
@@ -232,8 +292,9 @@ blog-image-ai/
 
 ### 下一階段規劃 📋
 1. **功能完善** (7-8 週)
+   - 🎯 **優先**: 完成提示詞最佳化助手 (feature/prompt-optimizer)
    - 完成圖片編輯功能
-   - 實作提示詞助手
+   - 實作傳統提示詞助手
    - 優化歷史記錄系統
 
 2. **品質提升** (9-10 週)
@@ -418,4 +479,28 @@ git push origin --delete feature/新功能名稱
 - **完整工作流程**: `.github/instructions/git-workflow-complete.md`
 - **Commit 規範**: `.github/instructions/commit-guidelines.md`
 - **功能分支流程**: `.github/instructions/feature-branch-workflow.md`
+- **自動化 PR 工作流程**: `.github/instructions/automated-pr-workflow.md`
+- **自動化腳本**: `.github/scripts/git-automation.sh`
 - **指令索引**: `.github/instructions/README.md`
+
+### 自動化 PR 指令
+當需要建立 Pull Request 時，可以使用自動化指令：
+
+```bash
+# 載入自動化腳本
+source .github/scripts/git-automation.sh
+
+# 功能開發流程
+create-feature-pr "功能名稱"     # 建立功能分支
+finish-feature-pr              # 完成功能並準備 PR
+auto-create-feature-pr         # 使用 GitHub CLI 自動建立 PR
+
+# 版本發布流程  
+create-release-pr "v1.2.0"     # 建立發布分支
+finish-release-pr              # 完成發布流程
+auto-create-release-pr         # 使用 GitHub CLI 自動建立發布 PR
+
+# 輔助指令
+git-help                       # 查看所有可用指令
+git-status-check              # 檢查當前 Git 狀態
+```
