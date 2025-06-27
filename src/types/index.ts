@@ -49,6 +49,10 @@ export interface ImageGenerationRequest {
   quality?: ImageQuality;
   style?: ImageStyle;
   n?: number;
+  // GPT-Image-1 特有屬性
+  outputFormat?: 'png' | 'jpeg' | 'webp';
+  outputCompression?: number;
+  moderation?: 'auto' | 'low';
 }
 
 // 圖片編輯請求

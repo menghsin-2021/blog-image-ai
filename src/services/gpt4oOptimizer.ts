@@ -167,22 +167,35 @@ ${content.targetAudience ? `目標讀者: ${content.targetAudience}` : ''}`;
         temperature: 0.8, // 提高創意性
       });
 
-      const resultText = response.choices[0].message.content;
+      const resultText = response.choices[0]?.message?.content;
+      
+      if (!resultText) {
+        console.warn('GPT-4o API 回應內容為空，使用降級模式');
+        return this.fallbackPromptGeneration(content, purpose, analysis);
+      }
       
       try {
         const result = JSON.parse(resultText);
+        
+        // 驗證回應結構的完整性
+        if (!result || typeof result !== 'object') {
+          console.warn('GPT-4o API 回應格式不正確，使用降級模式');
+          return this.fallbackPromptGeneration(content, purpose, analysis);
+        }
+        
         return {
           chinese: result.chinese || '生成失敗',
           english: result.english || 'Generation failed',
           suggestions: result.suggestions || ['無可用建議']
         };
       } catch (parseError) {
-        console.warn('提示詞生成回應解析失敗:', parseError);
+        console.warn('提示詞生成回應解析失敗，使用降級模式:', parseError);
+        console.warn('原始回應:', resultText);
         return this.fallbackPromptGeneration(content, purpose, analysis);
       }
     } catch (error) {
-      console.error('提示詞生成失敗:', error);
-      throw new Error('提示詞生成服務暫時無法使用，請稍後再試');
+      console.error('提示詞生成 API 呼叫失敗，使用降級模式:', error);
+      return this.fallbackPromptGeneration(content, purpose, analysis);
     }
   }
 
@@ -196,21 +209,39 @@ ${content.targetAudience ? `目標讀者: ${content.targetAudience}` : ''}`;
   ): Promise<OptimizedPrompt> {
     try {
       // 1. 分析內容
-      const analysis = await this.analyzeContent(content);
+      let analysis: ContentAnalysis;
+      try {
+        analysis = await this.analyzeContent(content);
+      } catch (analysisError) {
+        console.warn('內容分析失敗，使用預設分析:', analysisError);
+        analysis = this.createFallbackAnalysis(content);
+      }
       
       // 2. 生成最佳化提示詞
-      const prompts = await this.generateOptimizedPrompts(content, purpose, analysis);
+      let prompts: { chinese: string; english: string; suggestions: string[] };
+      try {
+        prompts = await this.generateOptimizedPrompts(content, purpose, analysis);
+      } catch (promptError) {
+        console.warn('提示詞生成失敗，使用降級模式:', promptError);
+        prompts = this.fallbackPromptGeneration(content, purpose, analysis);
+      }
       
-      // 3. 生成技術參數建議
+      // 3. 驗證提示詞結構
+      if (!prompts || !prompts.chinese || !prompts.english) {
+        console.warn('提示詞結構不完整，重新生成降級版本');
+        prompts = this.fallbackPromptGeneration(content, purpose, analysis);
+      }
+      
+      // 4. 生成技術參數建議
       const technicalParams = this.generateTechnicalParams(purpose, analysis);
       
-      // 4. 計算信心度
+      // 5. 計算信心度
       const confidence = this.calculateConfidence(content, analysis);
       
-      // 5. 生成 Markdown 匯出資料
+      // 6. 生成 Markdown 匯出資料
       const exportData = this.generateExportData(content, purpose, prompts, analysis, technicalParams);
 
-      return {
+      const result: OptimizedPrompt = {
         original: originalPrompt || content.content.slice(0, 100),
         optimized: {
           chinese: prompts.chinese,
@@ -223,18 +254,18 @@ ${content.targetAudience ? `目標讀者: ${content.targetAudience}` : ''}`;
         analysis,
         exportData
       };
+
+      // 7. 最終驗證結果結構
+      if (!result.optimized?.chinese || !result.optimized?.english) {
+        throw new Error('無法生成有效的最佳化結果');
+      }
+
+      return result;
     } catch (error) {
-      console.error('提示詞最佳化失敗，使用降級模式:', error);
+      console.error('提示詞最佳化完全失敗，使用完整降級模式:', error);
       
-      // 降級模式：使用預設分析和本地模板
-      const fallbackAnalysis: ContentAnalysis = {
-        keywords: content.keywords || ['技術', '部落格', '內容'],
-        topic: '技術文章',
-        sentiment: 'neutral',
-        complexity: 'moderate',
-        technicalTerms: this.extractTechnicalTerms(content.content)
-      };
-      
+      // 完整降級模式：確保返回有效結構
+      const fallbackAnalysis = this.createFallbackAnalysis(content);
       const fallbackPrompts = this.fallbackPromptGeneration(content, purpose, fallbackAnalysis);
       const fallbackTechnicalParams = this.generateTechnicalParams(purpose, fallbackAnalysis);
       const fallbackExportData = this.generateExportData(content, purpose, fallbackPrompts, fallbackAnalysis, fallbackTechnicalParams);
@@ -248,7 +279,7 @@ ${content.targetAudience ? `目標讀者: ${content.targetAudience}` : ''}`;
         suggestions: fallbackPrompts.suggestions,
         styleModifiers: ['現代', '簡潔', '專業'],
         technicalParams: fallbackTechnicalParams,
-        confidence: 0.5, // 降級模式的信心度較低
+        confidence: 0.3, // 降級模式的信心度更低
         analysis: fallbackAnalysis,
         exportData: fallbackExportData
       };
@@ -273,6 +304,19 @@ ${content.targetAudience ? `目標讀者: ${content.targetAudience}` : ''}`;
     });
     
     return Array.from(terms);
+  }
+
+  /**
+   * 建立降級分析結果
+   */
+  private createFallbackAnalysis(content: ContentInput): ContentAnalysis {
+    return {
+      keywords: content.keywords || ['技術', '部落格', '內容'],
+      topic: '技術文章',
+      sentiment: 'professional',
+      complexity: 'moderate',
+      technicalTerms: this.extractTechnicalTerms(content.content)
+    };
   }
 
   /**

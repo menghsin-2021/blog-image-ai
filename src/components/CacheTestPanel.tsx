@@ -105,19 +105,34 @@ export function CacheTestPanel() {
           const endTime = Date.now();
           const responseTime = endTime - startTime;
           
-          // 安全檢查結果結構
-          if (result && result.optimized && result.optimized.chinese) {
+          // 詳細檢查結果結構
+          if (!result) {
+            addLog(`❌ 錯誤 - 回應時間: ${responseTime}ms - 結果為 null 或 undefined`);
+          } else if (!result.optimized) {
+            addLog(`❌ 錯誤 - 回應時間: ${responseTime}ms - 缺少 optimized 屬性`);
+            addLog(`結構: ${JSON.stringify(Object.keys(result))}`);
+          } else if (!result.optimized.chinese || !result.optimized.english) {
+            addLog(`❌ 錯誤 - 回應時間: ${responseTime}ms - 缺少中文或英文提示詞`);
+            addLog(`optimized 結構: ${JSON.stringify(Object.keys(result.optimized))}`);
+            addLog(`chinese: ${result.optimized.chinese ? '✅' : '❌'}, english: ${result.optimized.english ? '✅' : '❌'}`);
+          } else {
             addLog(`✅ 完成 - 回應時間: ${responseTime}ms`);
             addLog(`結果: ${result.optimized.chinese.slice(0, 100)}...`);
-          } else {
-            addLog(`⚠️ 部分成功 - 回應時間: ${responseTime}ms`);
-            addLog(`警告: 回應結構不完整 - ${JSON.stringify(result)?.slice(0, 100)}...`);
           }
           
         } catch (error) {
           const endTime = Date.now();
           const responseTime = endTime - startTime;
-          addLog(`❌ 錯誤 - 回應時間: ${responseTime}ms - ${error}`);
+          
+          // 詳細錯誤資訊
+          if (error instanceof Error) {
+            addLog(`❌ 錯誤 - 回應時間: ${responseTime}ms - ${error.name}: ${error.message}`);
+            if (error.stack) {
+              addLog(`錯誤堆疊: ${error.stack.split('\n')[1]?.trim()}`);
+            }
+          } else {
+            addLog(`❌ 錯誤 - 回應時間: ${responseTime}ms - ${error}`);
+          }
         }
 
         // 短暫延遲避免過快請求

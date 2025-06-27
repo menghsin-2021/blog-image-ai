@@ -11,7 +11,7 @@ export const useImageHistory = () => {
 
   // 載入歷史記錄
   useEffect(() => {
-    const savedHistory = storage.get<GeneratedImage[]>(STORAGE_KEYS.generationHistory, []);
+    const savedHistory = storage.get<GeneratedImage[]>(STORAGE_KEYS.IMAGE_HISTORY, []);
     setHistory(savedHistory);
   }, []);
 
@@ -25,8 +25,8 @@ export const useImageHistory = () => {
     };
 
     setHistory(prev => {
-      const updated = [newItem, ...prev].slice(0, FILE_LIMITS.maxHistoryItems);
-      storage.set(STORAGE_KEYS.generationHistory, updated);
+      const updated = [newItem, ...prev].slice(0, FILE_LIMITS.MAX_HISTORY_ITEMS);
+      storage.set(STORAGE_KEYS.IMAGE_HISTORY, updated);
       return updated;
     });
 
@@ -41,7 +41,7 @@ export const useImageHistory = () => {
           ? { ...item, downloadCount: item.downloadCount + 1 }
           : item
       );
-      storage.set(STORAGE_KEYS.generationHistory, updated);
+      storage.set(STORAGE_KEYS.IMAGE_HISTORY, updated);
       return updated;
     });
   }, []);
@@ -50,7 +50,7 @@ export const useImageHistory = () => {
   const removeFromHistory = useCallback((id: string) => {
     setHistory(prev => {
       const updated = prev.filter(item => item.id !== id);
-      storage.set(STORAGE_KEYS.generationHistory, updated);
+      storage.set(STORAGE_KEYS.IMAGE_HISTORY, updated);
       return updated;
     });
   }, []);
@@ -58,7 +58,7 @@ export const useImageHistory = () => {
   // 清空歷史記錄
   const clearHistory = useCallback(() => {
     setHistory([]);
-    storage.remove(STORAGE_KEYS.generationHistory);
+    storage.remove(STORAGE_KEYS.IMAGE_HISTORY);
   }, []);
 
   return {

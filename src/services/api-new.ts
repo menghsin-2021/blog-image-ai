@@ -4,8 +4,7 @@ import {
   ImageEditRequest,
   ImageEditResponse,
   ImageVariationRequest,
-  ImageVariationResponse,
-  DalleModel 
+  ImageVariationResponse
 } from '../types';
 import { API_CONFIG } from '../utils/constants';
 import { delay } from '../utils/helpers';
@@ -262,19 +261,20 @@ class OpenAIService {
 
   /**
    * 驗證模型支援的圖片尺寸
+   * @deprecated 暫時未使用，保留供未來參考
    */
-  private validateSize(model: DalleModel, size: string): boolean {
-    switch (model) {
-      case 'dall-e-2':
-        return ['256x256', '512x512', '1024x1024'].includes(size);
-      case 'dall-e-3':
-        return ['1024x1024', '1024x1792', '1792x1024'].includes(size);
-      case 'gpt-image-1':
-        return ['1024x1024', '1536x1024', '1024x1536'].includes(size);
-      default:
-        return false;
-    }
-  }
+  // private validateSize(model: DalleModel, size: string): boolean {
+  //   switch (model) {
+  //     case 'dall-e-2':
+  //       return ['256x256', '512x512', '1024x1024'].includes(size);
+  //     case 'dall-e-3':
+  //       return ['1024x1024', '1024x1792', '1792x1024'].includes(size);
+  //     case 'gpt-image-1':
+  //       return ['1024x1024', '1536x1024', '1024x1536'].includes(size);
+  //     default:
+  //       return false;
+  //   }
+  // }
 }
 
 // 建立服務實例

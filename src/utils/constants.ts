@@ -1,5 +1,19 @@
 import { AspectRatio, DalleModel, ImageQuality, ImageStyle } from '../types';
 
+// 本地儲存鍵常數
+export const STORAGE_KEYS = {
+  IMAGE_HISTORY: 'blog-image-ai-history',
+  USER_PREFERENCES: 'blog-image-ai-preferences',
+  CACHE_DATA: 'blog-image-ai-cache'
+};
+
+// 檔案限制常數
+export const FILE_LIMITS = {
+  MAX_HISTORY_ITEMS: 100,
+  MAX_FILE_SIZE: 10 * 1024 * 1024, // 10MB
+  SUPPORTED_FORMATS: ['png', 'jpg', 'jpeg', 'webp']
+};
+
 // 預設圖片比例選項 (根據模型動態調整)
 export const ASPECT_RATIOS: AspectRatio[] = [
   {
