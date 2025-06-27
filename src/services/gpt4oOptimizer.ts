@@ -224,8 +224,34 @@ ${content.targetAudience ? `目標讀者: ${content.targetAudience}` : ''}`;
         exportData
       };
     } catch (error) {
-      console.error('提示詞最佳化失敗:', error);
-      throw error;
+      console.error('提示詞最佳化失敗，使用降級模式:', error);
+      
+      // 降級模式：使用預設分析和本地模板
+      const fallbackAnalysis: ContentAnalysis = {
+        keywords: content.keywords || ['技術', '部落格', '內容'],
+        topic: '技術文章',
+        sentiment: 'neutral',
+        complexity: 'moderate',
+        technicalTerms: this.extractTechnicalTerms(content.content)
+      };
+      
+      const fallbackPrompts = this.fallbackPromptGeneration(content, purpose, fallbackAnalysis);
+      const fallbackTechnicalParams = this.generateTechnicalParams(purpose, fallbackAnalysis);
+      const fallbackExportData = this.generateExportData(content, purpose, fallbackPrompts, fallbackAnalysis, fallbackTechnicalParams);
+
+      return {
+        original: originalPrompt || content.content.slice(0, 100),
+        optimized: {
+          chinese: fallbackPrompts.chinese,
+          english: fallbackPrompts.english
+        },
+        suggestions: fallbackPrompts.suggestions,
+        styleModifiers: ['現代', '簡潔', '專業'],
+        technicalParams: fallbackTechnicalParams,
+        confidence: 0.5, // 降級模式的信心度較低
+        analysis: fallbackAnalysis,
+        exportData: fallbackExportData
+      };
     }
   }
 

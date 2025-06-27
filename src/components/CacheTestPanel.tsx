@@ -105,8 +105,14 @@ export function CacheTestPanel() {
           const endTime = Date.now();
           const responseTime = endTime - startTime;
           
-          addLog(`✅ 完成 - 回應時間: ${responseTime}ms`);
-          addLog(`結果: ${result.optimized.chinese.slice(0, 100)}...`);
+          // 安全檢查結果結構
+          if (result && result.optimized && result.optimized.chinese) {
+            addLog(`✅ 完成 - 回應時間: ${responseTime}ms`);
+            addLog(`結果: ${result.optimized.chinese.slice(0, 100)}...`);
+          } else {
+            addLog(`⚠️ 部分成功 - 回應時間: ${responseTime}ms`);
+            addLog(`警告: 回應結構不完整 - ${JSON.stringify(result)?.slice(0, 100)}...`);
+          }
           
         } catch (error) {
           const endTime = Date.now();
