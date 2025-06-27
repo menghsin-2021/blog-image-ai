@@ -418,4 +418,28 @@ git push origin --delete feature/新功能名稱
 - **完整工作流程**: `.github/instructions/git-workflow-complete.md`
 - **Commit 規範**: `.github/instructions/commit-guidelines.md`
 - **功能分支流程**: `.github/instructions/feature-branch-workflow.md`
+- **自動化 PR 工作流程**: `.github/instructions/automated-pr-workflow.md`
+- **自動化腳本**: `.github/scripts/git-automation.sh`
 - **指令索引**: `.github/instructions/README.md`
+
+### 自動化 PR 指令
+當需要建立 Pull Request 時，可以使用自動化指令：
+
+```bash
+# 載入自動化腳本
+source .github/scripts/git-automation.sh
+
+# 功能開發流程
+create-feature-pr "功能名稱"     # 建立功能分支
+finish-feature-pr              # 完成功能並準備 PR
+auto-create-feature-pr         # 使用 GitHub CLI 自動建立 PR
+
+# 版本發布流程  
+create-release-pr "v1.2.0"     # 建立發布分支
+finish-release-pr              # 完成發布流程
+auto-create-release-pr         # 使用 GitHub CLI 自動建立發布 PR
+
+# 輔助指令
+git-help                       # 查看所有可用指令
+git-status-check              # 檢查當前 Git 狀態
+```

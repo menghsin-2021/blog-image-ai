@@ -28,20 +28,30 @@
   - 緊急修復 (Hotfix) 流程
   - 分支清理與維護
 
+### 自動化 PR 工作流程
+- **[`automated-pr-workflow.md`](./automated-pr-workflow.md)** - 自動化 Pull Request 工作流程
+  - Feature Branch → Develop PR 自動化
+  - Develop → Main PR (版本發布) 自動化
+  - GitHub CLI 整合
+  - 完整的自動化腳本
+
 ## 🎯 使用指南
 
 ### 新開發者入門
 1. 先閱讀 [`git-workflow-complete.md`](./git-workflow-complete.md) 了解整體工作流程
 2. 學習 [`commit-guidelines.md`](./commit-guidelines.md) 中的提交規範
 3. 參考 [`feature-branch-workflow.md`](./feature-branch-workflow.md) 進行功能開發
+4. 使用 [`automated-pr-workflow.md`](./automated-pr-workflow.md) 自動化 PR 流程
 
 ### 日常開發參考
-- **開始新功能**: 參考 `feature-branch-workflow.md` 中的「功能開發流程」
+- **開始新功能**: 使用 `create-feature-pr <功能名稱>` 或參考 `feature-branch-workflow.md`
 - **提交程式碼**: 使用 `commit-guidelines.md` 中的格式規範
+- **建立 PR**: 使用 `finish-feature-pr` 或 `auto-create-feature-pr`
 - **遇到問題**: 查看 `git-workflow-complete.md` 中的「故障排除」
 
 ### 進階操作
-- **版本發布**: 參考 `git-workflow-complete.md` 中的「版本發布流程」
+- **自動化流程**: 載入 `.github/scripts/git-automation.sh` 使用自動化指令
+- **版本發布**: 使用 `create-release-pr <版本號>` 或參考 `git-workflow-complete.md`
 - **緊急修復**: 使用 `feature-branch-workflow.md` 中的「Hotfix 流程」
 - **分支管理**: 參考 `git-workflow-complete.md` 中的「分支保護規則」
 
@@ -56,6 +66,42 @@
 - **Prompts**: `../.github/prompts/`
 - **Docker 設定**: `../../docker-compose.yml`
 - **建構腳本**: `../../start-server.sh`
+- **Git 自動化腳本**: `../.github/scripts/git-automation.sh`
+
+## 🚀 快速開始
+
+### 載入自動化腳本
+```bash
+# 在專案根目錄執行
+source .github/scripts/git-automation.sh
+
+# 查看可用指令
+git-help
+```
+
+### 快速功能開發
+```bash
+# 1. 建立功能分支
+create-feature-pr "圖片編輯功能"
+
+# 2. 開發並提交
+git add .
+git commit -m "feat(ui): 新增圖片編輯元件"
+
+# 3. 完成功能並建立 PR
+finish-feature-pr
+# 或使用 GitHub CLI 自動建立
+auto-create-feature-pr
+```
+
+### 快速版本發布
+```bash
+# 1. 建立發布分支
+create-release-pr "v1.2.0"
+
+# 2. 完成發布流程
+finish-release-pr
+```
 
 ## 📝 檔案維護
 
