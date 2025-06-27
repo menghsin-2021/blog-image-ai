@@ -287,4 +287,54 @@ blog-image-ai/
 - Use responsive variants (sm:, md:, lg:, etc.) for adaptive designs
 - Leverage state variants (hover:, focus:, active:, etc.) for interactive elements
 
+---
 
+## 專案文件管理規則
+
+### Change Log 資料夾管理
+- **位置**: `.github/change_log/`
+- **用途**: 存放所有專案變更記錄、修復報告、部署摘要等總結檔案
+- **檔案類型**: 所有 `*.md` 格式的總結和報告檔案
+
+### Change Log 檔案命名規則
+- **修復報告**: `{FEATURE}-FIX-REPORT.md` (例如: `GPT-IMAGE-1-FIX-REPORT.md`)
+- **更新記錄**: `{FEATURE}-UPDATE.md` (例如: `GPT-IMAGE-1-UPDATE.md`)
+- **部署摘要**: `DEPLOYMENT-SUMMARY.md`
+- **設定報告**: `{COMPONENT}-{ACTION}-report.md` (例如: `setup-complete-report.md`)
+- **環境修復**: `{ENVIRONMENT}-environment-fix.md` (例如: `conda-environment-fix.md`)
+
+### 檔案管理指令
+當建立新的總結檔案、修復報告、或專案變更記錄時：
+
+1. **自動移動規則**: 
+   - 所有總結相關的 `*.md` 檔案應放置在 `.github/change_log/` 資料夾中
+   - 不包括專案根目錄的 `README.md` 和 `.github/prompts/` 資料夾中的指南檔案
+
+2. **檔案類型歸類**:
+   - 專案變更記錄 → `.github/change_log/`
+   - 使用指南和 prompt → `.github/prompts/`
+   - 專案說明文件 → 根目錄 `README.md`
+
+3. **建立新變更記錄時**:
+   ```bash
+   # 建立變更記錄檔案的範例路徑
+   .github/change_log/NEW-FEATURE-IMPLEMENTATION-{YYYY-MM-DD}.md
+   .github/change_log/BUG-FIX-{COMPONENT}-{YYYY-MM-DD}.md
+   .github/change_log/DEPLOYMENT-{VERSION}-{YYYY-MM-DD}.md
+   ```
+
+### 現有檔案清單
+目前 `.github/change_log/` 資料夾包含：
+- `GPT-IMAGE-1-FIX-REPORT.md` - GPT Image 1 模型修復報告
+- `GPT-IMAGE-1-RESPONSE-FORMAT-FIX.md` - 回應格式修復記錄
+- `GPT-IMAGE-1-UPDATE.md` - GPT Image 1 更新記錄
+- `DEPLOYMENT-SUMMARY.md` - Docker 部署完成摘要
+- `conda-environment-fix.md` - Conda 環境修復報告
+- `setup-complete-report.md` - 專案設定完成報告
+
+### Copilot 自動化指令
+當執行專案相關的修復、更新、或部署任務時：
+1. 自動建立對應的變更記錄檔案
+2. 將檔案放置在 `.github/change_log/` 資料夾中
+3. 使用適當的檔案命名規則
+4. 包含完整的時間戳記和變更摘要

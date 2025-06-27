@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  # 開發環境服務
+  blog-image-ai-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: blog-image-ai-dev
+    ports:
+      - "3000:3000"
+    volumes:
+      # 掛載原始碼目錄，支援即時開發
+      - .:/app
+      # 排除 node_modules，使用容器內的版本
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true  # 支援 Windows/macOS 檔案監聽
+    env_file:
+      - .env
+    command: npm run dev -- --host 0.0.0.0
+    restart: unless-stopped
+
+  # 生產環境服務
+  blog-image-ai-prod:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: blog-image-ai-prod
+    ports:
+      - "8080:80"
+    env_file:
+      - .env
+    restart: unless-stopped
+
+networks:
+  default:
+    name: blog-image-ai-network

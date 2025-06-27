@@ -17,6 +17,39 @@ BlogImageAI 是一個基於 OpenAI 圖片生成 API 的 AI 圖片生成助手，
 - 📱 **響應式設計** - 優化的行動裝置體驗
 - 🌐 **現代介面** - 使用 Tailwind CSS 建構的美觀 UI
 
+## 🚀 快速啟動
+
+### 使用 Shell Script（推薦）
+
+```bash
+# 複製專案並進入目錄
+git clone https://github.com/menghsin-2021/blog-image-ai.git
+cd blog-image-ai
+
+# 設定環境變數（請編輯 .env 檔案設定您的 OpenAI API 金鑰）
+cp .env.example .env
+
+# 賦予執行權限並啟動開發伺服器
+chmod +x start-server.sh
+./start-server.sh dev
+```
+
+開啟瀏覽器存取：http://localhost:3000
+
+### 可用指令
+
+```bash
+./start-server.sh dev      # 啟動開發伺服器（預設）
+./start-server.sh prod     # 啟動生產伺服器
+./start-server.sh stop     # 停止所有服務
+./start-server.sh status   # 查看容器狀態
+./start-server.sh logs     # 查看容器記錄檔
+./start-server.sh clean    # 清理容器和映像檔
+./start-server.sh help     # 顯示幫助訊息
+```
+
+詳細的建構和部署指南請參考：[.github/prompts/build-server.prompt.md](.github/prompts/build-server.prompt.md)
+
 ## 🚀 技術架構
 
 - **前端**: React 18 + TypeScript + Vite
