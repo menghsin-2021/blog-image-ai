@@ -1,5 +1,5 @@
 import { FC, useState } from 'react';
-import { Download, RefreshCw, Copy, Check } from 'lucide-react';
+import { Download, RefreshCw, Copy, Check, Image } from 'lucide-react';
 
 interface SimpleImagePreviewProps {
   imageUrl: string | null;
@@ -19,7 +19,9 @@ export const SimpleImagePreview: FC<SimpleImagePreviewProps> = ({
   onRetry,
 }) => {
   const [isDownloading, setIsDownloading] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const [promptCopied, setPromptCopied] = useState(false);
+  const [imageCopied, setImageCopied] = useState(false);
+  const [copyError, setCopyError] = useState<string | null>(null);
 
   const handleDownload = async () => {
     if (!imageUrl) return;
@@ -47,10 +49,53 @@ export const SimpleImagePreview: FC<SimpleImagePreviewProps> = ({
     const textToCopy = revisedPrompt || originalPrompt;
     try {
       await navigator.clipboard.writeText(textToCopy);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      setPromptCopied(true);
+      setCopyError(null);
+      setTimeout(() => setPromptCopied(false), 2000);
     } catch (err) {
-      console.error('複製失敗:', err);
+      console.error('複製提示詞失敗:', err);
+      setCopyError('複製提示詞失敗，請手動複製');
+      setTimeout(() => setCopyError(null), 3000);
+    }
+  };
+
+  const handleCopyImage = async () => {
+    if (!imageUrl) return;
+
+    try {
+      // 檢查瀏覽器是否支援 Clipboard API
+      if (!navigator.clipboard || !ClipboardItem) {
+        throw new Error('瀏覽器不支援圖片複製功能');
+      }
+
+      // 下載圖片並轉換為 Blob
+      const response = await fetch(imageUrl);
+      if (!response.ok) {
+        throw new Error('無法載入圖片');
+      }
+
+      const blob = await response.blob();
+      
+      // 檢查圖片格式
+      if (!blob.type.startsWith('image/')) {
+        throw new Error('不支援的圖片格式');
+      }
+
+      // 複製到剪貼簿
+      await navigator.clipboard.write([
+        new ClipboardItem({
+          [blob.type]: blob
+        })
+      ]);
+
+      setImageCopied(true);
+      setCopyError(null);
+      setTimeout(() => setImageCopied(false), 2000);
+    } catch (err) {
+      console.error('複製圖片失敗:', err);
+      const errorMessage = err instanceof Error ? err.message : '複製圖片失敗';
+      setCopyError(errorMessage);
+      setTimeout(() => setCopyError(null), 5000);
     }
   };
 
@@ -124,11 +169,18 @@ export const SimpleImagePreview: FC<SimpleImagePreviewProps> = ({
               <Download className="w-5 h-5" />
             </button>
             <button
+              onClick={handleCopyImage}
+              className="bg-white bg-opacity-90 hover:bg-opacity-100 text-gray-800 p-3 rounded-full shadow-lg transition-all duration-200"
+              title="複製圖片"
+            >
+              {imageCopied ? <Check className="w-5 h-5 text-green-500" /> : <Image className="w-5 h-5" />}
+            </button>
+            <button
               onClick={handleCopyPrompt}
               className="bg-white bg-opacity-90 hover:bg-opacity-100 text-gray-800 p-3 rounded-full shadow-lg transition-all duration-200"
               title="複製提示詞"
             >
-              {copied ? <Check className="w-5 h-5 text-green-500" /> : <Copy className="w-5 h-5" />}
+              {promptCopied ? <Check className="w-5 h-5 text-green-500" /> : <Copy className="w-5 h-5" />}
             </button>
           </div>
         </div>
@@ -136,6 +188,16 @@ export const SimpleImagePreview: FC<SimpleImagePreviewProps> = ({
 
       {/* 提示詞資訊 */}
       <div className="p-4 border-t border-gray-100">
+        {/* 錯誤訊息顯示 */}
+        {copyError && (
+          <div className="mb-3 p-2 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-sm text-red-600">{copyError}</p>
+            <p className="text-xs text-red-500 mt-1">
+              提示：您可以右鍵點擊圖片選擇「複製圖片」作為替代方案
+            </p>
+          </div>
+        )}
+
         {revisedPrompt && revisedPrompt !== originalPrompt && (
           <div className="mb-3">
             <h4 className="text-sm font-medium text-gray-700 mb-1">優化後的提示詞:</h4>
@@ -144,19 +206,39 @@ export const SimpleImagePreview: FC<SimpleImagePreviewProps> = ({
         )}
 
         <div className="flex items-center justify-between">
-          <div>
+          <div className="flex-1 mr-4">
             <h4 className="text-sm font-medium text-gray-700 mb-1">原始提示詞:</h4>
             <p className="text-sm text-gray-600">"{originalPrompt}"</p>
           </div>
 
-          <button
-            onClick={handleDownload}
-            disabled={isDownloading}
-            className="bg-blue-500 hover:bg-blue-600 disabled:bg-blue-300 text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors"
-          >
-            <Download className="w-4 h-4" />
-            {isDownloading ? '下載中...' : '下載'}
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={handleCopyImage}
+              className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors"
+              title="複製圖片到剪貼簿"
+            >
+              {imageCopied ? <Check className="w-4 h-4" /> : <Image className="w-4 h-4" />}
+              {imageCopied ? '已複製圖片' : '複製圖片'}
+            </button>
+            
+            <button
+              onClick={handleCopyPrompt}
+              className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors"
+              title="複製提示詞到剪貼簿"
+            >
+              {promptCopied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+              {promptCopied ? '已複製提示詞' : '複製提示詞'}
+            </button>
+
+            <button
+              onClick={handleDownload}
+              disabled={isDownloading}
+              className="bg-blue-500 hover:bg-blue-600 disabled:bg-blue-300 text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors"
+            >
+              <Download className="w-4 h-4" />
+              {isDownloading ? '下載中...' : '下載'}
+            </button>
+          </div>
         </div>
       </div>
     </div>

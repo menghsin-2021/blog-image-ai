@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from './Button';
 import { ImageEditor } from './ImageEditor';
-import { downloadImage, formatFileName, copyToClipboard } from '../utils/helpers';
+import { downloadImage, formatFileName, copyToClipboard, copyImageToClipboard } from '../utils/helpers';
 import { DownloadFormat, DalleModel } from '../types';
 
 interface ImagePreviewProps {
@@ -35,6 +35,10 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
   const [showActions, setShowActions] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editPrompt, setEditPrompt] = useState('');
+  const [imageCopied, setImageCopied] = useState(false);
+  const [promptCopied, setPromptCopied] = useState(false);
+  const [urlCopied, setUrlCopied] = useState(false);
+  const [copyError, setCopyError] = useState<string | null>(null);
 
   const handleDownload = async () => {
     try {
@@ -51,18 +55,40 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
   const handleCopyUrl = async () => {
     try {
       await copyToClipboard(imageUrl);
-      // 這裡可以加入通知使用者複製成功的 toast
+      setUrlCopied(true);
+      setCopyError(null);
+      setTimeout(() => setUrlCopied(false), 2000);
     } catch (error) {
       console.error('複製連結失敗:', error);
+      setCopyError('複製連結失敗');
+      setTimeout(() => setCopyError(null), 3000);
     }
   };
 
   const handleCopyPrompt = async () => {
     try {
       await copyToClipboard(revisedPrompt || prompt);
-      // 這裡可以加入通知使用者複製成功的 toast
+      setPromptCopied(true);
+      setCopyError(null);
+      setTimeout(() => setPromptCopied(false), 2000);
     } catch (error) {
       console.error('複製提示詞失敗:', error);
+      setCopyError('複製提示詞失敗');
+      setTimeout(() => setCopyError(null), 3000);
+    }
+  };
+
+  const handleCopyImage = async () => {
+    try {
+      await copyImageToClipboard(imageUrl);
+      setImageCopied(true);
+      setCopyError(null);
+      setTimeout(() => setImageCopied(false), 2000);
+    } catch (error) {
+      console.error('複製圖片失敗:', error);
+      const errorMessage = error instanceof Error ? error.message : '複製圖片失敗';
+      setCopyError(errorMessage);
+      setTimeout(() => setCopyError(null), 5000);
     }
   };
 
@@ -175,22 +201,60 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
               </button>
 
               <button
+                onClick={handleCopyImage}
+                className="p-2 bg-white rounded-full shadow-lg hover:bg-gray-50 transition-colors"
+                title="複製圖片"
+              >
+                <svg
+                  className={`w-5 h-5 ${imageCopied ? 'text-green-500' : 'text-gray-700'}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  {imageCopied ? (
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
+                  ) : (
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    />
+                  )}
+                </svg>
+              </button>
+
+              <button
                 onClick={handleCopyUrl}
                 className="p-2 bg-white rounded-full shadow-lg hover:bg-gray-50 transition-colors"
                 title="複製圖片連結"
               >
                 <svg
-                  className="w-5 h-5 text-gray-700"
+                  className={`w-5 h-5 ${urlCopied ? 'text-green-500' : 'text-gray-700'}`}
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
-                  />
+                  {urlCopied ? (
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
+                  ) : (
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+                    />
+                  )}
                 </svg>
               </button>
             </div>
@@ -199,21 +263,46 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
 
         {/* 提示詞顯示 */}
         <div className="space-y-2">
+          {/* 錯誤訊息顯示 */}
+          {copyError && (
+            <div className="p-2 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-sm text-red-600">{copyError}</p>
+              {copyError.includes('瀏覽器不支援') && (
+                <p className="text-xs text-red-500 mt-1">
+                  提示：您可以右鍵點擊圖片選擇「複製圖片」作為替代方案
+                </p>
+              )}
+            </div>
+          )}
+
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium text-gray-700">提示詞</span>
             <button
               onClick={handleCopyPrompt}
-              className="text-xs text-gray-500 hover:text-gray-700 flex items-center space-x-1"
+              className={`text-xs flex items-center space-x-1 transition-colors ${
+                promptCopied 
+                  ? 'text-green-600 hover:text-green-700' 
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
             >
               <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
-                />
+                {promptCopied ? (
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
+                ) : (
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                  />
+                )}
               </svg>
-              <span>複製</span>
+              <span>{promptCopied ? '已複製' : '複製'}</span>
             </button>
           </div>
           <p className="text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">{prompt}</p>
