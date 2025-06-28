@@ -24,34 +24,35 @@ export interface ContentInput {
 
 // 提示詞最佳化結果
 export interface OptimizedPrompt {
-  original: string; // 原始提示詞
+  original?: string; // 原始提示詞
+  originalPrompt?: string; // 原始提示詞 (保持相容性)
   optimized: {
-    // 最佳化後提示詞 (雙語)
-    chinese: string; // 中文版本
-    english: string; // 英文版本
+    chinese: string; // 中文版最佳化提示詞
+    english: string; // 英文版最佳化提示詞
   };
-  suggestions: string[]; // 最佳化建議
-  styleModifiers: string[]; // 風格修飾詞
+  optimizedPrompt?: string; // 單一最佳化提示詞 (保持相容性)
+  improvements: string[]; // 改善點列表
+  reasoning: string; // 最佳化理由
+  suggestedStyle: string; // 建議的視覺風格
+  technicalTips: string; // 技術建議
+  confidence: number; // 信心度 (0-1)
+  analysis: {
+    keywords: string[]; // 關鍵字
+    topic: string; // 主題
+    sentiment: 'positive' | 'neutral' | 'professional'; // 情感
+    complexity: 'simple' | 'moderate' | 'complex'; // 複雜度
+  };
   technicalParams: {
-    // 技術參數建議
     aspectRatio: string;
     quality: string;
     style?: string;
   };
-  confidence: number; // 最佳化信心度 (0-1)
-  analysis: {
-    // GPT-4o 分析結果
-    keywords: string[]; // 提取的關鍵字
-    topic: string; // 主題分類
-    sentiment: string; // 情感分析
-    complexity: string; // 內容複雜度
-  };
+  styleModifiers: string[]; // 風格修飾詞
+  suggestions: string[]; // 建議
   exportData: {
-    // 匯出資料
-    markdown: string; // Markdown 格式
-    timestamp: string; // 建立時間
-    purpose: ImagePurposeType; // 圖片用途
+    markdown: string; // Markdown 格式匯出
   };
+  timestamp: number; // 生成時間戳
 }
 
 // 內容分析結果
@@ -123,4 +124,110 @@ export interface ExportOptions {
   includeTimestamp: boolean;
   includeTechnicalParams: boolean;
   language: LanguagePreference;
+}
+
+// === 統一提示詞最佳化型別系統 ===
+
+// 最佳化服務提供商
+export type OptimizationProvider = 'openai' | 'perplexity';
+
+// 統一的最佳化結果介面 (整合 OptimizedPrompt 和 PerplexityOptimizationResult)
+export interface UnifiedOptimizationResult {
+  // 基本識別
+  provider: OptimizationProvider;
+  model: string;
+  timestamp: number;
+
+  // 統一提示詞格式
+  original: string;
+  originalPrompt: string; // 向後相容性
+  optimized: {
+    chinese: string;
+    english: string;
+  };
+  optimizedPrompt: string; // 向後相容性，通常使用 chinese 版本
+
+  // 分析結果
+  improvements: string[];
+  reasoning: string;
+  suggestedStyle: string;
+  technicalTips: string;
+  confidence: number;
+
+  // 分析資訊
+  analysis: {
+    keywords: string[];
+    topic: string;
+    sentiment: 'positive' | 'neutral' | 'professional';
+    complexity: 'simple' | 'moderate' | 'complex';
+  };
+
+  // 技術參數
+  technicalParams: {
+    aspectRatio: string;
+    quality: string;
+    style?: string;
+  };
+
+  // 共同欄位
+  styleModifiers: string[];
+  suggestions: string[]; // 與 improvements 相同，保持相容性
+
+  // 匯出資料
+  exportData: {
+    markdown: string;
+  };
+
+  // 條件式欄位 - Perplexity 專用
+  citations?: PerplexityCitation[];
+  cost?: {
+    inputCost: number;
+    outputCost: number;
+    searchCost: number;
+    totalCost: number;
+  };
+  searchQueries?: number;
+}
+
+// Perplexity 引用來源 (從 perplexityOptimizer.ts 移到這裡統一管理)
+export interface PerplexityCitation {
+  number: number;
+  url: string;
+  title: string;
+  snippet?: string;
+}
+
+// 統一的最佳化提供商介面
+export interface OptimizationProviderInterface {
+  name: string;
+  provider: OptimizationProvider;
+  optimize(
+    content: ContentInput,
+    purpose: ImagePurposeType,
+    options?: any
+  ): Promise<UnifiedOptimizationResult>;
+  getAvailableModels(): ModelOption[];
+  estimateCost?(content: string, model?: string): Promise<number>;
+}
+
+// 模型選項
+export interface ModelOption {
+  value: string;
+  label: string;
+  description: string;
+  cost?: string;
+  features?: string[];
+}
+
+// 統一最佳化請求
+export interface UnifiedOptimizationRequest {
+  provider: OptimizationProvider;
+  content: ContentInput;
+  purpose: ImagePurposeType;
+  model?: string;
+  options?: {
+    temperature?: number;
+    maxTokens?: number;
+    // 其他提供商特定選項
+  };
 }
