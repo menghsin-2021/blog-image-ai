@@ -126,14 +126,17 @@ ${content.targetAudience ? `目標讀者: ${content.targetAudience}` : ''}`;
       banner: {
         chinese: '首頁橫幅 - 需要吸引眼球、視覺衝擊力強、代表文章主題',
         english: 'Header Banner - eye-catching, visually impactful, representing article theme',
+        requiredKeyword: '部落格文章開頭封面橫幅圖片',
       },
       illustration: {
         chinese: '段落說明圖 - 需要簡單清晰、輔助理解、避免干擾閱讀',
         english: 'Illustration - simple, clear, helps understanding, non-distracting',
+        requiredKeyword: '部落格文章段落說明圖片',
       },
       summary: {
         chinese: '內容總結圖 - 需要概念性、啟發性、留下深刻印象',
         english: 'Summary Image - conceptual, inspiring, memorable',
+        requiredKeyword: '部落格文章結尾總結圖片',
       },
     };
 
@@ -145,10 +148,12 @@ ${content.targetAudience ? `目標讀者: ${content.targetAudience}` : ''}`;
 3. 提示詞應該簡潔但具體，避免過於複雜
 4. 加入適當的風格指引（現代、專業、簡潔等）
 5. 考慮部落格圖片的特殊需求（易理解、不干擾閱讀）
+6. **重要：中文提示詞必須包含"${purposeDescriptions[purpose].requiredKeyword}"這個關鍵字**
+7. **重要：英文提示詞必須包含與用途相關的明確描述**
 
 請以 JSON 格式回應：
 {
-  "chinese": "中文提示詞",
+  "chinese": "中文提示詞（必須包含: ${purposeDescriptions[purpose].requiredKeyword}）",
   "english": "English prompt",
   "suggestions": ["建議1", "建議2", "建議3"]
 }`;
@@ -191,6 +196,17 @@ ${content.targetAudience ? `目標讀者: ${content.targetAudience}` : ''}`;
         if (!result || typeof result !== 'object') {
           console.warn('GPT-4o API 回應格式不正確，使用降級模式');
           return this.fallbackPromptGeneration(content, purpose, analysis);
+        }
+
+        // 驗證關鍵字是否包含在結果中
+        const requiredKeyword = purposeDescriptions[purpose].requiredKeyword;
+        const chinesePrompt = result.chinese || '';
+        
+        if (!chinesePrompt.includes(requiredKeyword)) {
+          console.warn(`生成的中文提示詞缺少必要關鍵字: ${requiredKeyword}`);
+          // 嘗試在提示詞中補充關鍵字
+          const enhancedChinese = this.enhancePromptWithKeyword(chinesePrompt, requiredKeyword);
+          result.chinese = enhancedChinese;
         }
 
         return {
@@ -504,6 +520,20 @@ ${prompts.suggestions.map(s => `- ${s}`).join('\n')}
       timestamp,
       purpose,
     };
+  }
+
+  /**
+   * 在提示詞中補充必要的關鍵字
+   */
+  private enhancePromptWithKeyword(prompt: string, requiredKeyword: string): string {
+    // 如果提示詞已經包含關鍵字，直接返回
+    if (prompt.includes(requiredKeyword)) {
+      return prompt;
+    }
+
+    // 嘗試自然地插入關鍵字
+    // 在提示詞開頭添加用途說明
+    return `${requiredKeyword}，${prompt}`;
   }
 }
 
