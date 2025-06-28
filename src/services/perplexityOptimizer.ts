@@ -337,3 +337,8 @@ ${content}
     return markdown;
   }
 }
+
+/**
+ * Perplexity 最佳化服務實例
+ */
+export const perplexityOptimizationService = new PerplexityOptimizer();

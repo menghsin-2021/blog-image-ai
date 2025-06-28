@@ -8,6 +8,9 @@ import {
 import { ServiceSelector } from './ServiceSelector';
 import { PurposeSelector } from './PurposeSelector';
 import { ContentInput as ContentInputComponent } from './ContentInput';
+import { UnifiedResultDisplay } from './UnifiedResultDisplay';
+import { OpenAIOptimizationProvider } from './providers/OpenAIOptimizationProvider';
+import { PerplexityOptimizationProvider } from './providers/PerplexityOptimizationProvider';
 
 // 工作流程步驟類型
 type WorkflowStep = 'service' | 'purpose' | 'content' | 'model' | 'result';
@@ -110,59 +113,32 @@ export const UnifiedPromptOptimizer: React.FC<UnifiedPromptOptimizerProps> = ({
     }));
 
     try {
-      // TODO: 實際的最佳化邏輯將在 Phase 2 實作
-      // 這裡先建立基本架構
-      console.log('Optimization request:', {
-        service: selectedService,
-        purpose: selectedPurpose,
-        content: contentInput,
-        model: model || state.selectedModel,
-      });
-
-      // 模擬 API 呼叫
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      // 建立模擬結果
-      const mockResult: UnifiedOptimizationResult = {
-        provider: selectedService,
-        model: model || state.selectedModel || 'default',
-        timestamp: Date.now(),
-        original: contentInput.content.slice(0, 100) + '...',
-        originalPrompt: contentInput.content.slice(0, 100) + '...',
-        optimized: {
-          chinese: '最佳化的中文提示詞 (模擬)',
-          english: 'Optimized English prompt (mock)',
-        },
-        optimizedPrompt: '最佳化的中文提示詞 (模擬)',
-        improvements: ['改善點 1', '改善點 2'],
-        reasoning: '模擬的最佳化理由',
-        suggestedStyle: '現代簡約',
-        technicalTips: '技術建議',
-        confidence: 0.85,
-        analysis: {
-          keywords: ['關鍵字1', '關鍵字2'],
-          topic: selectedPurpose,
-          sentiment: 'professional',
-          complexity: 'moderate',
-        },
-        technicalParams: {
-          aspectRatio: '16:9',
-          quality: 'high',
-        },
-        styleModifiers: ['現代', '簡約'],
-        suggestions: ['改善點 1', '改善點 2'],
-        exportData: {
-          markdown: '# 最佳化結果\\n\\n模擬內容',
-        },
-      };
+      let result: UnifiedOptimizationResult;
+      
+      // 根據選擇的服務建立對應的提供商
+      if (selectedService === 'openai') {
+        const provider = new OpenAIOptimizationProvider();
+        result = await provider.optimize(contentInput, selectedPurpose, {
+          model: model || 'gpt-4o',
+          originalPrompt: contentInput.content
+        });
+      } else if (selectedService === 'perplexity') {
+        const provider = new PerplexityOptimizationProvider();
+        result = await provider.optimize(contentInput, selectedPurpose, {
+          model: model || 'llama-3.1-sonar-large-128k-online',
+          originalPrompt: contentInput.content
+        });
+      } else {
+        throw new Error('不支援的服務提供商');
+      }
 
       setState(prev => ({
         ...prev,
-        optimizedResult: mockResult,
+        optimizedResult: result,
         currentStep: 'result',
       }));
 
-      onOptimizedPrompt?.(mockResult);
+      onOptimizedPrompt?.(result);
 
     } catch (error) {
       console.error('Optimization error:', error);
@@ -373,28 +349,48 @@ export const UnifiedPromptOptimizer: React.FC<UnifiedPromptOptimizerProps> = ({
         </p>
       </div>
 
-      {/* TODO: 在 Phase 3 實作統一結果展示元件 */}
+      {/* 統一結果顯示元件 */}
+      <UnifiedResultDisplay
+        result={state.optimizedResult}
+        isLoading={state.isLoading}
+        onExport={() => {
+          if (state.optimizedResult?.exportData?.markdown) {
+            // 建立並下載 Markdown 檔案
+            const blob = new Blob([state.optimizedResult.exportData.markdown], {
+              type: 'text/markdown;charset=utf-8'
+            });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `prompt-optimization-${Date.now()}.md`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+          }
+        }}
+        onCopyPrompt={(prompt, language) => {
+          navigator.clipboard.writeText(prompt).then(() => {
+            console.log(`${language} prompt copied to clipboard`);
+          });
+        }}
+      />
+
+      {/* 結果操作按鈕 */}
       {state.optimizedResult && (
-        <div className="bg-white border rounded-lg p-6">
-          <h3 className="text-lg font-semibold mb-4">最佳化提示詞</h3>
-          <div className="bg-gray-50 p-4 rounded border">
-            <p className="text-gray-800">{state.optimizedResult.optimizedPrompt}</p>
-          </div>
-          
-          <div className="mt-4 flex space-x-3">
-            <button
-              onClick={() => onApplyPrompt?.(state.optimizedResult!.optimizedPrompt)}
-              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
-            >
-              應用到圖片生成
-            </button>
-            <button
-              onClick={() => handleReset()}
-              className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700"
-            >
-              重新開始
-            </button>
-          </div>
+        <div className="flex justify-center space-x-3 mt-6">
+          <button
+            onClick={() => onApplyPrompt?.(state.optimizedResult!.optimizedPrompt)}
+            className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+          >
+            應用到圖片生成
+          </button>
+          <button
+            onClick={() => handleReset()}
+            className="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+          >
+            重新開始
+          </button>
         </div>
       )}
     </div>
