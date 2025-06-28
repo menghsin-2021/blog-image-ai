@@ -1,9 +1,9 @@
 import React, { useState, useCallback } from 'react';
-import { 
-  OptimizationProvider, 
-  ImagePurposeType, 
-  ContentInput, 
-  UnifiedOptimizationResult 
+import {
+  OptimizationProvider,
+  ImagePurposeType,
+  ContentInput,
+  UnifiedOptimizationResult,
 } from '../../types/promptOptimizer';
 import { ServiceSelector } from './ServiceSelector';
 import { PurposeSelector } from './PurposeSelector';
@@ -24,22 +24,22 @@ interface UnifiedPromptOptimizerProps {
 interface UnifiedOptimizerState {
   // 流程控制
   currentStep: WorkflowStep;
-  
+
   // 服務選擇
   selectedService: OptimizationProvider | null;
-  
+
   // 共用狀態
   selectedPurpose: ImagePurposeType | null;
   contentInput: ContentInput;
-  
+
   // 服務特定狀態
   selectedModel: string | null;
-  
+
   // 結果狀態
   optimizedResult: UnifiedOptimizationResult | null;
   isLoading: boolean;
   error: string | null;
-  
+
   // 成本狀態 (Perplexity 專用)
   estimatedCost?: number;
 }
@@ -97,78 +97,85 @@ export const UnifiedPromptOptimizer: React.FC<UnifiedPromptOptimizerProps> = ({
   }, []);
 
   // 處理模型選擇和最佳化
-  const handleOptimize = useCallback(async (model?: string) => {
-    const { selectedService, selectedPurpose, contentInput } = state;
-    
-    if (!selectedService || !selectedPurpose || !contentInput.content.trim()) {
-      setState(prev => ({ ...prev, error: '請完成所有必要的設定' }));
-      return;
-    }
+  const handleOptimize = useCallback(
+    async (model?: string) => {
+      const { selectedService, selectedPurpose, contentInput } = state;
 
-    setState(prev => ({ 
-      ...prev, 
-      isLoading: true, 
-      error: null,
-      selectedModel: model || prev.selectedModel,
-    }));
-
-    try {
-      let result: UnifiedOptimizationResult;
-      
-      // 根據選擇的服務建立對應的提供商
-      if (selectedService === 'openai') {
-        const provider = new OpenAIOptimizationProvider();
-        result = await provider.optimize(contentInput, selectedPurpose, {
-          model: model || 'gpt-4o',
-          originalPrompt: contentInput.content
-        });
-      } else if (selectedService === 'perplexity') {
-        const provider = new PerplexityOptimizationProvider();
-        result = await provider.optimize(contentInput, selectedPurpose, {
-          model: model || 'llama-3.1-sonar-large-128k-online',
-          originalPrompt: contentInput.content
-        });
-      } else {
-        throw new Error('不支援的服務提供商');
+      if (!selectedService || !selectedPurpose || !contentInput.content.trim()) {
+        setState(prev => ({ ...prev, error: '請完成所有必要的設定' }));
+        return;
       }
 
       setState(prev => ({
         ...prev,
-        optimizedResult: result,
-        currentStep: 'result',
+        isLoading: true,
+        error: null,
+        selectedModel: model || prev.selectedModel,
       }));
 
-      onOptimizedPrompt?.(result);
+      try {
+        let result: UnifiedOptimizationResult;
 
-    } catch (error) {
-      console.error('Optimization error:', error);
-      setState(prev => ({
-        ...prev,
-        error: error instanceof Error ? error.message : '最佳化失敗，請稍後再試',
-      }));
-    } finally {
-      setState(prev => ({ ...prev, isLoading: false }));
-    }
-  }, [state, onOptimizedPrompt]);
+        // 根據選擇的服務建立對應的提供商
+        if (selectedService === 'openai') {
+          const provider = new OpenAIOptimizationProvider();
+          result = await provider.optimize(contentInput, selectedPurpose, {
+            model: model || 'gpt-4o',
+            originalPrompt: contentInput.content,
+          });
+        } else if (selectedService === 'perplexity') {
+          const provider = new PerplexityOptimizationProvider();
+          result = await provider.optimize(contentInput, selectedPurpose, {
+            model: model || 'llama-3.1-sonar-large-128k-online',
+            originalPrompt: contentInput.content,
+          });
+        } else {
+          throw new Error('不支援的服務提供商');
+        }
+
+        setState(prev => ({
+          ...prev,
+          optimizedResult: result,
+          currentStep: 'result',
+        }));
+
+        onOptimizedPrompt?.(result);
+      } catch (error) {
+        console.error('Optimization error:', error);
+        setState(prev => ({
+          ...prev,
+          error: error instanceof Error ? error.message : '最佳化失敗，請稍後再試',
+        }));
+      } finally {
+        setState(prev => ({ ...prev, isLoading: false }));
+      }
+    },
+    [state, onOptimizedPrompt]
+  );
 
   // 重置到指定步驟
-  const handleReset = useCallback((step: WorkflowStep = 'service') => {
-    setState({
-      currentStep: step,
-      selectedService: step === 'service' ? null : state.selectedService,
-      selectedPurpose: ['service', 'purpose'].includes(step) ? null : state.selectedPurpose,
-      contentInput: ['service', 'purpose', 'content'].includes(step) ? {
-        title: '',
-        content: '',
-        keywords: [],
-        targetAudience: '',
-      } : state.contentInput,
-      selectedModel: null,
-      optimizedResult: null,
-      isLoading: false,
-      error: null,
-    });
-  }, [state]);
+  const handleReset = useCallback(
+    (step: WorkflowStep = 'service') => {
+      setState({
+        currentStep: step,
+        selectedService: step === 'service' ? null : state.selectedService,
+        selectedPurpose: ['service', 'purpose'].includes(step) ? null : state.selectedPurpose,
+        contentInput: ['service', 'purpose', 'content'].includes(step)
+          ? {
+              title: '',
+              content: '',
+              keywords: [],
+              targetAudience: '',
+            }
+          : state.contentInput,
+        selectedModel: null,
+        optimizedResult: null,
+        isLoading: false,
+        error: null,
+      });
+    },
+    [state]
+  );
 
   // 渲染步驟指示器
   const renderStepIndicator = () => {
@@ -190,23 +197,18 @@ export const UnifiedPromptOptimizer: React.FC<UnifiedPromptOptimizerProps> = ({
               <div
                 className={`
                   flex items-center justify-center w-10 h-10 rounded-full text-sm font-medium
-                  ${index <= currentIndex
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-gray-200 text-gray-500'
-                  }
+                  ${index <= currentIndex ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-500'}
                 `}
               >
                 {step.icon}
               </div>
-              <div className="text-xs text-gray-600 max-w-16 text-center">
-                {step.label}
-              </div>
+              <div className="text-xs text-gray-600 max-w-16 text-center">{step.label}</div>
               {index < steps.length - 1 && (
-                <div 
+                <div
                   className={`
                     w-8 h-0.5 
                     ${index < currentIndex ? 'bg-blue-500' : 'bg-gray-200'}
-                  `} 
+                  `}
                 />
               )}
             </React.Fragment>
@@ -250,7 +252,9 @@ export const UnifiedPromptOptimizer: React.FC<UnifiedPromptOptimizerProps> = ({
           <div>
             <ContentInputComponent
               content={state.contentInput}
-              onChange={(content: ContentInput) => setState(prev => ({ ...prev, contentInput: content }))}
+              onChange={(content: ContentInput) =>
+                setState(prev => ({ ...prev, contentInput: content }))
+              }
               onAnalyze={() => handleContentComplete(state.contentInput)}
               isAnalyzing={state.isLoading}
             />
@@ -280,9 +284,7 @@ export const UnifiedPromptOptimizer: React.FC<UnifiedPromptOptimizerProps> = ({
   const renderModelStep = () => (
     <div className="max-w-2xl mx-auto">
       <div className="text-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          模型設定
-        </h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">模型設定</h2>
         <p className="text-gray-600">
           使用 {state.selectedService === 'openai' ? 'OpenAI GPT-4o' : 'Perplexity AI'} 進行最佳化
         </p>
@@ -294,9 +296,9 @@ export const UnifiedPromptOptimizer: React.FC<UnifiedPromptOptimizerProps> = ({
           <label className="block text-sm font-medium text-gray-700 mb-2">
             選擇 Perplexity 模型
           </label>
-          <select 
+          <select
             value={state.selectedModel || 'sonar'}
-            onChange={(e) => setState(prev => ({ ...prev, selectedModel: e.target.value }))}
+            onChange={e => setState(prev => ({ ...prev, selectedModel: e.target.value }))}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
           >
             <option value="sonar">Sonar - 快速且經濟</option>
@@ -319,9 +321,7 @@ export const UnifiedPromptOptimizer: React.FC<UnifiedPromptOptimizerProps> = ({
               正在最佳化...
             </>
           ) : (
-            <>
-              ✨ 開始最佳化
-            </>
+            <>✨ 開始最佳化</>
           )}
         </button>
       </div>
@@ -341,9 +341,7 @@ export const UnifiedPromptOptimizer: React.FC<UnifiedPromptOptimizerProps> = ({
   const renderResultStep = () => (
     <div className="max-w-4xl mx-auto">
       <div className="text-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          最佳化結果
-        </h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">最佳化結果</h2>
         <p className="text-gray-600">
           {state.selectedService === 'openai' ? 'OpenAI GPT-4o' : 'Perplexity AI'} 最佳化完成
         </p>
@@ -357,7 +355,7 @@ export const UnifiedPromptOptimizer: React.FC<UnifiedPromptOptimizerProps> = ({
           if (state.optimizedResult?.exportData?.markdown) {
             // 建立並下載 Markdown 檔案
             const blob = new Blob([state.optimizedResult.exportData.markdown], {
-              type: 'text/markdown;charset=utf-8'
+              type: 'text/markdown;charset=utf-8',
             });
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');

@@ -45,16 +45,12 @@ export const ServiceSelector: React.FC<ServiceSelectorProps> = ({
   return (
     <div className={`space-y-4 ${className}`}>
       <div className="text-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          選擇 AI 最佳化服務
-        </h2>
-        <p className="text-gray-600">
-          選擇最適合您需求的提示詞最佳化服務
-        </p>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">選擇 AI 最佳化服務</h2>
+        <p className="text-gray-600">選擇最適合您需求的提示詞最佳化服務</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {SERVICE_OPTIONS.map((option) => (
+        {SERVICE_OPTIONS.map(option => (
           <ServiceOptionCard
             key={option.provider}
             option={option}
@@ -73,11 +69,7 @@ interface ServiceOptionCardProps {
   onSelect: () => void;
 }
 
-const ServiceOptionCard: React.FC<ServiceOptionCardProps> = ({
-  option,
-  isSelected,
-  onSelect,
-}) => {
+const ServiceOptionCard: React.FC<ServiceOptionCardProps> = ({ option, isSelected, onSelect }) => {
   return (
     <div
       className={`
@@ -102,7 +94,11 @@ const ServiceOptionCard: React.FC<ServiceOptionCardProps> = ({
         <div className="absolute top-4 right-4">
           <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
             <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+              <path
+                fillRule="evenodd"
+                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                clipRule="evenodd"
+              />
             </svg>
           </div>
         </div>
@@ -111,15 +107,11 @@ const ServiceOptionCard: React.FC<ServiceOptionCardProps> = ({
       {/* 服務資訊 */}
       <div className="flex items-start space-x-4">
         <div className="text-4xl">{option.icon}</div>
-        
+
         <div className="flex-1">
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">
-            {option.title}
-          </h3>
-          
-          <p className="text-gray-600 text-sm mb-3">
-            {option.description}
-          </p>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">{option.title}</h3>
+
+          <p className="text-gray-600 text-sm mb-3">{option.description}</p>
 
           {/* 功能特色 */}
           <div className="flex flex-wrap gap-2 mb-3">
@@ -136,9 +128,7 @@ const ServiceOptionCard: React.FC<ServiceOptionCardProps> = ({
           {/* 成本資訊 */}
           <div className="flex items-center">
             <span className="text-xs text-gray-500">成本：</span>
-            <span className="text-sm font-medium text-gray-700 ml-1">
-              {option.cost}
-            </span>
+            <span className="text-sm font-medium text-gray-700 ml-1">{option.cost}</span>
           </div>
         </div>
       </div>

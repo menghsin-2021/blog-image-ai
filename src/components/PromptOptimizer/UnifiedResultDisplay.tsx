@@ -15,7 +15,7 @@ export function UnifiedResultDisplay({
   result,
   isLoading,
   onExport,
-  onCopyPrompt
+  onCopyPrompt,
 }: UnifiedResultDisplayProps) {
   if (isLoading) {
     return (
@@ -34,17 +34,23 @@ export function UnifiedResultDisplay({
 
   const getProviderIcon = (provider: string) => {
     switch (provider) {
-      case 'openai': return '🤖';
-      case 'perplexity': return '🌐';
-      default: return '✨';
+      case 'openai':
+        return '🤖';
+      case 'perplexity':
+        return '🌐';
+      default:
+        return '✨';
     }
   };
 
   const getProviderName = (provider: string) => {
     switch (provider) {
-      case 'openai': return 'OpenAI GPT-4o';
-      case 'perplexity': return 'Perplexity AI';
-      default: return provider;
+      case 'openai':
+        return 'OpenAI GPT-4o';
+      case 'perplexity':
+        return 'Perplexity AI';
+      default:
+        return provider;
     }
   };
 
@@ -73,7 +79,7 @@ export function UnifiedResultDisplay({
         <div className="px-6 py-4 border-b border-gray-200">
           <h4 className="text-lg font-medium text-gray-900">最佳化提示詞</h4>
         </div>
-        
+
         <div className="p-6 space-y-4">
           {/* 中文版本 */}
           <div>
@@ -86,9 +92,7 @@ export function UnifiedResultDisplay({
                 複製
               </button>
             </div>
-            <div className="p-3 bg-gray-50 rounded border text-sm">
-              {result.optimized.chinese}
-            </div>
+            <div className="p-3 bg-gray-50 rounded border text-sm">{result.optimized.chinese}</div>
           </div>
 
           {/* 英文版本 */}
@@ -102,9 +106,7 @@ export function UnifiedResultDisplay({
                 複製
               </button>
             </div>
-            <div className="p-3 bg-gray-50 rounded border text-sm">
-              {result.optimized.english}
-            </div>
+            <div className="p-3 bg-gray-50 rounded border text-sm">{result.optimized.english}</div>
           </div>
         </div>
       </div>
@@ -207,9 +209,7 @@ export function UnifiedResultDisplay({
             <div className="grid grid-cols-3 gap-4 text-sm">
               <div>
                 <span className="text-gray-700">總成本：</span>
-                <span className="font-medium ml-2">
-                  ${result.cost.totalCost.toFixed(4)} USD
-                </span>
+                <span className="font-medium ml-2">${result.cost.totalCost.toFixed(4)} USD</span>
               </div>
               <div>
                 <span className="text-gray-700">搜尋成本：</span>

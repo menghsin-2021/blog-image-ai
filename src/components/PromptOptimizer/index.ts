@@ -17,7 +17,10 @@ export { UnifiedResultDisplay } from './UnifiedResultDisplay';
 
 // 服務提供商 (Phase 2)
 export { OpenAIOptimizationProvider } from './providers/OpenAIOptimizationProvider';
-export { PerplexityOptimizationProvider, perplexityOptimizationProvider } from './providers/PerplexityOptimizationProvider';
+export {
+  PerplexityOptimizationProvider,
+  perplexityOptimizationProvider,
+} from './providers/PerplexityOptimizationProvider';
 
 // 導出資料
 export { IMAGE_PURPOSES } from './PurposeSelector';

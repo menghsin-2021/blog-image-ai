@@ -70,9 +70,11 @@ export class PerplexityOptimizer {
   constructor() {
     this.apiKey = import.meta.env.VITE_PERPLEXITY_API_KEY;
     this.baseUrl = PERPLEXITY_API_CONFIG.BASE_URL;
-    
+
     if (!this.apiKey) {
-      throw new Error('Perplexity API key is required. Please set VITE_PERPLEXITY_API_KEY in your environment variables.');
+      throw new Error(
+        'Perplexity API key is required. Please set VITE_PERPLEXITY_API_KEY in your environment variables.'
+      );
     }
   }
 
@@ -83,7 +85,7 @@ export class PerplexityOptimizer {
         {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${this.apiKey}`,
+            Authorization: `Bearer ${this.apiKey}`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
@@ -165,7 +167,7 @@ ${content}
   ): Promise<PerplexityOptimizationResult> {
     try {
       const messages = this.createOptimizationPrompt(content, purpose);
-      
+
       const request: PerplexityRequest = {
         model,
         messages,
@@ -175,10 +177,10 @@ ${content}
       };
 
       const response = await this.makeRequest(request);
-      
+
       // 解析回應內容
       const responseContent = response.choices[0]?.message?.content || '';
-      
+
       let parsedContent: any;
       try {
         // 嘗試解析 JSON 回應
@@ -236,7 +238,9 @@ ${content}
           quality: 'high',
           style: parsedContent.suggestedStyle || 'professional',
         },
-        styleModifiers: parsedContent.suggestedStyle ? [parsedContent.suggestedStyle] : ['professional'],
+        styleModifiers: parsedContent.suggestedStyle
+          ? [parsedContent.suggestedStyle]
+          : ['professional'],
         suggestions: parsedContent.improvements || [],
         exportData: {
           markdown: this.generateMarkdown(parsedContent, response.citations || []),
@@ -248,9 +252,7 @@ ${content}
       };
     } catch (error) {
       console.error('Perplexity optimization error:', error);
-      throw new Error(
-        `提示詞最佳化失敗: ${error instanceof Error ? error.message : '未知錯誤'}`
-      );
+      throw new Error(`提示詞最佳化失敗: ${error instanceof Error ? error.message : '未知錯誤'}`);
     }
   }
 
@@ -263,10 +265,10 @@ ${content}
     // 簡單的內容分析邏輯
     const wordCount = content.split(/\s+/).length;
     const hasComplexTerms = /技術|分析|研究|深度|專業|複雜/.test(content);
-    
+
     let complexity: 'simple' | 'medium' | 'complex';
     let recommendedModel: PerplexityModel;
-    
+
     if (wordCount < 200 && !hasComplexTerms) {
       complexity = 'simple';
       recommendedModel = PERPLEXITY_MODELS.SONAR;
@@ -300,13 +302,32 @@ ${content}
    */
   private extractKeywords(text: string): string[] {
     // 簡單的關鍵字提取邏輯
-    const words = text.toLowerCase()
+    const words = text
+      .toLowerCase()
       .replace(/[^\u4e00-\u9fa5a-zA-Z\s]/g, '') // 保留中文、英文和空格
       .split(/\s+/)
       .filter(word => word.length > 1);
 
     // 移除常見停用詞
-    const stopWords = ['的', '和', '或', '但', '在', '是', '有', '以', '為', '與', 'the', 'and', 'or', 'but', 'in', 'is', 'with'];
+    const stopWords = [
+      '的',
+      '和',
+      '或',
+      '但',
+      '在',
+      '是',
+      '有',
+      '以',
+      '為',
+      '與',
+      'the',
+      'and',
+      'or',
+      'but',
+      'in',
+      'is',
+      'with',
+    ];
     const keywords = words.filter(word => !stopWords.includes(word));
 
     // 回傳前 10 個關鍵字
@@ -318,10 +339,10 @@ ${content}
    */
   private generateMarkdown(parsedContent: any, citations: PerplexityCitation[]): string {
     let markdown = `# 提示詞最佳化結果\n\n`;
-    
+
     markdown += `## 原始提示詞\n${parsedContent.originalPrompt}\n\n`;
     markdown += `## 最佳化後提示詞\n${parsedContent.optimizedPrompt}\n\n`;
-    
+
     if (parsedContent.reasoning) {
       markdown += `## 最佳化理由\n${parsedContent.reasoning}\n\n`;
     }

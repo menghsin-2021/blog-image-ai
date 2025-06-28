@@ -137,7 +137,7 @@ export interface UnifiedOptimizationResult {
   provider: OptimizationProvider;
   model: string;
   timestamp: number;
-  
+
   // 統一提示詞格式
   original: string;
   originalPrompt: string; // 向後相容性
@@ -146,14 +146,14 @@ export interface UnifiedOptimizationResult {
     english: string;
   };
   optimizedPrompt: string; // 向後相容性，通常使用 chinese 版本
-  
+
   // 分析結果
   improvements: string[];
   reasoning: string;
   suggestedStyle: string;
   technicalTips: string;
   confidence: number;
-  
+
   // 分析資訊
   analysis: {
     keywords: string[];
@@ -161,23 +161,23 @@ export interface UnifiedOptimizationResult {
     sentiment: 'positive' | 'neutral' | 'professional';
     complexity: 'simple' | 'moderate' | 'complex';
   };
-  
+
   // 技術參數
   technicalParams: {
     aspectRatio: string;
     quality: string;
     style?: string;
   };
-  
+
   // 共同欄位
   styleModifiers: string[];
   suggestions: string[]; // 與 improvements 相同，保持相容性
-  
+
   // 匯出資料
   exportData: {
     markdown: string;
   };
-  
+
   // 條件式欄位 - Perplexity 專用
   citations?: PerplexityCitation[];
   cost?: {
@@ -201,7 +201,11 @@ export interface PerplexityCitation {
 export interface OptimizationProviderInterface {
   name: string;
   provider: OptimizationProvider;
-  optimize(content: ContentInput, purpose: ImagePurposeType, options?: any): Promise<UnifiedOptimizationResult>;
+  optimize(
+    content: ContentInput,
+    purpose: ImagePurposeType,
+    options?: any
+  ): Promise<UnifiedOptimizationResult>;
   getAvailableModels(): ModelOption[];
   estimateCost?(content: string, model?: string): Promise<number>;
 }

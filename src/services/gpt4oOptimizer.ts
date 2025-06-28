@@ -266,7 +266,10 @@ ${content.targetAudience ? `目標讀者: ${content.targetAudience}` : ''}`;
         },
         optimizedPrompt: prompts.chinese, // 預設使用中文版本
         improvements: prompts.suggestions, // 使用建議作為改善點
-        reasoning: analysis.complexity === 'complex' ? '內容較為複雜，需要更詳細的視覺呈現' : '內容清晰，可以直接視覺化',
+        reasoning:
+          analysis.complexity === 'complex'
+            ? '內容較為複雜，需要更詳細的視覺呈現'
+            : '內容清晰，可以直接視覺化',
         suggestedStyle: this.extractStyleModifiers(analysis).join(', '),
         technicalTips: `建議${technicalParams.aspectRatio}比例，${technicalParams.quality}品質`,
         suggestions: prompts.suggestions,

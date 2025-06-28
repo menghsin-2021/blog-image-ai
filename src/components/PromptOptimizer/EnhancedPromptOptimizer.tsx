@@ -10,7 +10,10 @@ import {
   PERPLEXITY_MODELS,
   PerplexityModel,
 } from '../../utils/perplexityConstants';
-import { PerplexityOptimizer, PerplexityOptimizationResult } from '../../services/perplexityOptimizer';
+import {
+  PerplexityOptimizer,
+  PerplexityOptimizationResult,
+} from '../../services/perplexityOptimizer';
 import { PurposeSelector } from './PurposeSelector';
 import { ContentInput } from './ContentInput';
 import { ProviderSelector } from './ProviderSelector';
@@ -28,7 +31,9 @@ export const EnhancedPromptOptimizer: React.FC<EnhancedPromptOptimizerProps> = (
   className = '',
 }) => {
   // 狀態管理
-  const [currentStep, setCurrentStep] = useState<'purpose' | 'content' | 'provider' | 'result'>('purpose');
+  const [currentStep, setCurrentStep] = useState<'purpose' | 'content' | 'provider' | 'result'>(
+    'purpose'
+  );
   const [selectedPurpose, setSelectedPurpose] = useState<ImagePurposeType | null>(null);
   const [contentInput, setContentInput] = useState<ContentInputType>({
     title: '',
@@ -42,7 +47,9 @@ export const EnhancedPromptOptimizer: React.FC<EnhancedPromptOptimizerProps> = (
   const [selectedModel, setSelectedModel] = useState<PerplexityModel | string>(
     PERPLEXITY_MODELS.SONAR
   );
-  const [optimizedResult, setOptimizedResult] = useState<OptimizedPrompt | PerplexityOptimizationResult | null>(null);
+  const [optimizedResult, setOptimizedResult] = useState<
+    OptimizedPrompt | PerplexityOptimizationResult | null
+  >(null);
   const [estimatedCost, setEstimatedCost] = useState<number | undefined>();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -73,7 +80,7 @@ export const EnhancedPromptOptimizer: React.FC<EnhancedPromptOptimizerProps> = (
   // 處理提供商選擇
   const handleProviderSelect = useCallback((provider: OptimizationProvider) => {
     setSelectedProvider(provider);
-    
+
     // 設定預設模型
     if (provider === OPTIMIZATION_PROVIDERS.PERPLEXITY) {
       setSelectedModel(PERPLEXITY_MODELS.SONAR);
@@ -84,8 +91,13 @@ export const EnhancedPromptOptimizer: React.FC<EnhancedPromptOptimizerProps> = (
 
   // 估算成本 (當內容或模型變化時)
   useEffect(() => {
-    if (selectedProvider === OPTIMIZATION_PROVIDERS.PERPLEXITY && perplexityOptimizer && contentInput.content) {
-      perplexityOptimizer.analyzeBlogContent(contentInput.content)
+    if (
+      selectedProvider === OPTIMIZATION_PROVIDERS.PERPLEXITY &&
+      perplexityOptimizer &&
+      contentInput.content
+    ) {
+      perplexityOptimizer
+        .analyzeBlogContent(contentInput.content)
         .then(analysis => {
           setEstimatedCost(analysis.estimatedCost);
         })
@@ -132,18 +144,26 @@ export const EnhancedPromptOptimizer: React.FC<EnhancedPromptOptimizerProps> = (
       onOptimizedPrompt?.(result);
     } catch (error) {
       console.error('Optimization error:', error);
-      setError(
-        error instanceof Error ? error.message : '提示詞最佳化失敗，請稍後再試'
-      );
+      setError(error instanceof Error ? error.message : '提示詞最佳化失敗，請稍後再試');
     } finally {
       setIsLoading(false);
     }
-  }, [selectedPurpose, contentInput, selectedProvider, selectedModel, perplexityOptimizer, onOptimizedPrompt]);
+  }, [
+    selectedPurpose,
+    contentInput,
+    selectedProvider,
+    selectedModel,
+    perplexityOptimizer,
+    onOptimizedPrompt,
+  ]);
 
   // 處理應用提示詞
-  const handleApplyPrompt = useCallback((prompt: string) => {
-    onApplyPrompt?.(prompt);
-  }, [onApplyPrompt]);
+  const handleApplyPrompt = useCallback(
+    (prompt: string) => {
+      onApplyPrompt?.(prompt);
+    },
+    [onApplyPrompt]
+  );
 
   // 處理重置
   const handleReset = useCallback(() => {
@@ -194,10 +214,7 @@ export const EnhancedPromptOptimizer: React.FC<EnhancedPromptOptimizerProps> = (
               <div
                 className={`
                   flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium
-                  ${index <= currentIndex
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-200 text-gray-600'
-                  }
+                  ${index <= currentIndex ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'}
                 `}
               >
                 {index + 1}
@@ -237,7 +254,9 @@ export const EnhancedPromptOptimizer: React.FC<EnhancedPromptOptimizerProps> = (
             <div>
               <p className="text-blue-900 font-medium">正在最佳化提示詞...</p>
               <p className="text-blue-700 text-sm">
-                使用 {selectedProvider === OPTIMIZATION_PROVIDERS.PERPLEXITY ? 'Perplexity' : 'OpenAI'} 分析您的內容
+                使用{' '}
+                {selectedProvider === OPTIMIZATION_PROVIDERS.PERPLEXITY ? 'Perplexity' : 'OpenAI'}{' '}
+                分析您的內容
               </p>
             </div>
           </div>
@@ -250,7 +269,12 @@ export const EnhancedPromptOptimizer: React.FC<EnhancedPromptOptimizerProps> = (
           <div className="flex items-center space-x-3">
             <div className="text-red-500">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
             </div>
             <div>
@@ -282,12 +306,8 @@ export const EnhancedPromptOptimizer: React.FC<EnhancedPromptOptimizerProps> = (
         {currentStep === 'provider' && (
           <div>
             <div className="mb-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-2">
-                選擇 AI 最佳化服務
-              </h2>
-              <p className="text-gray-600">
-                選擇適合的 AI 服務來最佳化您的提示詞
-              </p>
+              <h2 className="text-xl font-semibold text-gray-900 mb-2">選擇 AI 最佳化服務</h2>
+              <p className="text-gray-600">選擇適合的 AI 服務來最佳化您的提示詞</p>
             </div>
 
             <ProviderSelector

@@ -9,11 +9,11 @@ export const PERPLEXITY_API_CONFIG = {
 
 export const PERPLEXITY_MODELS = {
   SONAR: 'llama-3.1-sonar-small-128k-online',
-  SONAR_PRO: 'llama-3.1-sonar-large-128k-online', 
+  SONAR_PRO: 'llama-3.1-sonar-large-128k-online',
   SONAR_REASONING: 'llama-3.1-sonar-huge-128k-online',
 } as const;
 
-export type PerplexityModel = typeof PERPLEXITY_MODELS[keyof typeof PERPLEXITY_MODELS];
+export type PerplexityModel = (typeof PERPLEXITY_MODELS)[keyof typeof PERPLEXITY_MODELS];
 
 export const PERPLEXITY_MODEL_INFO = {
   [PERPLEXITY_MODELS.SONAR]: {
@@ -53,7 +53,8 @@ export const OPTIMIZATION_PROVIDERS = {
   OPENAI: 'openai',
 } as const;
 
-export type OptimizationProvider = typeof OPTIMIZATION_PROVIDERS[keyof typeof OPTIMIZATION_PROVIDERS];
+export type OptimizationProvider =
+  (typeof OPTIMIZATION_PROVIDERS)[keyof typeof OPTIMIZATION_PROVIDERS];
 
 export const PROVIDER_INFO = {
   [OPTIMIZATION_PROVIDERS.PERPLEXITY]: {
@@ -82,11 +83,11 @@ export const calculatePerplexityCost = (
   model: PerplexityModel
 ) => {
   const modelInfo = PERPLEXITY_MODEL_INFO[model];
-  
+
   const inputCost = (inputTokens / 1_000_000) * modelInfo.inputCost;
   const outputCost = (outputTokens / 1_000_000) * modelInfo.outputCost;
   const searchCost = (searchQueries / 1_000) * modelInfo.searchCost;
-  
+
   return {
     inputCost,
     outputCost,
