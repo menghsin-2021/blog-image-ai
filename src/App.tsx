@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { AspectRatio, ImageGenerationRequest, DalleModel, ImageQuality, ImageStyle } from './types';
-import { OptimizedPrompt } from './types/promptOptimizer';
+import { OptimizedPrompt, UnifiedOptimizationResult } from './types/promptOptimizer';
 import { ASPECT_RATIOS, DEFAULT_SETTINGS, getAspectRatiosForModel } from './utils/constants';
 import { useImageGeneration } from './hooks/useImageGeneration';
 import { AspectRatioSelector } from './components/AspectRatioSelector';
 import { ModelSettings } from './components/ModelSettings';
 import { SimpleImagePreview } from './components/SimpleImagePreview';
-import { PromptOptimizer, EnhancedPromptOptimizer } from './components/PromptOptimizer';
+import { UnifiedPromptOptimizer } from './components/PromptOptimizer';
 // import { CacheTestPanel } from './components/CacheTestPanel';
 import { SimpleCacheTestPanel } from './components/SimpleCacheTestPanel';
 
@@ -22,8 +22,8 @@ function App() {
   const [selectedQuality, setSelectedQuality] = useState<ImageQuality>(DEFAULT_SETTINGS.quality);
   const [selectedStyle, setSelectedStyle] = useState<ImageStyle>(DEFAULT_SETTINGS.style);
 
-  // 頁籤狀態 - 使用簡單的字串聯合類型
-  type TabType = 'generate' | 'optimize' | 'perplexity' | 'cacheTest';
+  // 頁籤狀態 - 整合最佳化功能
+  type TabType = 'generate' | 'optimize' | 'cacheTest';
   const [activeTab, setActiveTab] = useState<TabType>('generate');
 
   // 圖片生成 Hook
@@ -96,17 +96,7 @@ function App() {
                     : 'text-gray-500 hover:text-gray-700'
                 }`}
               >
-                ✨ 提示詞最佳化
-              </button>
-              <button
-                onClick={() => setActiveTab('perplexity')}
-                className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-                  activeTab === 'perplexity'
-                    ? 'bg-white text-blue-600 shadow-sm'
-                    : 'text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                🔍 Perplexity 最佳化
+                ✨ 智慧最佳化
               </button>
               {/* 只在開發環境或除錯模式下顯示快取測試頁籤 */}
               {isDebugMode && (
@@ -200,24 +190,33 @@ function App() {
               </div>
             </div>
           ) : activeTab === 'optimize' ? (
-            /* 提示詞最佳化頁面 */
-            <PromptOptimizer
-              onOptimizedPrompt={handleOptimizedPrompt}
-              onApplyPrompt={handleApplyPrompt}
-            />
-          ) : activeTab === 'perplexity' ? (
-            /* Perplexity 最佳化頁面 */
-            <EnhancedPromptOptimizer
-              onOptimizedPrompt={(result) => {
-                console.log('Perplexity 最佳化結果:', result);
-                // 如果結果有 optimizedPrompt 屬性，處理為舊格式
-                if ('optimizedPrompt' in result) {
-                  handleOptimizedPrompt(result as OptimizedPrompt);
-                }
+            /* 統一最佳化頁面 - 支援 OpenAI 和 Perplexity */
+            <UnifiedPromptOptimizer
+              onOptimizedPrompt={(result: UnifiedOptimizationResult) => {
+                console.log('統一最佳化結果:', result);
+                // 轉換為舊格式以相容現有邏輯
+                const legacyFormat: OptimizedPrompt = {
+                  original: result.original,
+                  originalPrompt: result.originalPrompt,
+                  optimized: result.optimized,
+                  optimizedPrompt: result.optimizedPrompt,
+                  improvements: result.improvements,
+                  reasoning: result.reasoning,
+                  suggestedStyle: result.suggestedStyle,
+                  technicalTips: result.technicalTips,
+                  suggestions: result.suggestions,
+                  styleModifiers: result.styleModifiers,
+                  technicalParams: result.technicalParams,
+                  confidence: result.confidence,
+                  analysis: result.analysis,
+                  exportData: result.exportData,
+                  timestamp: result.timestamp,
+                };
+                handleOptimizedPrompt(legacyFormat);
               }}
               onApplyPrompt={handleApplyPrompt}
             />
-          ) : isDebugMode ? (
+          ) : isDebugMode && activeTab === 'cacheTest' ? (
             /* 快取測試頁面 - 只在開發環境或除錯模式中顯示 */
             <div className="bg-white rounded-xl shadow-lg p-6">
               <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">

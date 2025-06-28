@@ -114,6 +114,8 @@ export class PerplexityOptimizer {
   private createOptimizationPrompt(content: string, purpose: string): PerplexityMessage[] {
     const systemPrompt = `你是一個專業的部落格圖片生成提示詞最佳化專家。
 
+**重要：請務必使用繁體中文回應，不要使用簡體中文。**
+
 你的任務是分析部落格內容，並為指定的圖片用途生成最佳化的 AI 圖片生成提示詞。
 
 請遵循以下原則：
@@ -122,11 +124,13 @@ export class PerplexityOptimizer {
 3. 考慮目標受眾和視覺效果
 4. 包含具體的視覺元素、風格指導和技術參數
 5. 確保提示詞能生成專業、高品質的圖片
+6. **所有回應內容必須使用繁體中文（Traditional Chinese），包括提示詞和建議**
 
 請以 JSON 格式回應，包含以下欄位：
 {
-  "originalPrompt": "基於內容生成的基礎提示詞",
-  "optimizedPrompt": "經過最佳化的詳細提示詞",
+  "originalPrompt": "基於內容生成的基礎提示詞（繁體中文）",
+  "optimizedPrompt": "經過最佳化的詳細提示詞（繁體中文）",
+  "optimizedPromptEn": "經過最佳化的詳細提示詞（英文版本）",
   "improvements": ["改善點1", "改善點2", ...],
   "reasoning": "最佳化的理由和邏輯",
   "suggestedStyle": "建議的視覺風格",
@@ -140,7 +144,13 @@ ${content}
 
 圖片用途：${purpose}
 
-請基於最新的 AI 圖片生成趨勢和部落格視覺設計最佳實踐，提供詳細的最佳化建議。`;
+**特別要求：**
+1. 必須提供繁體中文（optimizedPrompt）和英文（optimizedPromptEn）兩個版本的最佳化提示詞
+2. 所有說明文字請使用繁體中文（Traditional Chinese），不要使用簡體中文
+3. 提示詞應該適合台灣地區的使用者
+4. 請基於最新的 AI 圖片生成趨勢和部落格視覺設計最佳實踐，提供詳細的最佳化建議
+
+請確保回應格式正確，且所有中文字都是繁體字。兩個版本的提示詞內容應該相對應但語言不同。`;
 
     return [
       { role: 'system', content: systemPrompt },
@@ -183,6 +193,7 @@ ${content}
         parsedContent = {
           originalPrompt: content.substring(0, 100) + '...',
           optimizedPrompt: responseContent,
+          optimizedPromptEn: responseContent, // 預設使用相同內容
           improvements: ['基於即時網路資訊最佳化', 'Perplexity AI 分析優化'],
           reasoning: '使用 Perplexity AI 基於最新網路資訊進行最佳化',
           suggestedStyle: '現代簡約風格',
@@ -206,7 +217,7 @@ ${content}
         originalPrompt: parsedContent.originalPrompt,
         optimized: {
           chinese: parsedContent.optimizedPrompt,
-          english: parsedContent.optimizedPrompt, // Perplexity 通常回傳一個版本
+          english: parsedContent.optimizedPromptEn || parsedContent.optimizedPrompt, // 使用英文版本或退回中文版本
         },
         optimizedPrompt: parsedContent.optimizedPrompt,
         improvements: parsedContent.improvements || [],

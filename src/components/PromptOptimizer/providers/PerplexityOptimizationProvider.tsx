@@ -120,7 +120,7 @@ export class PerplexityOptimizationProvider implements OptimizationProviderInter
       originalPrompt: perplexityResult.originalPrompt || perplexityResult.original || '',
       optimized: {
         chinese: perplexityResult.optimized?.chinese || perplexityResult.optimizedPrompt || '',
-        english: perplexityResult.optimized?.english || perplexityResult.optimizedPrompt || '',
+        english: perplexityResult.optimized?.english || perplexityResult.optimizedPromptEn || perplexityResult.optimizedPrompt || '',
       },
       optimizedPrompt: perplexityResult.optimizedPrompt || perplexityResult.optimized?.chinese || '',
       
