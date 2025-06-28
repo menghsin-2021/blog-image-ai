@@ -259,16 +259,23 @@ ${content.targetAudience ? `目標讀者: ${content.targetAudience}` : ''}`;
 
       const result: OptimizedPrompt = {
         original: originalPrompt || content.content.slice(0, 100),
+        originalPrompt: originalPrompt || content.content.slice(0, 100),
         optimized: {
           chinese: prompts.chinese,
           english: prompts.english,
         },
+        optimizedPrompt: prompts.chinese, // 預設使用中文版本
+        improvements: prompts.suggestions, // 使用建議作為改善點
+        reasoning: analysis.complexity === 'complex' ? '內容較為複雜，需要更詳細的視覺呈現' : '內容清晰，可以直接視覺化',
+        suggestedStyle: this.extractStyleModifiers(analysis).join(', '),
+        technicalTips: `建議${technicalParams.aspectRatio}比例，${technicalParams.quality}品質`,
         suggestions: prompts.suggestions,
         styleModifiers: this.extractStyleModifiers(analysis),
         technicalParams,
         confidence,
         analysis,
         exportData,
+        timestamp: Date.now(),
       };
 
       // 7. 最終驗證結果結構
@@ -294,16 +301,23 @@ ${content.targetAudience ? `目標讀者: ${content.targetAudience}` : ''}`;
 
       return {
         original: originalPrompt || content.content.slice(0, 100),
+        originalPrompt: originalPrompt || content.content.slice(0, 100),
         optimized: {
           chinese: fallbackPrompts.chinese,
           english: fallbackPrompts.english,
         },
+        optimizedPrompt: fallbackPrompts.chinese,
+        improvements: fallbackPrompts.suggestions,
+        reasoning: '使用降級模式產生的結果',
+        suggestedStyle: '現代, 簡潔, 專業',
+        technicalTips: `建議${fallbackTechnicalParams.aspectRatio}比例`,
         suggestions: fallbackPrompts.suggestions,
         styleModifiers: ['現代', '簡潔', '專業'],
         technicalParams: fallbackTechnicalParams,
         confidence: 0.3, // 降級模式的信心度更低
         analysis: fallbackAnalysis,
         exportData: fallbackExportData,
+        timestamp: Date.now(),
       };
     }
   }

@@ -24,34 +24,35 @@ export interface ContentInput {
 
 // 提示詞最佳化結果
 export interface OptimizedPrompt {
-  original: string; // 原始提示詞
+  original?: string; // 原始提示詞
+  originalPrompt?: string; // 原始提示詞 (保持相容性)
   optimized: {
-    // 最佳化後提示詞 (雙語)
-    chinese: string; // 中文版本
-    english: string; // 英文版本
+    chinese: string; // 中文版最佳化提示詞
+    english: string; // 英文版最佳化提示詞
   };
-  suggestions: string[]; // 最佳化建議
-  styleModifiers: string[]; // 風格修飾詞
+  optimizedPrompt?: string; // 單一最佳化提示詞 (保持相容性)
+  improvements: string[]; // 改善點列表
+  reasoning: string; // 最佳化理由
+  suggestedStyle: string; // 建議的視覺風格
+  technicalTips: string; // 技術建議
+  confidence: number; // 信心度 (0-1)
+  analysis: {
+    keywords: string[]; // 關鍵字
+    topic: string; // 主題
+    sentiment: 'positive' | 'neutral' | 'professional'; // 情感
+    complexity: 'simple' | 'moderate' | 'complex'; // 複雜度
+  };
   technicalParams: {
-    // 技術參數建議
     aspectRatio: string;
     quality: string;
     style?: string;
   };
-  confidence: number; // 最佳化信心度 (0-1)
-  analysis: {
-    // GPT-4o 分析結果
-    keywords: string[]; // 提取的關鍵字
-    topic: string; // 主題分類
-    sentiment: string; // 情感分析
-    complexity: string; // 內容複雜度
-  };
+  styleModifiers: string[]; // 風格修飾詞
+  suggestions: string[]; // 建議
   exportData: {
-    // 匯出資料
-    markdown: string; // Markdown 格式
-    timestamp: string; // 建立時間
-    purpose: ImagePurposeType; // 圖片用途
+    markdown: string; // Markdown 格式匯出
   };
+  timestamp: number; // 生成時間戳
 }
 
 // 內容分析結果

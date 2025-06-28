@@ -373,7 +373,13 @@ export async function optimizePrompt(
 
   return {
     original: originalPrompt || content.content.slice(0, 100) + '...',
+    originalPrompt: originalPrompt || content.content.slice(0, 100) + '...',
     optimized: optimizedPrompt,
+    optimizedPrompt: optimizedPrompt.chinese, // 預設使用中文版本
+    improvements: suggestions,
+    reasoning: '根據內容分析產生的最佳化建議',
+    suggestedStyle: styleModifiers.join(', '),
+    technicalTips: `建議${technicalParams.aspectRatio}比例，${technicalParams.quality}品質`,
     suggestions,
     styleModifiers,
     technicalParams,
@@ -386,9 +392,8 @@ export async function optimizePrompt(
     },
     exportData: {
       markdown: generateMarkdownExport(optimizedPrompt, suggestions, technicalParams),
-      timestamp: new Date().toISOString(),
-      purpose,
     },
+    timestamp: Date.now(),
   };
 }
 
