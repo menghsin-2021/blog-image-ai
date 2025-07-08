@@ -9,7 +9,7 @@ export const PERPLEXITY_API_CONFIG = {
 
 export const PERPLEXITY_MODELS = {
   SONAR: 'sonar',
-  SONAR_PRO: 'sonar-pro', 
+  SONAR_PRO: 'sonar-pro',
   SONAR_REASONING: 'sonar-reasoning',
 } as const;
 

@@ -32,9 +32,7 @@ export class PerplexityOptimizationProvider implements OptimizationProviderInter
       const purposeString = this.convertPurposeToString(purpose);
 
       // 選擇模型
-      const selectedModel = this.convertModelName(
-        options?.model || 'sonar-pro'
-      );
+      const selectedModel = this.convertModelName(options?.model || 'sonar-pro');
 
       // 使用現有的 Perplexity 服務實例
       const result = await perplexityOptimizationService.optimizePrompt(
@@ -44,10 +42,7 @@ export class PerplexityOptimizationProvider implements OptimizationProviderInter
       );
 
       // 轉換為統一格式
-      return this.convertToUnifiedResult(
-        result,
-        options?.model || 'sonar-pro'
-      );
+      return this.convertToUnifiedResult(result, options?.model || 'sonar-pro');
     } catch (error) {
       console.error('Perplexity optimization failed:', error);
       throw new Error(
@@ -92,8 +87,8 @@ export class PerplexityOptimizationProvider implements OptimizationProviderInter
 
       // Perplexity 價格表（每1000 tokens的成本，美元）
       const pricing: Record<string, number> = {
-        'sonar': 0.0002, // $0.0002
-        'sonar-pro': 0.001, // $0.001  
+        sonar: 0.0002, // $0.0002
+        'sonar-pro': 0.001, // $0.001
         'sonar-reasoning': 0.005, // $0.005
       };
 
@@ -199,7 +194,7 @@ export class PerplexityOptimizationProvider implements OptimizationProviderInter
   private convertModelName(modelName: string): PerplexityModel {
     // 模型名稱映射
     const modelMapping: Record<string, PerplexityModel> = {
-      'sonar': PERPLEXITY_MODELS.SONAR,
+      sonar: PERPLEXITY_MODELS.SONAR,
       'sonar-pro': PERPLEXITY_MODELS.SONAR_PRO,
       'sonar-reasoning': PERPLEXITY_MODELS.SONAR_REASONING,
       // 向下相容舊的模型名稱

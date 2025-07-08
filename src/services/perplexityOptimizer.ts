@@ -116,9 +116,9 @@ export class PerplexityOptimizer {
   private createOptimizationPrompt(content: string, purpose: string): PerplexityMessage[] {
     // 定義用途關鍵字對應
     const purposeKeywords = {
-      '首頁橫幅': '部落格文章開頭封面橫幅圖片',
-      '段落說明': '部落格文章段落說明圖片', 
-      '內容總結': '部落格文章結尾總結圖片',
+      首頁橫幅: '部落格文章開頭封面橫幅圖片',
+      段落說明: '部落格文章段落說明圖片',
+      內容總結: '部落格文章結尾總結圖片',
     };
 
     const requiredKeyword = purposeKeywords[purpose as keyof typeof purposeKeywords] || purpose;
@@ -218,14 +218,14 @@ ${content}
 
       // 驗證關鍵字是否包含在結果中
       const purposeKeywords = {
-        '首頁橫幅': '部落格文章開頭封面橫幅圖片',
-        '段落說明': '部落格文章段落說明圖片',
-        '內容總結': '部落格文章結尾總結圖片',
+        首頁橫幅: '部落格文章開頭封面橫幅圖片',
+        段落說明: '部落格文章段落說明圖片',
+        內容總結: '部落格文章結尾總結圖片',
       };
-      
+
       const requiredKeyword = purposeKeywords[purpose as keyof typeof purposeKeywords] || purpose;
       const chinesePrompt = parsedContent.optimizedPrompt || '';
-      
+
       if (!chinesePrompt.includes(requiredKeyword)) {
         console.warn(`Perplexity 生成的中文提示詞缺少必要關鍵字: ${requiredKeyword}`);
         // 在提示詞開頭補充關鍵字

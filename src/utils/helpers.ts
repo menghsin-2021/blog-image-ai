@@ -81,7 +81,7 @@ export const copyImageToClipboard = async (imageUrl: string): Promise<void> => {
     }
 
     const blob = await response.blob();
-    
+
     // 檢查圖片格式
     if (!blob.type.startsWith('image/')) {
       throw new Error('不支援的圖片格式');
@@ -90,8 +90,8 @@ export const copyImageToClipboard = async (imageUrl: string): Promise<void> => {
     // 複製到剪貼簿
     await navigator.clipboard.write([
       new ClipboardItem({
-        [blob.type]: blob
-      })
+        [blob.type]: blob,
+      }),
     ]);
   } catch (error) {
     console.error('複製圖片到剪貼簿失敗:', error);

@@ -75,7 +75,7 @@ export const SimpleImagePreview: FC<SimpleImagePreviewProps> = ({
       }
 
       const blob = await response.blob();
-      
+
       // 檢查圖片格式
       if (!blob.type.startsWith('image/')) {
         throw new Error('不支援的圖片格式');
@@ -84,8 +84,8 @@ export const SimpleImagePreview: FC<SimpleImagePreviewProps> = ({
       // 複製到剪貼簿
       await navigator.clipboard.write([
         new ClipboardItem({
-          [blob.type]: blob
-        })
+          [blob.type]: blob,
+        }),
       ]);
 
       setImageCopied(true);
@@ -173,14 +173,22 @@ export const SimpleImagePreview: FC<SimpleImagePreviewProps> = ({
               className="bg-white bg-opacity-90 hover:bg-opacity-100 text-gray-800 p-3 rounded-full shadow-lg transition-all duration-200"
               title="複製圖片"
             >
-              {imageCopied ? <Check className="w-5 h-5 text-green-500" /> : <Image className="w-5 h-5" />}
+              {imageCopied ? (
+                <Check className="w-5 h-5 text-green-500" />
+              ) : (
+                <Image className="w-5 h-5" />
+              )}
             </button>
             <button
               onClick={handleCopyPrompt}
               className="bg-white bg-opacity-90 hover:bg-opacity-100 text-gray-800 p-3 rounded-full shadow-lg transition-all duration-200"
               title="複製提示詞"
             >
-              {promptCopied ? <Check className="w-5 h-5 text-green-500" /> : <Copy className="w-5 h-5" />}
+              {promptCopied ? (
+                <Check className="w-5 h-5 text-green-500" />
+              ) : (
+                <Copy className="w-5 h-5" />
+              )}
             </button>
           </div>
         </div>
@@ -220,7 +228,7 @@ export const SimpleImagePreview: FC<SimpleImagePreviewProps> = ({
               {imageCopied ? <Check className="w-4 h-4" /> : <Image className="w-4 h-4" />}
               {imageCopied ? '已複製圖片' : '複製圖片'}
             </button>
-            
+
             <button
               onClick={handleCopyPrompt}
               className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors"
