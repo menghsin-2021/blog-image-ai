@@ -33,7 +33,7 @@ export class PerplexityOptimizationProvider implements OptimizationProviderInter
 
       // 選擇模型
       const selectedModel = this.convertModelName(
-        options?.model || 'llama-3.1-sonar-large-128k-online'
+        options?.model || 'sonar-pro'
       );
 
       // 使用現有的 Perplexity 服務實例
@@ -46,7 +46,7 @@ export class PerplexityOptimizationProvider implements OptimizationProviderInter
       // 轉換為統一格式
       return this.convertToUnifiedResult(
         result,
-        options?.model || 'llama-3.1-sonar-large-128k-online'
+        options?.model || 'sonar-pro'
       );
     } catch (error) {
       console.error('Perplexity optimization failed:', error);
@@ -62,20 +62,20 @@ export class PerplexityOptimizationProvider implements OptimizationProviderInter
   getAvailableModels(): ModelOption[] {
     return [
       {
-        value: 'llama-3.1-sonar-large-128k-online',
-        label: 'Llama 3.1 Sonar Large (Online)',
-        description: '結合線上搜尋的大型模型，提供最新資訊',
+        value: 'sonar-pro',
+        label: 'Sonar Pro - 進階搜尋模型',
+        description: '結合線上搜尋的進階模型，提供最新資訊',
         features: ['即時搜尋', '引用來源', '最新資訊'],
       },
       {
-        value: 'llama-3.1-sonar-small-128k-online',
-        label: 'Llama 3.1 Sonar Small (Online)',
+        value: 'sonar',
+        label: 'Sonar - 基礎搜尋模型',
         description: '輕量級線上搜尋模型，成本較低',
         features: ['即時搜尋', '快速回應', '成本效益'],
       },
       {
-        value: 'llama-3.1-sonar-huge-128k-online',
-        label: 'Llama 3.1 Sonar Huge (Online)',
+        value: 'sonar-reasoning',
+        label: 'Sonar Reasoning - 推理模型',
         description: '最強大的線上搜尋模型，深度分析',
         features: ['深度分析', '完整引用', '專業級'],
       },
@@ -92,13 +92,13 @@ export class PerplexityOptimizationProvider implements OptimizationProviderInter
 
       // Perplexity 價格表（每1000 tokens的成本，美元）
       const pricing: Record<string, number> = {
-        'llama-3.1-sonar-small-128k-online': 0.0002, // $0.0002
-        'llama-3.1-sonar-large-128k-online': 0.001, // $0.001
-        'llama-3.1-sonar-huge-128k-online': 0.005, // $0.005
+        'sonar': 0.0002, // $0.0002
+        'sonar-pro': 0.001, // $0.001  
+        'sonar-reasoning': 0.005, // $0.005
       };
 
-      const selectedModel = model || 'llama-3.1-sonar-large-128k-online';
-      const pricePerK = pricing[selectedModel] || pricing['llama-3.1-sonar-large-128k-online'];
+      const selectedModel = model || 'sonar-pro';
+      const pricePerK = pricing[selectedModel] || pricing['sonar-pro'];
 
       return (estimatedTokens / 1000) * pricePerK;
     } catch (error) {
@@ -199,6 +199,10 @@ export class PerplexityOptimizationProvider implements OptimizationProviderInter
   private convertModelName(modelName: string): PerplexityModel {
     // 模型名稱映射
     const modelMapping: Record<string, PerplexityModel> = {
+      'sonar': PERPLEXITY_MODELS.SONAR,
+      'sonar-pro': PERPLEXITY_MODELS.SONAR_PRO,
+      'sonar-reasoning': PERPLEXITY_MODELS.SONAR_REASONING,
+      // 向下相容舊的模型名稱
       'llama-3.1-sonar-small-128k-online': PERPLEXITY_MODELS.SONAR,
       'llama-3.1-sonar-large-128k-online': PERPLEXITY_MODELS.SONAR_PRO,
       'llama-3.1-sonar-huge-128k-online': PERPLEXITY_MODELS.SONAR_REASONING,

@@ -8,9 +8,9 @@ export const PERPLEXITY_API_CONFIG = {
 } as const;
 
 export const PERPLEXITY_MODELS = {
-  SONAR: 'llama-3.1-sonar-small-128k-online',
-  SONAR_PRO: 'llama-3.1-sonar-large-128k-online',
-  SONAR_REASONING: 'llama-3.1-sonar-huge-128k-online',
+  SONAR: 'sonar',
+  SONAR_PRO: 'sonar-pro', 
+  SONAR_REASONING: 'sonar-reasoning',
 } as const;
 
 export type PerplexityModel = (typeof PERPLEXITY_MODELS)[keyof typeof PERPLEXITY_MODELS];

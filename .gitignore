@@ -22,3 +22,7 @@ test-*.sh
 # 腳本和報告檔案（在 scripts 目錄中管理）
 /scripts/debug/
 /scripts/test/
+
+# 專案模板
+/PROJECT_TEMPLATE
+/PROJECT_TEMPLATE/*
