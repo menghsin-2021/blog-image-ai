@@ -23,8 +23,10 @@ BlogImageAI 現在整合了 Perplexity AI 作為提示詞最佳化的新選項�
 
 ### 🎯 多種 Sonar 模型
 - **Sonar**: 適合一般內容，速度快
-- **Sonar Pro**: 適合複雜內容，品質更佳
+- **Sonar Pro**: 適合複雜內容，品質更佳  
 - **Sonar Reasoning**: 適合需要深度分析的專業內容
+
+> **模型更新說明**: Perplexity 已簡化模型名稱，從 `llama-3.1-sonar-*-128k-online` 格式更新為簡潔的 `sonar*` 格式。
 
 ## 設定步驟
 
@@ -84,16 +86,21 @@ npm run dev
 - ✅ 適用於：一般部落格文章、基礎內容
 - ⚡ 特點：快速回應、成本較低
 - 💰 成本：約 $0.02-0.05 每次查詢
+- 🔧 **模型名稱**: `sonar`
 
 #### Sonar Pro  
 - ✅ 適用於：複雜內容、專業文章
 - 🎯 特點：更深度的分析、更準確的建議
 - 💰 成本：約 $0.05-0.10 每次查詢
+- 🔧 **模型名稱**: `sonar-pro`
 
 #### Sonar Reasoning
 - ✅ 適用於：技術文章、研究內容、需要深度思考的主題
 - 🧠 特點：邏輯推理、多步驟分析
 - 💰 成本：約 $0.10-0.20 每次查詢
+- 🔧 **模型名稱**: `sonar-reasoning`
+
+> **重要更新**: Perplexity API 已更新模型名稱格式。如果您在程式碼中直接使用模型名稱，請使用新的簡化格式（如 `sonar-pro`）而非舊格式（如 `llama-3.1-sonar-large-128k-online`）。
 
 ## 輸出格式
 
@@ -145,8 +152,16 @@ npm run dev
 
 #### 模型不可用
 ```
-錯誤: 選擇的模型暫時不可用
-解決: 切換到其他可用的模型 (Sonar/Sonar Pro/Sonar Reasoning)
+錯誤: Invalid model 'llama-3.1-sonar-large-128k-online'
+解決: 使用新的模型名稱格式 (sonar, sonar-pro, sonar-reasoning)
+```
+
+#### API 格式更新
+```
+錯誤: 使用舊的模型名稱格式
+解決: 更新為新的簡化格式：
+- 舊格式: llama-3.1-sonar-large-128k-online
+- 新格式: sonar-pro
 ```
 
 ### 偵錯模式

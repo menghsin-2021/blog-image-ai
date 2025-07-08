@@ -201,7 +201,7 @@ ${content.targetAudience ? `目標讀者: ${content.targetAudience}` : ''}`;
         // 驗證關鍵字是否包含在結果中
         const requiredKeyword = purposeDescriptions[purpose].requiredKeyword;
         const chinesePrompt = result.chinese || '';
-        
+
         if (!chinesePrompt.includes(requiredKeyword)) {
           console.warn(`生成的中文提示詞缺少必要關鍵字: ${requiredKeyword}`);
           // 嘗試在提示詞中補充關鍵字
