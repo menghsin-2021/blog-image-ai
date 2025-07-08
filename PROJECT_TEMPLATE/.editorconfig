@@ -1,0 +1,105 @@
+# EditorConfig is awesome: https://EditorConfig.org
+
+# 根配置檔案
+root = true
+
+# 所有檔案的通用設定
+[*]
+charset = utf-8
+end_of_line = lf
+indent_style = space
+indent_size = 2
+insert_final_newline = true
+trim_trailing_whitespace = true
+max_line_length = 100
+
+# JavaScript/TypeScript 檔案
+[*.{js,jsx,ts,tsx,vue}]
+indent_size = 2
+quote_type = single
+
+# JSON 檔案
+[*.json]
+indent_size = 2
+
+# YAML 檔案
+[*.{yml,yaml}]
+indent_size = 2
+
+# Markdown 檔案
+[*.md]
+trim_trailing_whitespace = false
+max_line_length = 80
+
+# Python 檔案
+[*.py]
+indent_size = 4
+max_line_length = 88
+
+# Java 檔案
+[*.java]
+indent_size = 4
+
+# C/C++ 檔案
+[*.{c,cpp,h,hpp}]
+indent_size = 4
+
+# HTML 檔案
+[*.html]
+indent_size = 2
+
+# CSS/SCSS/LESS 檔案
+[*.{css,scss,less,sass}]
+indent_size = 2
+
+# XML 檔案
+[*.xml]
+indent_size = 2
+
+# Shell 腳本
+[*.{sh,bash}]
+indent_size = 4
+
+# Dockerfile
+[Dockerfile*]
+indent_size = 4
+
+# Makefile (必須使用 tab)
+[Makefile]
+indent_style = tab
+
+# Package.json (使用較小的縮排)
+[package.json]
+indent_size = 2
+
+# .env 檔案
+[.env*]
+insert_final_newline = false
+
+# 配置檔案
+[*.{conf,ini,cfg}]
+indent_size = 4
+
+# SQL 檔案
+[*.sql]
+indent_size = 4
+
+# GraphQL 檔案
+[*.{graphql,gql}]
+indent_size = 2
+
+# Prisma schema 檔案
+[*.prisma]
+indent_size = 2
+
+# 忽略某些檔案的格式檢查
+[*.{min.js,min.css}]
+insert_final_newline = false
+trim_trailing_whitespace = false
+
+# 特殊目錄的檔案
+[{package,bower}.json]
+indent_size = 2
+
+[*.{diff,patch}]
+trim_trailing_whitespace = false
