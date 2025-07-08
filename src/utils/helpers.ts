@@ -65,6 +65,42 @@ export const copyToClipboard = async (text: string): Promise<void> => {
 };
 
 /**
+ * 複製圖片到剪貼簿
+ */
+export const copyImageToClipboard = async (imageUrl: string): Promise<void> => {
+  try {
+    // 檢查瀏覽器是否支援 Clipboard API
+    if (!navigator.clipboard || !ClipboardItem) {
+      throw new Error('瀏覽器不支援圖片複製功能');
+    }
+
+    // 下載圖片並轉換為 Blob
+    const response = await fetch(imageUrl);
+    if (!response.ok) {
+      throw new Error('無法載入圖片');
+    }
+
+    const blob = await response.blob();
+    
+    // 檢查圖片格式
+    if (!blob.type.startsWith('image/')) {
+      throw new Error('不支援的圖片格式');
+    }
+
+    // 複製到剪貼簿
+    await navigator.clipboard.write([
+      new ClipboardItem({
+        [blob.type]: blob
+      })
+    ]);
+  } catch (error) {
+    console.error('複製圖片到剪貼簿失敗:', error);
+    const errorMessage = error instanceof Error ? error.message : '複製圖片失敗';
+    throw new Error(errorMessage);
+  }
+};
+
+/**
  * 格式化檔案大小
  */
 export const formatFileSize = (bytes: number): string => {

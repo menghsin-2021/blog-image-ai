@@ -114,6 +114,15 @@ export class PerplexityOptimizer {
   }
 
   private createOptimizationPrompt(content: string, purpose: string): PerplexityMessage[] {
+    // 定義用途關鍵字對應
+    const purposeKeywords = {
+      '首頁橫幅': '部落格文章開頭封面橫幅圖片',
+      '段落說明': '部落格文章段落說明圖片', 
+      '內容總結': '部落格文章結尾總結圖片',
+    };
+
+    const requiredKeyword = purposeKeywords[purpose as keyof typeof purposeKeywords] || purpose;
+
     const systemPrompt = `你是一個專業的部落格圖片生成提示詞最佳化專家。
 
 **重要：請務必使用繁體中文回應，不要使用簡體中文。**
@@ -127,11 +136,13 @@ export class PerplexityOptimizer {
 4. 包含具體的視覺元素、風格指導和技術參數
 5. 確保提示詞能生成專業、高品質的圖片
 6. **所有回應內容必須使用繁體中文（Traditional Chinese），包括提示詞和建議**
+7. **重要：optimizedPrompt（繁體中文版本）必須包含關鍵字"${requiredKeyword}"**
+8. **重要：optimizedPromptEn（英文版本）必須包含與用途相關的明確描述**
 
 請以 JSON 格式回應，包含以下欄位：
 {
   "originalPrompt": "基於內容生成的基礎提示詞（繁體中文）",
-  "optimizedPrompt": "經過最佳化的詳細提示詞（繁體中文）",
+  "optimizedPrompt": "經過最佳化的詳細提示詞（繁體中文，必須包含: ${requiredKeyword}）",
   "optimizedPromptEn": "經過最佳化的詳細提示詞（英文版本）",
   "improvements": ["改善點1", "改善點2", ...],
   "reasoning": "最佳化的理由和邏輯",
@@ -145,12 +156,14 @@ export class PerplexityOptimizer {
 ${content}
 
 圖片用途：${purpose}
+**關鍵字要求：提示詞必須包含"${requiredKeyword}"**
 
 **特別要求：**
 1. 必須提供繁體中文（optimizedPrompt）和英文（optimizedPromptEn）兩個版本的最佳化提示詞
-2. 所有說明文字請使用繁體中文（Traditional Chinese），不要使用簡體中文
-3. 提示詞應該適合台灣地區的使用者
-4. 請基於最新的 AI 圖片生成趨勢和部落格視覺設計最佳實踐，提供詳細的最佳化建議
+2. 繁體中文版本必須包含"${requiredKeyword}"這個關鍵字
+3. 所有說明文字請使用繁體中文（Traditional Chinese），不要使用簡體中文
+4. 提示詞應該適合台灣地區的使用者
+5. 請基於最新的 AI 圖片生成趨勢和部落格視覺設計最佳實踐，提供詳細的最佳化建議
 
 請確保回應格式正確，且所有中文字都是繁體字。兩個版本的提示詞內容應該相對應但語言不同。`;
 
@@ -201,6 +214,22 @@ ${content}
           suggestedStyle: '現代簡約風格',
           technicalTips: '建議使用高解析度和專業構圖',
         };
+      }
+
+      // 驗證關鍵字是否包含在結果中
+      const purposeKeywords = {
+        '首頁橫幅': '部落格文章開頭封面橫幅圖片',
+        '段落說明': '部落格文章段落說明圖片',
+        '內容總結': '部落格文章結尾總結圖片',
+      };
+      
+      const requiredKeyword = purposeKeywords[purpose as keyof typeof purposeKeywords] || purpose;
+      const chinesePrompt = parsedContent.optimizedPrompt || '';
+      
+      if (!chinesePrompt.includes(requiredKeyword)) {
+        console.warn(`Perplexity 生成的中文提示詞缺少必要關鍵字: ${requiredKeyword}`);
+        // 在提示詞開頭補充關鍵字
+        parsedContent.optimizedPrompt = `${requiredKeyword}，${chinesePrompt}`;
       }
 
       // 計算成本 (估算搜尋查詢數量)
